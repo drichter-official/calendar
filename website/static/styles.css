@@ -1,0 +1,59 @@
+.calendar-container {
+    position: relative;
+    max-width: 100%; /* adjust width to your preference */
+    max-height: 100%;
+    margin: auto;
+    /*aspect-ratio: 6 / 4;*/
+}
+
+.calendar-bg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Common door button style */
+.door-btn {
+    position: absolute;
+    width: 16.66%;           /* 6 columns */
+    height: 25%;             /* 4 rows */
+    opacity: 0.5;            /* semi-visible for debugging, set to 0 when ready */
+    background: rgba(255, 0, 0, 0.3);
+    border: 2px solid #ff0000;
+    cursor: pointer;
+    text-align: center;
+    line-height: calc(25vh); /* Vertical centering number */
+    font-size: 2rem;
+    color: white;
+    font-weight: bold;
+    user-select: none;
+}
+
+/* Position classes */
+.pos1  { left: 0%;     top: 0%; }
+.pos2  { left: 16.66%; top: 0%; }
+.pos3  { left: 33.33%; top: 0%; }
+.pos4  { left: 50%;    top: 0%; }
+.pos5  { left: 66.66%; top: 0%; }
+.pos6  { left: 83.33%; top: 0%; }
+
+.pos7  { left: 0%;     top: 25%; }
+.pos8  { left: 16.66%; top: 25%; }
+.pos9  { left: 33.33%; top: 25%; }
+.pos10 { left: 50%;    top: 25%; }
+.pos11 { left: 66.66%; top: 25%; }
+.pos12 { left: 83.33%; top: 25%; }
+
+.pos13 { left: 0%;     top: 50%; }
+.pos14 { left: 16.66%; top: 50%; }
+.pos15 { left: 33.33%; top: 50%; }
+.pos16 { left: 50%;    top: 50%; }
+.pos17 { left: 66.66%; top: 50%; }
+.pos18 { left: 83.33%; top: 50%; }
+
+.pos19 { left: 0%;     top: 75%; }
+.pos20 { left: 16.66%; top: 75%; }
+.pos21 { left: 33.33%; top: 75%; }
+.pos22 { left: 50%;    top: 75%; }
+.pos23 { left: 66.66%; top: 75%; }
+.pos24 { left: 83.33%; top: 75%; }
