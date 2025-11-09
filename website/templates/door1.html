@@ -1,12 +1,247 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Door {{door}}</title>
+    <title>Door {{door}} - Interactive Sudoku</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .sudoku-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .sudoku {
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .sudoku td {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            border: 1px solid #999;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .sudoku td input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            outline: none;
+            background-color: #fffef0;
+        }
+        .sudoku td.prefilled {
+            background-color: #e8e8e8;
+            color: #000;
+        }
+        .sudoku td input:focus {
+            background-color: #d4edff;
+        }
+        .sudoku td.correct {
+            background-color: #90ee90 !important;
+        }
+        .sudoku td.incorrect {
+            background-color: #ffcccb !important;
+        }
+        .sudoku td:nth-child(3), .sudoku td:nth-child(6) {
+            border-right: 3px solid #000;
+        }
+        .sudoku tr:nth-child(3) td, .sudoku tr:nth-child(6) td {
+            border-bottom: 3px solid #000;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.secondary {
+            background-color: #2196F3;
+        }
+        button.secondary:hover {
+            background-color: #0b7dda;
+        }
+        #message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin: 20px 0;
+            text-decoration: none;
+            color: #2196F3;
+            font-size: 1rem;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Congratulations!</h1>
-    <!-- Place your puzzle or message here -->
-    <p>Here is a custom Sudoku for Day {{door}}!</p>
-    <a href="/">Back to calendar</a>
+    <h1>Day {{ door }} - Interactive Sudoku Puzzle</h1>
+    <p style="text-align: center;">Fill in the empty cells with numbers 1-9. Each row, column, and 3x3 box must contain all digits from 1 to 9.</p>
+    
+    <div class="sudoku-container">
+        <table class="sudoku" id="sudokuGrid">
+            {% for i in range(9) %}
+            <tr>
+                {% for j in range(9) %}
+                <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}">
+                    {% if sudoku[i][j] != 0 %}
+                        {{ sudoku[i][j] }}
+                    {% else %}
+                        <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    
+    <div class="controls">
+        <button onclick="checkSolution()">Check Solution</button>
+        <button onclick="clearAll()" class="secondary">Clear All</button>
+        <button onclick="resetBoard()" class="secondary">Reset</button>
+    </div>
+    
+    <div id="message"></div>
+    
+    <a href="/" class="back-link">← Back to Calendar</a>
+
+    <script>
+        // Store the solution
+        const solution = {{ solution | tojson }};
+        const initialPuzzle = {{ sudoku | tojson }};
+        
+        // Only allow numbers 1-9
+        document.querySelectorAll('.sudoku input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                const value = e.target.value;
+                if (value && (!/^[1-9]$/.test(value))) {
+                    e.target.value = '';
+                }
+            });
+            
+            // Add keyboard navigation
+            input.addEventListener('keydown', function(e) {
+                const row = parseInt(e.target.dataset.row);
+                const col = parseInt(e.target.dataset.col);
+                let newRow = row;
+                let newCol = col;
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        newRow = row > 0 ? row - 1 : row;
+                        break;
+                    case 'ArrowDown':
+                    case 'Enter':
+                        e.preventDefault();
+                        newRow = row < 8 ? row + 1 : row;
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        newCol = col > 0 ? col - 1 : col;
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        newCol = col < 8 ? col + 1 : col;
+                        break;
+                }
+                
+                if (newRow !== row || newCol !== col) {
+                    const nextInput = document.querySelector(`input[data-row="${newRow}"][data-col="${newCol}"]`);
+                    if (nextInput) {
+                        nextInput.focus();
+                        nextInput.select();
+                    }
+                }
+            });
+        });
+        
+        function checkSolution() {
+            let allCorrect = true;
+            let allFilled = true;
+            const inputs = document.querySelectorAll('.sudoku input');
+            
+            inputs.forEach(input => {
+                const row = parseInt(input.dataset.row);
+                const col = parseInt(input.dataset.col);
+                const value = input.value;
+                const cell = input.parentElement;
+                
+                // Remove previous styling
+                cell.classList.remove('correct', 'incorrect');
+                
+                if (!value) {
+                    allFilled = false;
+                    return;
+                }
+                
+                if (parseInt(value) === solution[row][col]) {
+                    cell.classList.add('correct');
+                } else {
+                    cell.classList.add('incorrect');
+                    allCorrect = false;
+                }
+            });
+            
+            const messageDiv = document.getElementById('message');
+            if (!allFilled) {
+                messageDiv.innerHTML = '<span class="error">Please fill in all cells first!</span>';
+            } else if (allCorrect) {
+                messageDiv.innerHTML = '<span class="success">🎉 Congratulations! You solved the Sudoku correctly! 🎉</span>';
+            } else {
+                messageDiv.innerHTML = '<span class="error">Some cells are incorrect. Keep trying!</span>';
+            }
+        }
+        
+        function clearAll() {
+            document.querySelectorAll('.sudoku input').forEach(input => {
+                input.value = '';
+                input.parentElement.classList.remove('correct', 'incorrect');
+            });
+            document.getElementById('message').innerHTML = '';
+        }
+        
+        function resetBoard() {
+            clearAll();
+        }
+    </script>
 </body>
 </html>
