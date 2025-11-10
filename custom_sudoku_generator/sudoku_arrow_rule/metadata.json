@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Arrow Sudoku",
+    "description": "Sum of arrow cells must equal the circle cell value",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:04:47.767531",
+  "size": 9,
+  "box_size": 3
+}

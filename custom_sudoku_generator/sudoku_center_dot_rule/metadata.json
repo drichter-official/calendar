@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Center Dot Sudoku",
+    "description": "Center cells of all 3x3 boxes must contain unique digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:04:59.471765",
+  "size": 9,
+  "box_size": 3
+}

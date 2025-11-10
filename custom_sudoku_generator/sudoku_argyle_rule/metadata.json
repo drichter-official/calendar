@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Argyle Sudoku",
+    "description": "Diagonals of 3x3 boxes must not contain repeated digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:04:47.638106",
+  "size": 9,
+  "box_size": 3
+}

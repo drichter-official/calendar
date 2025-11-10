@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Thermo Sudoku",
+    "description": "Digits strictly increase along thermometer lines",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:16:39.739087",
+  "size": 9,
+  "box_size": 3
+}

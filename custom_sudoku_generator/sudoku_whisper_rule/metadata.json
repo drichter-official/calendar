@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Whisper Sudoku",
+    "description": "Adjacent cells along whisper lines differ by at least 5",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:16:39.850557",
+  "size": 9,
+  "box_size": 3
+}

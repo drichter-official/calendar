@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Nonconsecutive Sudoku",
+    "description": "Orthogonally adjacent cells cannot have consecutive digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:16:32.690110",
+  "size": 9,
+  "box_size": 3
+}

@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Consecutive Sudoku",
+    "description": "Orthogonally adjacent cells may contain consecutive digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:06:59.639786",
+  "size": 9,
+  "box_size": 3
+}

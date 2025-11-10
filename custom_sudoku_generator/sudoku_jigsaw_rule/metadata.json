@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Jigsaw Sudoku",
+    "description": "Irregular regions instead of standard 3x3 boxes",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:08:59.967064",
+  "size": 9,
+  "box_size": 3
+}

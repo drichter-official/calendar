@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Kropki Sudoku",
+    "description": "Adjacent cells have specific difference or ratio relationships",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:09:00.072823",
+  "size": 9,
+  "box_size": 3
+}

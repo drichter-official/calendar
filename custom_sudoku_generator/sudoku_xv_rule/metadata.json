@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "XV Sudoku",
+    "description": "Specific adjacent cells must sum to 10 (X) or 5 (V)",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:19:06.369140",
+  "size": 9,
+  "box_size": 3
+}
