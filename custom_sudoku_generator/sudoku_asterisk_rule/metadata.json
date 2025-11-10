@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Asterisk Sudoku",
+    "description": "Nine cells forming an asterisk must contain digits 1-9",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:22:32.559873",
+  "size": 9,
+  "box_size": 3
+}

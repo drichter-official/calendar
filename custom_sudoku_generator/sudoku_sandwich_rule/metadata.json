@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Sandwich Sudoku",
+    "description": "Sum of digits between 1 and 9 in rows/columns follows constraints",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:13:00.558098",
+  "size": 9,
+  "box_size": 3
+}

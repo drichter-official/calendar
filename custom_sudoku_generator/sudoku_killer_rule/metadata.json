@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Killer Sudoku",
+    "description": "Cages must sum to specific values with no repeated digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:09:00.017501",
+  "size": 9,
+  "box_size": 3
+}

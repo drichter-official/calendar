@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Even-Odd Sudoku",
+    "description": "Specific cells must contain even or odd digits",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:16:29.950073",
+  "size": 9,
+  "box_size": 3
+}

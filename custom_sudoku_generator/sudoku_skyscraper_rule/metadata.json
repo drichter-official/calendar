@@ -1,0 +1,11 @@
+{
+  "rule": {
+    "name": "Skyscraper Sudoku",
+    "description": "Visibility clues around edges indicate visible buildings",
+    "size": 9,
+    "box_size": 3
+  },
+  "generated_at": "2025-11-10T21:13:00.726798",
+  "size": 9,
+  "box_size": 3
+}

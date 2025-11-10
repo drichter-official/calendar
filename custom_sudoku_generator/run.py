@@ -253,8 +253,24 @@ def discover_rules(base_folder=None):
 if __name__ == "__main__":
     import sys
 
-    # Check if a specific rule folder is provided
-    if len(sys.argv) > 1:
+    # Discover rules first
+    rule_folders = discover_rules()
+
+    # Check for special flags
+    if len(sys.argv) > 1 and sys.argv[1] == "--all":
+        print("=== Sudoku Generator - Generating All Rules ===\n")
+        for folder in rule_folders:
+            generate_sudoku_for_rule(folder)
+            print("\n" + "="*60 + "\n")
+    elif len(sys.argv) > 2 and sys.argv[1] == "--index":
+        idx = int(sys.argv[2]) - 1
+        if 0 <= idx < len(rule_folders):
+            difficulty = int(sys.argv[3]) if len(sys.argv) > 3 else 5
+            generate_sudoku_for_rule(rule_folders[idx], difficulty)
+        else:
+            print(f"Error: Invalid index. Choose between 1 and {len(rule_folders)}")
+    elif len(sys.argv) > 1:
+        # Check if a specific rule folder is provided
         rule_folder = sys.argv[1]
         difficulty = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
@@ -263,10 +279,8 @@ if __name__ == "__main__":
         else:
             print(f"Error: Rule folder '{rule_folder}' not found")
     else:
-        # Discover and generate for all rules
+        # List available rules
         print("=== Sudoku Generator - Modular System ===\n")
-
-        rule_folders = discover_rules()
 
         if not rule_folders:
             print("No rule folders found. Generating a basic Sudoku...")
@@ -289,15 +303,3 @@ if __name__ == "__main__":
             print("  - Run with specific folder: python run.py <rule_folder_path> [difficulty]")
             print("  - Generate for all: python run.py --all")
             print("  - Generate for specific folder from list: python run.py --index <number>")
-
-            if len(sys.argv) > 1 and sys.argv[1] == "--all":
-                for folder in rule_folders:
-                    generate_sudoku_for_rule(folder)
-                    print("\n" + "="*60 + "\n")
-            elif len(sys.argv) > 2 and sys.argv[1] == "--index":
-                idx = int(sys.argv[2]) - 1
-                if 0 <= idx < len(rule_folders):
-                    difficulty = int(sys.argv[3]) if len(sys.argv) > 3 else 5
-                    generate_sudoku_for_rule(rule_folders[idx], difficulty)
-                else:
-                    print(f"Error: Invalid index. Choose between 1 and {len(rule_folders)}")
