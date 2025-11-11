@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'custom_sudoku_
 # Mapping of door numbers to rule folders
 DOOR_TO_RULE = {
     1: 'sudoku_knights_rule',
+    2: 'sudoku_diagonal_rule',
     # Add more mappings as needed
 }
 
@@ -77,11 +78,16 @@ def calendar():
 
 @app.route('/door/<int:door_number>')
 def door(door_number):
-    # For door 1, load and display the interactive sudoku
+    # For door 1, load and display the interactive sudoku with Knights rule
     if door_number == 1:
         sudoku_grid = load_sudoku(door_number)
         solution_grid = load_solution(door_number)
         return render_template("door1.html", door=door_number, sudoku=sudoku_grid, solution=solution_grid)
+    # For door 2, load and display the interactive sudoku with Diagonal rule
+    elif door_number == 2:
+        sudoku_grid = load_sudoku(door_number)
+        solution_grid = load_solution(door_number)
+        return render_template("door2.html", door=door_number, sudoku=sudoku_grid, solution=solution_grid)
     # For other doors, render their specific templates
     return render_template(f"door{door_number}.html", door=door_number)
 
