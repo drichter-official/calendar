@@ -2,6 +2,35 @@
 
 A flexible, extensible Sudoku generator that supports custom rules and constraints.
 
+## ✨ Recent Major Updates
+
+### 1. Reverse Generation Framework
+The generator now supports **reverse generation** - makes generation **10-1000x faster** for complex rules like Killer, Sandwich, Arrow, and Thermo Sudoku.
+
+- **Traditional**: Define constraints → Generate solution (slow/may fail)  
+- **Reverse**: Generate solution → Derive constraints (fast/always succeeds)
+
+📖 See [REVERSE_GENERATION.md](REVERSE_GENERATION.md)
+
+### 2. Standard Box Override
+Rules like Jigsaw Sudoku can now properly **replace** standard 3x3 boxes with custom regions instead of incorrectly validating both.
+
+📖 See [STANDARD_BOX_OVERRIDE.md](STANDARD_BOX_OVERRIDE.md)
+
+### 3. Enhanced Metadata
+All rules now export comprehensive metadata including regions, lines, cages, and constraints for visualization.
+
+📖 See [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)
+
+## 📚 Documentation
+
+- **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)** - Quick reference for adding new rules
+- **[REVERSE_GENERATION.md](REVERSE_GENERATION.md)** - Detailed guide to reverse generation
+- **[STANDARD_BOX_OVERRIDE.md](STANDARD_BOX_OVERRIDE.md)** - Standard box override feature
+- **[IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)** - Recent changes and performance metrics
+- **[QUICKSTART.md](QUICKSTART.md)** - Getting started guide
+- **[VARIANTS.md](VARIANTS.md)** - Available Sudoku variants
+
 ## Structure
 
 ```

@@ -14,12 +14,12 @@ class KnightsRule(BaseRule):
     Sudoku with Knight's Rule: No two cells that are a chess knight's move apart
     can contain the same digit.
     """
-
+    
     def __init__(self, size=9, box_size=3):
         super().__init__(size, box_size)
         self.name = "Knight's Rule"
         self.description = "No two cells a knight's move apart can contain the same digit"
-
+    
     def validate(self, grid, row, col, num):
         """
         Check if placing 'num' at (row, col) violates the knight's rule.
@@ -35,7 +35,7 @@ class KnightsRule(BaseRule):
             if 0 <= nr < self.size and 0 <= nc < self.size:
                 if grid[nr][nc] == num:
                     return False
-
+        
         return True
 
 

@@ -23,12 +23,13 @@
             border-collapse: collapse;
             background-color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 4px solid #000;
         }
         .sudoku td {
             width: 50px;
             height: 50px;
             text-align: center;
-            border: 1px solid #999;
+            border: 2px solid #999;
             font-size: 1.3rem;
             font-weight: bold;
         }
@@ -46,19 +47,51 @@
             background-color: #e8e8e8;
             color: #000;
         }
-        .sudoku td input:focus {
-            background-color: #d4edff;
+        /* Row/column highlight - lowest priority */
+        .sudoku td.rowcol-highlight {
+            background-color: #e3f2fd !important; /* very light blue for row/col */
         }
+        /* Number highlights - override row/col highlight */
+        .sudoku td.highlighted-user {
+            background-color: #ce93d8 !important; /* bright yellow for user-filled */
+        }
+        .sudoku td.highlighted-prefilled {
+            background-color: #b995f0 !important; /* bright purple for prefilled */
+        }
+        /* Selected cell outline */
+        .sudoku td.selected-cell {
+            outline: 3px solid #1565c0;
+            outline-offset: -3px;
+            z-index: 10;
+            position: relative;
+        }
+        /* Ensure input backgrounds inherit from parent td */
+        .sudoku td.rowcol-highlight input {
+            background-color: transparent;
+        }
+        .sudoku td.highlighted-user input {
+            background-color: transparent;
+        }
+        .sudoku td.highlighted-prefilled input {
+            background-color: transparent;
+        }
+        /* Validation colors - highest priority */
         .sudoku td.correct {
-            background-color: #90ee90 !important;
+            background-color: #a5d6a7 !important;
+        }
+        .sudoku td.correct input {
+            background-color: transparent;
         }
         .sudoku td.incorrect {
-            background-color: #ffcccb !important;
+            background-color: #ef9a9a !important;
         }
-        .sudoku td:nth-child(3), .sudoku td:nth-child(6) {
+        .sudoku td.incorrect input {
+            background-color: transparent;
+        }
+        .sudoku td:nth-child(3n) {
             border-right: 3px solid #000;
         }
-        .sudoku tr:nth-child(3) td, .sudoku tr:nth-child(6) td {
+        .sudoku tr:nth-child(3n) td {
             border-bottom: 3px solid #000;
         }
         .controls {
@@ -154,9 +187,20 @@
                 const value = e.target.value;
                 if (value && (!/^[1-9]$/.test(value))) {
                     e.target.value = '';
+                } else {
+                    highlightSameNumbersAndRowCol(e.target, value);
                 }
             });
-            
+
+            input.addEventListener('focus', function(e) {
+                const value = e.target.value;
+                highlightSameNumbersAndRowCol(e.target, value);
+            });
+
+            input.addEventListener('blur', function(e) {
+                clearHighlights();
+            });
+
             // Add keyboard navigation
             input.addEventListener('keydown', function(e) {
                 const row = parseInt(e.target.dataset.row);
@@ -194,6 +238,21 @@
             });
         });
         
+        // Add click listeners to prefilled cells
+        document.querySelectorAll('.sudoku td.prefilled').forEach(cell => {
+            cell.addEventListener('click', function(e) {
+                const value = e.target.textContent.trim();
+                highlightSameNumbersAndRowCol(cell, value);
+            });
+        });
+
+        // Clear highlights when clicking outside the sudoku grid
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.sudoku')) {
+                clearHighlights();
+            }
+        });
+
         function checkSolution() {
             let allCorrect = true;
             let allFilled = true;
@@ -241,6 +300,54 @@
         
         function resetBoard() {
             clearAll();
+        }
+
+        function highlightSameNumbersAndRowCol(selectedCell, number) {
+            clearHighlights();
+            if (!selectedCell) return;
+
+            // Get row and col
+            let row = null, col = null;
+            if (selectedCell.tagName === 'INPUT') {
+                row = parseInt(selectedCell.dataset.row);
+                col = parseInt(selectedCell.dataset.col);
+            } else {
+                row = parseInt(selectedCell.getAttribute('data-row'));
+                col = parseInt(selectedCell.getAttribute('data-col'));
+            }
+
+            // Highlight row and column
+            document.querySelectorAll('.sudoku td').forEach(cell => {
+                const cellRow = parseInt(cell.getAttribute('data-row'));
+                const cellCol = parseInt(cell.getAttribute('data-col'));
+                if (cellRow === row || cellCol === col) {
+                    cell.classList.add('rowcol-highlight');
+                }
+            });
+
+            // Highlight selected cell
+            if (selectedCell.tagName === 'INPUT') {
+                selectedCell.parentElement.classList.add('selected-cell');
+            } else {
+                selectedCell.classList.add('selected-cell');
+            }
+
+            // Highlight all cells with the same number
+            document.querySelectorAll('.sudoku td').forEach(cell => {
+                const text = cell.textContent.trim();
+                const input = cell.querySelector('input');
+                if (text === number && cell.classList.contains('prefilled')) {
+                    cell.classList.add('highlighted-prefilled');
+                } else if (input && input.value === number && input.value !== '' && !cell.classList.contains('prefilled')) {
+                    cell.classList.add('highlighted-user');
+                }
+            });
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('.sudoku td').forEach(cell => {
+                cell.classList.remove('highlighted', 'highlighted-prefilled', 'highlighted-user', 'rowcol-highlight', 'selected-cell');
+            });
         }
     </script>
 </body>

@@ -6,7 +6,7 @@
 </head>
 <body>
     <div class="calendar-container">
-        <img src="/static/white_img.png" class="calendar-bg" alt="Advent Calendar" />
+        <img src="/static/lottas_background.png" class="calendar-bg" alt="Advent Calendar" />
         {% for door_number, pos_class in door_positions %}
           <a href="{{ url_for('door', door_number=door_number) }}" class="door-btn {{ pos_class }}">
             {{ door_number }}

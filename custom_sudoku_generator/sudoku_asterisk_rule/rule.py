@@ -47,6 +47,13 @@ class AsteriskRule(BaseRule):
         return True
 
 
+    def get_metadata(self):
+        """Return metadata including asterisk cells."""
+        metadata = super().get_metadata()
+        metadata['asterisk_cells'] = list(self.asterisk_cells)
+        return metadata
+
+
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):
     return AsteriskRule(size, box_size)

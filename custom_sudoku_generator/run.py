@@ -15,21 +15,22 @@ class SudokuGenerator:
 
 
     def is_valid(self, grid, row, col, num):
-        # Standard Sudoku rules
-        box_row_start = (row // self.box_size) * self.box_size
-        box_col_start = (col // self.box_size) * self.box_size
-
+        # Standard Sudoku rules - row and column constraints (always apply)
         if any(grid[row][i] == num for i in range(self.size)):
             return False
         if any(grid[i][col] == num for i in range(self.size)):
             return False
-        for r in range(box_row_start, box_row_start + self.box_size):
-            for c in range(box_col_start, box_col_start + self.box_size):
-                if grid[r][c] == num:
-                    return False
 
-        # Custom rule checks (add your rules here)
-        # Example: shapes must satisfy some condition:
+        # Standard box constraint (only if the rule uses standard boxes)
+        if self.custom_rule_instance.use_standard_boxes:
+            box_row_start = (row // self.box_size) * self.box_size
+            box_col_start = (col // self.box_size) * self.box_size
+            for r in range(box_row_start, box_row_start + self.box_size):
+                for c in range(box_col_start, box_col_start + self.box_size):
+                    if grid[r][c] == num:
+                        return False
+
+        # Custom rule checks
         if not self.custom_rule(grid, row, col, num):
             return False
 
@@ -193,13 +194,14 @@ def load_custom_rule(rule_folder):
     return BaseRule()
 
 
-def generate_sudoku_for_rule(rule_folder, difficulty_attempts=5):
+def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None):
     """
     Generate a Sudoku puzzle for a specific rule folder.
 
     Args:
         rule_folder: Path to the folder containing the rule
-        difficulty_attempts: Number of attempts to remove cells (higher = harder)
+        difficulty_attempts: Number of attempts to remove cells (higher = harder).
+                           If None, uses smart defaults based on rule complexity.
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
@@ -210,6 +212,38 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=5):
     print(f"\nGenerating Sudoku with rule: {custom_rule.name}")
     print(f"Description: {custom_rule.description}")
 
+    # Use smart defaults if not specified
+    if difficulty_attempts is None:
+        # Check if rule is highly restrictive (e.g., non-consecutive)
+        if hasattr(custom_rule, 'is_highly_restrictive') and custom_rule.is_highly_restrictive:
+            difficulty_attempts = 2  # Very few attempts for highly restrictive rules
+        # Reverse generation rules have complex constraints - use fewer attempts
+        elif custom_rule.supports_reverse_generation():
+            difficulty_attempts = 3  # Fewer attempts for complex rules
+        else:
+            difficulty_attempts = 5  # Standard attempts for simple rules
+
+    # Check if this rule supports reverse generation
+    if custom_rule.supports_reverse_generation():
+        print("Using REVERSE GENERATION mode (solution first, then constraints)...")
+        return generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts)
+    else:
+        print("Using FORWARD GENERATION mode (constraints first, then solution)...")
+        return generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts)
+
+
+def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
+    """
+    Traditional generation: Start with constraints, generate a solution that satisfies them.
+
+    Args:
+        custom_rule: The custom rule instance
+        rule_folder: Path to save the puzzle
+        difficulty_attempts: Number of attempts to remove cells
+
+    Returns:
+        tuple: (puzzle_grid, solution_grid)
+    """
     # Create generator with the custom rule
     gen = SudokuGenerator(custom_rule=custom_rule)
 
@@ -223,6 +257,48 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=5):
 
     # Save the puzzle
     gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+
+    return puzzle_grid, solution_grid
+
+
+def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5):
+    """
+    Reverse generation: Generate a standard Sudoku solution first, then derive constraints from it.
+
+    This is much faster for complex rules like Killer, Sandwich, Arrow, etc.
+
+    Args:
+        custom_rule: The custom rule instance (must support reverse generation)
+        rule_folder: Path to save the puzzle
+        difficulty_attempts: Number of attempts to remove cells
+
+    Returns:
+        tuple: (puzzle_grid, solution_grid)
+    """
+    # First, generate a standard Sudoku solution (no custom constraints)
+    print("Step 1: Generating standard Sudoku solution...")
+    base_gen = SudokuGenerator(custom_rule=BaseRule())
+    solution_grid = base_gen.generate_full_grid()
+
+    print("Step 2: Deriving constraints from solution...")
+    # Derive constraints from the solution
+    if not custom_rule.derive_constraints_from_solution(solution_grid):
+        print("ERROR: Failed to derive constraints from solution!")
+        return None, None
+
+    print("Step 3: Creating puzzle by removing numbers...")
+    # Now create a generator with the custom rule that has derived constraints
+    gen = SudokuGenerator(custom_rule=custom_rule)
+    gen.grid = copy.deepcopy(solution_grid)
+
+    # Create puzzle by removing numbers
+    puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts)
+
+    # Save the puzzle
+    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+
+    return puzzle_grid, solution_grid
+
 
     return puzzle_grid, solution_grid
 
@@ -252,14 +328,14 @@ def discover_rules(base_folder=None):
 
 if __name__ == "__main__":
     import sys
-
+    from tqdm import tqdm
     # Discover rules first
     rule_folders = discover_rules()
 
     # Check for special flags
     if len(sys.argv) > 1 and sys.argv[1] == "--all":
         print("=== Sudoku Generator - Generating All Rules ===\n")
-        for folder in rule_folders:
+        for folder in tqdm(rule_folders):
             generate_sudoku_for_rule(folder)
             print("\n" + "="*60 + "\n")
     elif len(sys.argv) > 2 and sys.argv[1] == "--index":

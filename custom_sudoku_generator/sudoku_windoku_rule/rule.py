@@ -45,6 +45,18 @@ class WindokuRule(BaseRule):
         return True
 
 
+    def get_metadata(self):
+        """Return metadata including windoku window positions."""
+        metadata = super().get_metadata()
+        # Convert window positions to full cell lists for visualization
+        metadata['windoku_regions'] = [
+            [(r, c) for r in range(wr, wr + 3) for c in range(wc, wc + 3)]
+            for wr, wc in self.windoku_windows
+        ]
+        metadata['windoku_window_corners'] = self.windoku_windows
+        return metadata
+
+
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):
     return WindokuRule(size, box_size)

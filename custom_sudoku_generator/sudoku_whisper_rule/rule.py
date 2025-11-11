@@ -12,7 +12,7 @@ from base_rule import BaseRule
 class WhisperRule(BaseRule):
     """
     Whisper Sudoku: Adjacent cells along whisper lines must differ by at least 5.
-    For simplicity, we'll apply this to the center column.
+    Multiple whisper lines create interesting constraint patterns.
     """
 
     def __init__(self, size=9, box_size=3):
@@ -20,25 +20,46 @@ class WhisperRule(BaseRule):
         self.name = "Whisper Sudoku"
         self.description = "Adjacent cells along whisper lines differ by at least 5"
 
+        # Define whisper lines (lists of cells where adjacent pairs differ by at least 5)
+        self.whisper_lines = [
+            [(0, 1), (1, 1), (2, 1), (3, 1)],  # Vertical line
+            [(1, 4), (2, 4), (3, 4)],  # Vertical line
+            [(4, 0), (4, 1), (4, 2)],  # Horizontal line
+            [(5, 5), (6, 5), (7, 5)],  # Vertical line
+            [(7, 7), (8, 7), (8, 6)],  # L-shaped line
+        ]
+
     def validate(self, grid, row, col, num):
         """
         Check if placing 'num' at (row, col) violates the whisper rule.
-        Only first 3 cells of center column form a whisper line.
         """
-        # Apply whisper rule to first 3 cells of center column only
-        if col == 4 and row < 3:
-            # Check above
-            if row > 0:
-                above_num = grid[row - 1][col]
-                if above_num != 0 and abs(num - above_num) < 5:
-                    return False
-            # Check below
-            if row < 2:
-                below_num = grid[row + 1][col]
-                if below_num != 0 and abs(num - below_num) < 5:
-                    return False
-        
+        # Check each whisper line
+        for line in self.whisper_lines:
+            if (row, col) in line:
+                idx = line.index((row, col))
+
+                # Check previous cell in line (must differ by at least 5)
+                if idx > 0:
+                    prev_r, prev_c = line[idx - 1]
+                    prev_num = grid[prev_r][prev_c]
+                    if prev_num != 0 and abs(num - prev_num) < 5:
+                        return False
+
+                # Check next cell in line (must differ by at least 5)
+                if idx < len(line) - 1:
+                    next_r, next_c = line[idx + 1]
+                    next_num = grid[next_r][next_c]
+                    if next_num != 0 and abs(num - next_num) < 5:
+                        return False
+
         return True
+
+
+    def get_metadata(self):
+        """Return metadata including whisper lines."""
+        metadata = super().get_metadata()
+        metadata['whisper_lines'] = self.whisper_lines
+        return metadata
 
 
 # Factory function to create an instance of this rule

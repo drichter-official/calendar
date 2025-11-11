@@ -46,6 +46,14 @@ class ChainRule(BaseRule):
         return True
 
 
+    def get_metadata(self):
+        """Return metadata including chain constraint cells."""
+        metadata = super().get_metadata()
+        metadata['corner_cells'] = self.corner_cells
+        metadata['top_left_corners'] = [(0,0), (0,3), (0,6), (3,0), (3,3), (3,6), (6,0), (6,3), (6,6)]
+        return metadata
+
+
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):
     return ChainRule(size, box_size)

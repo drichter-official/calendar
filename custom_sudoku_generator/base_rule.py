@@ -21,6 +21,9 @@ class BaseRule:
         self.name = "Base Rule"
         self.description = "No custom rules applied"
 
+        # Some rules (like Jigsaw) replace the standard box constraint entirely
+        self.use_standard_boxes = True
+
     def validate(self, grid, row, col, num):
         """
         Validate whether placing 'num' at position (row, col) is allowed.
@@ -49,4 +52,35 @@ class BaseRule:
             "size": self.size,
             "box_size": self.box_size
         }
+
+    def supports_reverse_generation(self):
+        """
+        Indicate whether this rule supports generating constraints from a solution.
+
+        For complex rules (like Killer, Sandwich, Arrow), it's much faster to:
+        1. Generate a valid standard Sudoku solution
+        2. Derive constraints from that solution
+
+        Rather than trying to generate a solution that satisfies pre-defined constraints.
+
+        Returns:
+            bool: True if this rule can derive constraints from a complete solution
+        """
+        return False
+
+    def derive_constraints_from_solution(self, solution_grid):
+        """
+        Derive rule-specific constraints from a completed Sudoku solution.
+
+        This method should be overridden by rules that support reverse generation.
+        It should analyze the solution and create appropriate constraints (cages,
+        thermometers, arrows, etc.) that are satisfied by the solution.
+
+        Args:
+            solution_grid: A completed valid Sudoku grid
+
+        Returns:
+            bool: True if constraints were successfully derived
+        """
+        return True
 
