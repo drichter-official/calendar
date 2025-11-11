@@ -88,6 +88,106 @@
         .sudoku td.diagonal-cell input {
             background-color: transparent;
         }
+        .sudoku td.windoku-cell {
+            background-color: #e3f2fd !important;
+        }
+        .sudoku td.windoku-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.asterisk-cell {
+            background-color: #fff9c4 !important;
+        }
+        .sudoku td.asterisk-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.even-cell {
+            background-color: #c8e6c9 !important;
+        }
+        .sudoku td.even-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.odd-cell {
+            background-color: #ffccbc !important;
+        }
+        .sudoku td.odd-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.magic-square-cell {
+            background-color: #f3e5f5 !important;
+        }
+        .sudoku td.magic-square-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.center-dot-cell {
+            background-color: #ffe0b2 !important;
+        }
+        .sudoku td.center-dot-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.killer-cage {
+            position: relative;
+            border: 2px dashed #9c27b0 !important;
+        }
+        .sudoku td.cage-sum {
+            font-size: 0.7rem;
+            color: #9c27b0;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-weight: normal;
+        }
+        .sudoku td.thermo-cell {
+            background-color: #e1f5fe !important;
+        }
+        .sudoku td.thermo-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.arrow-circle {
+            background-color: #fff9c4 !important;
+            border-radius: 50%;
+        }
+        .sudoku td.arrow-circle input {
+            background-color: transparent;
+        }
+        .sudoku td.arrow-cell {
+            background-color: #fffde7 !important;
+        }
+        .sudoku td.arrow-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.renban-cell {
+            background-color: #f3e5f5 !important;
+        }
+        .sudoku td.renban-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.jigsaw-region-0 { background-color: #ffebee !important; }
+        .sudoku td.jigsaw-region-1 { background-color: #e8f5e9 !important; }
+        .sudoku td.jigsaw-region-2 { background-color: #e3f2fd !important; }
+        .sudoku td.jigsaw-region-3 { background-color: #fff3e0 !important; }
+        .sudoku td.jigsaw-region-4 { background-color: #f3e5f5 !important; }
+        .sudoku td.jigsaw-region-5 { background-color: #fce4ec !important; }
+        .sudoku td.jigsaw-region-6 { background-color: #e0f2f1 !important; }
+        .sudoku td.jigsaw-region-7 { background-color: #fff9c4 !important; }
+        .sudoku td.jigsaw-region-8 { background-color: #e1f5fe !important; }
+        .sudoku td.whisper-cell {
+            background-color: #e1bee7 !important;
+        }
+        .sudoku td.whisper-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.chain-corner-cell {
+            background-color: #ffecb3 !important;
+        }
+        .sudoku td.chain-corner-cell input {
+            background-color: transparent;
+        }
+        .sudoku td.consecutive-cell {
+            background-color: #c5e1a5 !important;
+        }
+        .sudoku td.consecutive-cell input {
+            background-color: transparent;
+        }
         /* Row/column highlight - lowest priority */
         .sudoku td.rowcol-highlight {
             background-color: #e3f2fd !important; /* very light blue for row/col */
@@ -241,7 +341,7 @@
                 rule.windoku_regions.forEach(region => {
                     region.forEach(([row, col]) => {
                         const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) cell.classList.add('special-cell');
+                        if (cell) cell.classList.add('windoku-cell');
                     });
                 });
             }
@@ -250,7 +350,7 @@
             if (rule.asterisk_cells) {
                 rule.asterisk_cells.forEach(([row, col]) => {
                     const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                    if (cell) cell.classList.add('special-cell');
+                    if (cell) cell.classList.add('asterisk-cell');
                 });
             }
             
@@ -258,10 +358,7 @@
             if (rule.even_cells) {
                 rule.even_cells.forEach(([row, col]) => {
                     const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                    if (cell) {
-                        cell.classList.add('special-cell');
-                        cell.style.backgroundColor = '#269e20';
-                    }
+                    if (cell) cell.classList.add('even-cell');
                 });
             }
             
@@ -269,10 +366,123 @@
             if (rule.odd_cells) {
                 rule.odd_cells.forEach(([row, col]) => {
                     const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                    if (cell) {
-                        cell.classList.add('special-cell');
-                        cell.style.backgroundColor = '#c79056';
+                    if (cell) cell.classList.add('odd-cell');
+                });
+            }
+
+            // Magic Square cells
+            if (rule.magic_box_location) {
+                const loc = rule.magic_box_location;
+                loc.rows.forEach(row => {
+                    loc.cols.forEach(col => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('magic-square-cell');
+                    });
+                });
+            }
+
+            // Center Dot cells (center of each 3x3 box)
+            if (rule.name && rule.name.includes('Center Dot')) {
+                for (let boxRow = 0; boxRow < 3; boxRow++) {
+                    for (let boxCol = 0; boxCol < 3; boxCol++) {
+                        const centerRow = boxRow * 3 + 1;
+                        const centerCol = boxCol * 3 + 1;
+                        const cell = document.querySelector(`td[data-row="${centerRow}"][data-col="${centerCol}"]`);
+                        if (cell) cell.classList.add('center-dot-cell');
                     }
+                }
+            }
+
+            // Killer Sudoku cages
+            if (rule.cages) {
+                rule.cages.forEach((cage, index) => {
+                    cage.cells.forEach(([row, col], cellIndex) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            cell.classList.add('killer-cage');
+                            // Add sum label to first cell in cage
+                            if (cellIndex === 0) {
+                                const sumLabel = document.createElement('div');
+                                sumLabel.className = 'cage-sum';
+                                sumLabel.textContent = cage.sum;
+                                cell.insertBefore(sumLabel, cell.firstChild);
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Thermometer cells
+            if (rule.thermometers) {
+                rule.thermometers.forEach(thermo => {
+                    thermo.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('thermo-cell');
+                    });
+                });
+            }
+
+            // Arrow Sudoku
+            if (rule.arrows) {
+                rule.arrows.forEach(arrow => {
+                    // Circle cell
+                    const [circleRow, circleCol] = arrow.circle;
+                    const circleCell = document.querySelector(`td[data-row="${circleRow}"][data-col="${circleCol}"]`);
+                    if (circleCell) circleCell.classList.add('arrow-circle');
+
+                    // Arrow cells
+                    arrow.arrow_cells.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('arrow-cell');
+                    });
+                });
+            }
+
+            // Renban lines
+            if (rule.renban_lines) {
+                rule.renban_lines.forEach(line => {
+                    line.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('renban-cell');
+                    });
+                });
+            }
+
+            // Jigsaw regions
+            if (rule.jigsaw_regions) {
+                rule.jigsaw_regions.forEach((region, regionIndex) => {
+                    region.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add(`jigsaw-region-${regionIndex}`);
+                    });
+                });
+            }
+
+            // Whisper lines
+            if (rule.whisper_lines) {
+                rule.whisper_lines.forEach(line => {
+                    line.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('whisper-cell');
+                    });
+                });
+            }
+
+            // Chain Sudoku corner cells
+            if (rule.corner_cells) {
+                rule.corner_cells.forEach(([row, col]) => {
+                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) cell.classList.add('chain-corner-cell');
+                });
+            }
+
+            // Consecutive pairs
+            if (rule.consecutive_pairs) {
+                rule.consecutive_pairs.forEach(pair => {
+                    pair.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add('consecutive-cell');
+                    });
                 });
             }
         }
