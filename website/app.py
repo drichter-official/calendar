@@ -25,13 +25,51 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'custom_sudoku_
 DOOR_TO_RULE = {
     1: 'sudoku_knights_rule',
     2: 'sudoku_diagonal_rule',
-    # Add more mappings as needed
+    3: 'sudoku_windoku_rule',
+    4: 'sudoku_asterisk_rule',
+    5: 'sudoku_kings_rule',
+    6: 'sudoku_argyle_rule',
+    7: 'sudoku_center_dot_rule',
+    8: 'sudoku_star_rule',
+    9: 'sudoku_magic_square_rule',
+    10: 'sudoku_nonconsecutive_rule',
+    11: 'sudoku_consecutive_rule',
+    12: 'sudoku_even_odd_rule',
+    13: 'sudoku_kropki_rule',
+    14: 'sudoku_xv_rule',
+    15: 'sudoku_sandwich_rule',
+    16: 'sudoku_skyscraper_rule',
+    17: 'sudoku_futoshiki_rule',
+    18: 'sudoku_killer_rule',
+    19: 'sudoku_arrow_rule',
+    20: 'sudoku_chain_rule',
+    21: 'sudoku_thermo_rule',
+    22: 'sudoku_whisper_rule',
+    23: 'sudoku_renban_rule',
+    24: 'sudoku_jigsaw_rule',
 }
 
 def get_rule_folder(door_number):
     """Get the rule folder path for a given door number."""
     rule_name = DOOR_TO_RULE.get(door_number, 'sudoku_knights_rule')
     return os.path.join(os.path.dirname(__file__), '..', 'custom_sudoku_generator', rule_name)
+
+def load_metadata(door_number):
+    """Load metadata for a given door number."""
+    rule_folder = get_rule_folder(door_number)
+    metadata_path = os.path.join(rule_folder, 'metadata.json')
+    try:
+        import json
+        with open(metadata_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Warning: Could not load metadata for door {door_number}: {e}")
+        return {
+            'rule': {
+                'name': 'Interactive Sudoku',
+                'description': 'Fill in the empty cells with numbers 1-9. Each row, column, and 3x3 box must contain all digits from 1 to 9.'
+            }
+        }
 
 position_classes = [
     'pos1', 'pos2', 'pos3', 'pos4', 'pos5', 'pos6',
@@ -78,18 +116,21 @@ def calendar():
 
 @app.route('/door/<int:door_number>')
 def door(door_number):
-    # For door 1, load and display the interactive sudoku with Knights rule
-    if door_number == 1:
-        sudoku_grid = load_sudoku(door_number)
-        solution_grid = load_solution(door_number)
-        return render_template("door1.html", door=door_number, sudoku=sudoku_grid, solution=solution_grid)
-    # For door 2, load and display the interactive sudoku with Diagonal rule
-    elif door_number == 2:
-        sudoku_grid = load_sudoku(door_number)
-        solution_grid = load_solution(door_number)
-        return render_template("door2.html", door=door_number, sudoku=sudoku_grid, solution=solution_grid)
-    # For other doors, render their specific templates
-    return render_template(f"door{door_number}.html", door=door_number)
+    # Validate door number
+    if door_number < 1 or door_number > 24:
+        return "Invalid door number", 404
+    
+    # Load metadata, sudoku grid, and solution for the door
+    metadata = load_metadata(door_number)
+    sudoku_grid = load_sudoku(door_number)
+    solution_grid = load_solution(door_number)
+    
+    # Use a generic template for all doors
+    return render_template("door.html", 
+                         door=door_number, 
+                         metadata=metadata,
+                         sudoku=sudoku_grid, 
+                         solution=solution_grid)
 
 @app.route('/generate/<int:door_number>')
 def generate_puzzle(door_number):
