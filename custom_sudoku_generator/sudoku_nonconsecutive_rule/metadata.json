@@ -4,10 +4,10 @@
     "description": "Orthogonally adjacent cells cannot have consecutive digits",
     "size": 9,
     "box_size": 3,
-    "relaxed_mode": true,
+    "relaxed_mode": false,
     "note": "Relaxed constraint (max 1 consecutive neighbor per cell) for practical generation"
   },
-  "generated_at": "2025-11-11T21:42:38.627840",
+  "generated_at": "2025-11-12T00:36:57.549102",
   "size": 9,
   "box_size": 3
 }
