@@ -77,6 +77,13 @@ class XVRule(BaseRule):
 
         return True
 
+    def get_metadata(self):
+        """Return metadata including X and V pair markers."""
+        metadata = super().get_metadata()
+        metadata['x_pairs'] = [list(pair) for pair in self.x_pairs]
+        metadata['v_pairs'] = [list(pair) for pair in self.v_pairs]
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):

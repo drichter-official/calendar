@@ -195,6 +195,14 @@
             background-color: #c5e1a5 !important;
             color: inherit;
         }
+        .sudoku td.argyle-cell {
+            background-color: #d1c4e9 !important;
+            color: inherit;
+        }
+        .sudoku td.star-cell {
+            background-color: #fff59d !important;
+            color: inherit;
+        }
         .sudoku td.killer-cage {
             border-style: dashed;
             border-width: 2px;
@@ -225,6 +233,8 @@
         .sudoku td.whisper-cell input,
         .sudoku td.chain-corner-cell input,
         .sudoku td.consecutive-cell input,
+        .sudoku td.argyle-cell input,
+        .sudoku td.star-cell input,
         .sudoku td.jigsaw-region-0 input,
         .sudoku td.jigsaw-region-1 input,
         .sudoku td.jigsaw-region-2 input,
@@ -534,6 +544,91 @@
                     pair.forEach(([row, col]) => {
                         const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
                         if (cell) cell.classList.add('consecutive-cell');
+                    });
+                });
+            }
+
+            // Argyle cells (diagonals within boxes)
+            if (rule.argyle_cells) {
+                rule.argyle_cells.forEach(([row, col]) => {
+                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) cell.classList.add('argyle-cell');
+                });
+            }
+
+            // Star pattern cells
+            if (rule.star_cells) {
+                rule.star_cells.forEach(([row, col]) => {
+                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) cell.classList.add('star-cell');
+                });
+            }
+
+            // XV pairs - mark cells involved in X or V constraints
+            if (rule.x_pairs) {
+                rule.x_pairs.forEach(pair => {
+                    pair.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            // Add a visual indicator for XV constraints
+                            cell.style.borderColor = '#ff6b6b';
+                            cell.style.borderWidth = '2px';
+                        }
+                    });
+                });
+            }
+
+            if (rule.v_pairs) {
+                rule.v_pairs.forEach(pair => {
+                    pair.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            // Add a visual indicator for XV constraints
+                            cell.style.borderColor = '#4ecdc4';
+                            cell.style.borderWidth = '2px';
+                        }
+                    });
+                });
+            }
+
+            // Futoshiki inequalities - draw inequality symbols
+            if (rule.inequalities) {
+                rule.inequalities.forEach(inequality => {
+                    const [r1, c1] = inequality.cell1;
+                    const [r2, c2] = inequality.cell2;
+                    const operator = inequality.operator;
+                    
+                    // Add visual styling to cells involved in inequalities
+                    const cell1 = document.querySelector(`td[data-row="${r1}"][data-col="${c1}"]`);
+                    const cell2 = document.querySelector(`td[data-row="${r2}"][data-col="${c2}"]`);
+                    if (cell1) cell1.style.borderColor = '#9c27b0';
+                    if (cell2) cell2.style.borderColor = '#9c27b0';
+                    
+                    // TODO: Draw inequality symbols between cells
+                });
+            }
+
+            // Kropki dots - mark cells with white or black dots
+            if (rule.white_dots) {
+                rule.white_dots.forEach(pair => {
+                    pair.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            cell.style.borderColor = '#ffffff';
+                            cell.style.borderWidth = '2px';
+                        }
+                    });
+                });
+            }
+
+            if (rule.black_dots) {
+                rule.black_dots.forEach(pair => {
+                    pair.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) {
+                            cell.style.borderColor = '#000000';
+                            cell.style.borderWidth = '3px';
+                        }
                     });
                 });
             }

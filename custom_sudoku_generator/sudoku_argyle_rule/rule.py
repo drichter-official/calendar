@@ -46,6 +46,29 @@ class ArgyleRule(BaseRule):
         
         return True
 
+    def get_metadata(self):
+        """Return metadata including argyle diagonal cells."""
+        metadata = super().get_metadata()
+        
+        # Calculate all argyle diagonal cells (diagonals of each 3x3 box)
+        argyle_cells = []
+        for box_row in range(3):
+            for box_col in range(3):
+                box_start_row = box_row * 3
+                box_start_col = box_col * 3
+                
+                # Main diagonal of this box
+                for i in range(3):
+                    argyle_cells.append((box_start_row + i, box_start_col + i))
+                
+                # Anti-diagonal of this box
+                for i in range(3):
+                    argyle_cells.append((box_start_row + i, box_start_col + (2 - i)))
+        
+        # Remove duplicates (center cells are counted twice)
+        metadata['argyle_cells'] = list(set(argyle_cells))
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):

@@ -3,9 +3,121 @@
     "name": "Futoshiki Sudoku",
     "description": "Inequality constraints between adjacent cells",
     "size": 9,
-    "box_size": 3
+    "box_size": 3,
+    "inequalities": [
+      {
+        "cell1": [
+          0,
+          0
+        ],
+        "cell2": [
+          0,
+          1
+        ],
+        "operator": "<"
+      },
+      {
+        "cell1": [
+          0,
+          1
+        ],
+        "cell2": [
+          0,
+          2
+        ],
+        "operator": "<"
+      },
+      {
+        "cell1": [
+          0,
+          3
+        ],
+        "cell2": [
+          0,
+          4
+        ],
+        "operator": ">"
+      },
+      {
+        "cell1": [
+          1,
+          0
+        ],
+        "cell2": [
+          2,
+          0
+        ],
+        "operator": "<"
+      },
+      {
+        "cell1": [
+          2,
+          2
+        ],
+        "cell2": [
+          2,
+          3
+        ],
+        "operator": ">"
+      },
+      {
+        "cell1": [
+          3,
+          0
+        ],
+        "cell2": [
+          4,
+          0
+        ],
+        "operator": ">"
+      },
+      {
+        "cell1": [
+          4,
+          4
+        ],
+        "cell2": [
+          5,
+          4
+        ],
+        "operator": "<"
+      },
+      {
+        "cell1": [
+          5,
+          5
+        ],
+        "cell2": [
+          5,
+          6
+        ],
+        "operator": "<"
+      },
+      {
+        "cell1": [
+          6,
+          6
+        ],
+        "cell2": [
+          7,
+          6
+        ],
+        "operator": ">"
+      },
+      {
+        "cell1": [
+          8,
+          7
+        ],
+        "cell2": [
+          8,
+          8
+        ],
+        "operator": "<"
+      }
+    ]
   },
-  "generated_at": "2025-11-11T21:17:26.096098",
+  "generated_at": "2025-11-13T15:12:25.336993",
   "size": 9,
   "box_size": 3
 }

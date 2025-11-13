@@ -75,6 +75,13 @@ class KropkiRule(BaseRule):
 
         return True
 
+    def get_metadata(self):
+        """Return metadata including white and black dot markers."""
+        metadata = super().get_metadata()
+        metadata['white_dots'] = [list(pair) for pair in self.white_dots]
+        metadata['black_dots'] = [list(pair) for pair in self.black_dots]
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):

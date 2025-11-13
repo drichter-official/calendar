@@ -61,6 +61,19 @@ class FutoshikiRule(BaseRule):
 
         return True
 
+    def get_metadata(self):
+        """Return metadata including inequality constraints."""
+        metadata = super().get_metadata()
+        metadata['inequalities'] = [
+            {
+                'cell1': list(cell1),
+                'cell2': list(cell2),
+                'operator': operator
+            }
+            for cell1, cell2, operator in self.inequalities
+        ]
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):

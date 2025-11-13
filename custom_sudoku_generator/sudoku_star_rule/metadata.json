@@ -3,9 +3,47 @@
     "name": "Star Sudoku",
     "description": "Cells in star pattern must contain unique digits",
     "size": 9,
-    "box_size": 3
+    "box_size": 3,
+    "star_cells": [
+      [
+        4,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        3,
+        5
+      ]
+    ]
   },
-  "generated_at": "2025-11-11T21:18:00.198053",
+  "generated_at": "2025-11-13T15:09:59.016965",
   "size": 9,
   "box_size": 3
 }

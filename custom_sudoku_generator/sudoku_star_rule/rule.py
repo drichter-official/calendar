@@ -47,6 +47,12 @@ class StarRule(BaseRule):
         
         return True
 
+    def get_metadata(self):
+        """Return metadata including star pattern cells."""
+        metadata = super().get_metadata()
+        metadata['star_cells'] = list(self.star_cells)
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):
