@@ -38,6 +38,17 @@ class DiagonalRule(BaseRule):
 
         return True
 
+    def get_metadata(self):
+        """Return metadata including diagonal cells."""
+        metadata = super().get_metadata()
+        # Main diagonal and anti-diagonal cells
+        diagonal_cells = []
+        for i in range(self.size):
+            diagonal_cells.append([i, i])  # Main diagonal
+            diagonal_cells.append([i, self.size - 1 - i])  # Anti-diagonal
+        metadata['diagonal_cells'] = diagonal_cells
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):

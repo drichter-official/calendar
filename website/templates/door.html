@@ -386,7 +386,13 @@
             const rule = metadata.rule;
 
             // Diagonal cells (Diagonal Rule)
-            if (rule.name && rule.name.includes('Diagonal')) {
+            if (rule.diagonal_cells) {
+                rule.diagonal_cells.forEach(([row, col]) => {
+                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) cell.classList.add('diagonal-cell');
+                });
+            } else if (rule.name && rule.name.includes('Diagonal')) {
+                // Fallback for old metadata without diagonal_cells
                 for (let i = 0; i < 9; i++) {
                     // Main diagonal
                     const cell1 = document.querySelector(`td[data-row="${i}"][data-col="${i}"]`);
@@ -444,7 +450,13 @@
             }
 
             // Center Dot cells (center of each 3x3 box)
-            if (rule.name && rule.name.includes('Center Dot')) {
+            if (rule.center_dot_cells) {
+                rule.center_dot_cells.forEach(([row, col]) => {
+                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                    if (cell) cell.classList.add('center-dot-cell');
+                });
+            } else if (rule.name && rule.name.includes('Center Dot')) {
+                // Fallback for old metadata without center_dot_cells
                 for (let boxRow = 0; boxRow < 3; boxRow++) {
                     for (let boxCol = 0; boxCol < 3; boxCol++) {
                         const centerRow = boxRow * 3 + 1;

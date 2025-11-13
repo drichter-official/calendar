@@ -3,9 +3,47 @@
     "name": "Center Dot Sudoku",
     "description": "Center cells of all 3x3 boxes must contain unique digits",
     "size": 9,
-    "box_size": 3
+    "box_size": 3,
+    "center_dot_cells": [
+      [
+        4,
+        4
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        7
+      ]
+    ]
   },
-  "generated_at": "2025-11-11T21:18:55.917870",
+  "generated_at": "2025-11-13T15:15:42.097070",
   "size": 9,
   "box_size": 3
 }

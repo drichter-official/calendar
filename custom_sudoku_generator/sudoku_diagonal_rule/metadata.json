@@ -3,9 +3,83 @@
     "name": "Diagonal Rule (Sudoku X)",
     "description": "Main diagonals must contain each digit 1-9 exactly once",
     "size": 9,
-    "box_size": 3
+    "box_size": 3,
+    "diagonal_cells": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        6,
+        2
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        0
+      ]
+    ]
   },
-  "generated_at": "2025-11-11T21:26:52.565580",
+  "generated_at": "2025-11-13T15:15:42.096826",
   "size": 9,
   "box_size": 3
 }

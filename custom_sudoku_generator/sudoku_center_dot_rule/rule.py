@@ -40,6 +40,12 @@ class CenterDotRule(BaseRule):
         
         return True
 
+    def get_metadata(self):
+        """Return metadata including center dot cells."""
+        metadata = super().get_metadata()
+        metadata['center_dot_cells'] = list(self.center_cells)
+        return metadata
+
 
 # Factory function to create an instance of this rule
 def create_rule(size=9, box_size=3):
