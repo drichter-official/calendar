@@ -19,12 +19,12 @@
             justify-content: center;
             margin: 20px 0;
         }
-                .sudoku {
+        .sudoku {
             border-collapse: separate;
             border-spacing: 0;
             background-color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 3px solid #000;        /* Thick outer border */
+            border: 3px solid #000000 !important;        /* Thick outer border */
         }
         .sudoku td {
             width: 50px;
@@ -76,6 +76,18 @@
             background-color: #fffef0;
         }
 
+        /* Remove browser focus outline/shadow and hide the blinking caret when an input is focused
+           This removes the blue blinking line on focused inputs while preserving the selected-cell
+           outline which is applied to the parent <td>. */
+        .sudoku td input:focus {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            -webkit-appearance: none !important;
+            caret-color: transparent !important; /* hides blinking caret */
+            -webkit-tap-highlight-color: transparent !important; /* mobile tap highlight */
+        }
+
         /* Layer 1: Base background - LOWEST PRIORITY */
         /* Default input background is set above */
 
@@ -83,6 +95,10 @@
         .sudoku td.prefilled {
             background-color: #e8e8e8;
             color: inherit;
+            cursor: pointer;
+        }
+        .sudoku td.prefilled:focus {
+            outline: none; /* Remove default outline, we use selected-cell class */
         }
 
         /* Layer 3: Special field colors - override prefilled cells, borders show through */
@@ -208,12 +224,24 @@
         .sudoku td.renban-cell input,
         .sudoku td.whisper-cell input,
         .sudoku td.chain-corner-cell input,
-        .sudoku td.consecutive-cell input {
+        .sudoku td.consecutive-cell input,
+        .sudoku td.jigsaw-region-0 input,
+        .sudoku td.jigsaw-region-1 input,
+        .sudoku td.jigsaw-region-2 input,
+        .sudoku td.jigsaw-region-3 input,
+        .sudoku td.jigsaw-region-4 input,
+        .sudoku td.jigsaw-region-5 input,
+        .sudoku td.jigsaw-region-6 input,
+        .sudoku td.jigsaw-region-7 input,
+        .sudoku td.jigsaw-region-8 input,
+        .sudoku td.jigsaw-region-9 input
+
+        {
             background-color: transparent;
         }
         /* Layer 4: Interactive highlights - override special field colors */
         .sudoku td.rowcol-highlight {
-            background-color: #e3f2fd !important; /* very light blue for row/col */
+            background-color: #f3e5f5 !important; /* very light blue for row/col */
             color: inherit;
         }
         .sudoku td.highlighted-user {
@@ -232,8 +260,8 @@
 
         /* Selected cell outline - doesn't change background */
         .sudoku td.selected-cell {
-            outline: 3px solid #1565c0;
-            outline-offset: -3px;
+            outline: 2px solid #b995f0;
+            outline-offset: -2px;
             z-index: 10;
             position: relative;
         }
@@ -312,7 +340,7 @@
             {% for i in range(9) %}
             <tr>
                 {% for j in range(9) %}
-                <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}">
+                <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}" {% if sudoku[i][j] != 0 %}tabindex="0"{% endif %}>
                     {% if sudoku[i][j] != 0 %}
                         {{ sudoku[i][j] }}
                     {% else %}
@@ -538,48 +566,82 @@
 
             // Add keyboard navigation
             input.addEventListener('keydown', function(e) {
-                const row = parseInt(e.target.dataset.row);
-                const col = parseInt(e.target.dataset.col);
-                let newRow = row;
-                let newCol = col;
-
-                switch(e.key) {
-                    case 'ArrowUp':
-                        e.preventDefault();
-                        newRow = row > 0 ? row - 1 : row;
-                        break;
-                    case 'ArrowDown':
-                    case 'Enter':
-                        e.preventDefault();
-                        newRow = row < 8 ? row + 1 : row;
-                        break;
-                    case 'ArrowLeft':
-                        e.preventDefault();
-                        newCol = col > 0 ? col - 1 : col;
-                        break;
-                    case 'ArrowRight':
-                        e.preventDefault();
-                        newCol = col < 8 ? col + 1 : col;
-                        break;
-                }
-
-                if (newRow !== row || newCol !== col) {
-                    const nextInput = document.querySelector(`input[data-row="${newRow}"][data-col="${newCol}"]`);
-                    if (nextInput) {
-                        nextInput.focus();
-                        nextInput.select();
-                    }
-                }
+                handleKeyboardNavigation(e, e.target);
             });
         });
 
-        // Add click listeners to prefilled cells
+        // Add click, focus, blur and keyboard navigation listeners to prefilled cells
         document.querySelectorAll('.sudoku td.prefilled').forEach(cell => {
             cell.addEventListener('click', function(e) {
+                cell.focus();
                 const value = e.target.textContent.trim();
                 highlightSameNumbersAndRowCol(cell, value);
             });
+
+            cell.addEventListener('focus', function(e) {
+                const value = e.target.textContent.trim();
+                highlightSameNumbersAndRowCol(cell, value);
+            });
+
+            cell.addEventListener('blur', function(e) {
+                clearHighlights();
+            });
+
+            cell.addEventListener('keydown', function(e) {
+                handleKeyboardNavigation(e, cell);
+            });
         });
+
+        // Unified keyboard navigation handler
+        function handleKeyboardNavigation(e, element) {
+            let row, col;
+            if (element.tagName === 'INPUT') {
+                row = parseInt(element.dataset.row);
+                col = parseInt(element.dataset.col);
+            } else {
+                row = parseInt(element.getAttribute('data-row'));
+                col = parseInt(element.getAttribute('data-col'));
+            }
+
+            let newRow = row;
+            let newCol = col;
+
+            switch(e.key) {
+                case 'ArrowUp':
+                    e.preventDefault();
+                    newRow = row > 0 ? row - 1 : row;
+                    break;
+                case 'ArrowDown':
+                case 'Enter':
+                    e.preventDefault();
+                    newRow = row < 8 ? row + 1 : row;
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    newCol = col > 0 ? col - 1 : col;
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    newCol = col < 8 ? col + 1 : col;
+                    break;
+                default:
+                    return; // Don't navigate for other keys
+            }
+
+            if (newRow !== row || newCol !== col) {
+                // Try to find input first, then prefilled cell
+                let nextCell = document.querySelector(`input[data-row="${newRow}"][data-col="${newCol}"]`);
+                if (nextCell) {
+                    nextCell.focus();
+                    nextCell.select();
+                } else {
+                    nextCell = document.querySelector(`td[data-row="${newRow}"][data-col="${newCol}"].prefilled`);
+                    if (nextCell) {
+                        nextCell.focus();
+                    }
+                }
+            }
+        }
 
         // Clear highlights when clicking outside the sudoku grid
         document.addEventListener('click', function(e) {
