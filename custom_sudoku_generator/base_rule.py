@@ -84,3 +84,16 @@ class BaseRule:
         """
         return True
 
+    def get_priority_removal_cells(self):
+        """
+        Return a list of cells that should be prioritized for removal during puzzle generation.
+
+        This allows rules to specify that certain constrained cells should be removed first
+        to make the puzzle more engaging (e.g., cells in consecutive lines, thermometer cells, etc.)
+
+        Returns:
+            list: List of (row, col) tuples representing cells to prioritize for removal.
+                  Empty list means no priority (use random removal).
+        """
+        return []
+

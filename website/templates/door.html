@@ -38,7 +38,7 @@
             width: 50px;
             height: 50px;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             position: relative;
             box-sizing: border-box;
@@ -78,10 +78,22 @@
             height: 100%;
             border: none;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             outline: none;
             background-color: #fffef0;
+        }
+        .sudoku td .notes {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: #666;
+            line-height: 1.1;
+            pointer-events: none;
+            max-width: 40px;
+            word-wrap: break-word;
         }
 
         /* Remove browser focus outline/shadow and hide the blinking caret when an input is focused
@@ -131,7 +143,7 @@
             color: inherit;
         }
         .sudoku td.magic-square-cell {
-            background-color: #f3e5f5 !important;
+            background-color: #c8efca !important;
             color: inherit;
         }
         .sudoku td.center-dot-cell {
@@ -199,8 +211,36 @@
             background-color: #ffecb3 !important;
             color: inherit;
         }
-        .sudoku td.consecutive-cell {
+        .sudoku td.consecutive-line-0 {
             background-color: #c5e1a5 !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-1 {
+            background-color: #b3e5fc !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-2 {
+            background-color: #ffe0b2 !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-3 {
+            background-color: #f8bbd0 !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-4 {
+            background-color: #d1c4e9 !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-5 {
+            background-color: #ffccbc !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-6 {
+            background-color: #c8e6c9 !important;
+            color: inherit;
+        }
+        .sudoku td.consecutive-line-7 {
+            background-color: #fff9c4 !important;
             color: inherit;
         }
         /*.sudoku td.argyle-cell {
@@ -240,7 +280,14 @@
         .sudoku td.renban-cell input,
         .sudoku td.whisper-cell input,
         .sudoku td.chain-corner-cell input,
-        .sudoku td.consecutive-cell input,
+        .sudoku td.consecutive-line-0 input,
+        .sudoku td.consecutive-line-1 input,
+        .sudoku td.consecutive-line-2 input,
+        .sudoku td.consecutive-line-3 input,
+        .sudoku td.consecutive-line-4 input,
+        .sudoku td.consecutive-line-5 input,
+        .sudoku td.consecutive-line-6 input,
+        .sudoku td.consecutive-line-7 input,
         .sudoku td.star-cell input,
         .sudoku td.jigsaw-region-0 input,
         .sudoku td.jigsaw-region-1 input,
@@ -322,6 +369,26 @@
         button.secondary:hover {
             background-color: #0b7dda;
         }
+        button.notes-toggle {
+            background-color: #673AB7;
+            font-weight: bold;
+            position: relative;
+        }
+        button.notes-toggle:hover {
+            background-color: #5E35B1;
+        }
+        button.notes-toggle.active {
+            background-color: #FF9800;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+        button.notes-toggle.active:hover {
+            background-color: #F57C00;
+        }
+        button.notes-toggle .hotkey {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-left: 5px;
+        }
         #message {
             text-align: center;
             margin: 20px 0;
@@ -346,6 +413,55 @@
         .back-link:hover {
             text-decoration: underline;
         }
+        .sudoku-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .highlight-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px 18px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            min-width: 180px;
+            z-index: 1000;
+        }
+        .highlight-controls h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
+        }
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .checkbox-option:hover {
+            background-color: #f5f5f5;
+        }
+        .checkbox-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #9c27b0;
+        }
+        .checkbox-option label {
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #444;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -353,8 +469,10 @@
     <p style="text-align: center;">{{ metadata.rule.description }}</p>
 
     <div class="sudoku-container">
-        <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
-        <table class="sudoku" id="sudokuGrid">
+        <div class="sudoku-wrapper">
+            <div style="position: relative;">
+                <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
+                <table class="sudoku" id="sudokuGrid">
             {% for i in range(9) %}
             <tr>
                 {% for j in range(9) %}
@@ -362,6 +480,7 @@
                     {% if sudoku[i][j] != 0 %}
                         {{ sudoku[i][j] }}
                     {% else %}
+                        <div class="notes" data-row="{{i}}" data-col="{{j}}"></div>
                         <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
                     {% endif %}
                 </td>
@@ -369,11 +488,30 @@
             </tr>
             {% endfor %}
         </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed position highlight controls at bottom right -->
+    <div class="highlight-controls">
+        <h3>Highlights</h3>
+        <div class="checkbox-option">
+            <input type="checkbox" id="toggleRowCol" checked>
+            <label for="toggleRowCol">Row/Column</label>
+        </div>
+        <div class="checkbox-option">
+            <input type="checkbox" id="toggleSameNumber" checked>
+            <label for="toggleSameNumber">Same Number</label>
+        </div>
     </div>
 
     <div class="controls">
+        <button id="notesToggle" onclick="toggleNotesMode()" class="notes-toggle">
+            📝 Notes Mode <span class="hotkey">(Space)</span>
+        </button>
+        <br>
         <button onclick="checkSolution()">Check Solution</button>
-        <button onclick="clearAll()" class="secondary">Clear All</button>
+        <button onclick="undo()" class="secondary">↶ Undo</button>
         <button onclick="resetBoard()" class="secondary">Reset</button>
         <button onclick="generateNewPuzzle()" class="secondary">Generate New Puzzle</button>
     </div>
@@ -389,7 +527,117 @@
         const initialPuzzle = {{ sudoku | tojson }};
         const metadata = {{ metadata | tojson }};
 
-        // Apply special cell highlighting based on metadata
+        // Highlight settings (default enabled)
+        let highlightRowColEnabled = true;
+        let highlightSameNumberEnabled = true;
+
+        // Notes mode (default disabled)
+        let notesMode = false;
+        const cellNotes = {}; // Store notes for each cell: {row,col: Set of numbers}
+
+        // Undo system - track all user actions
+        const undoHistory = [];
+        const MAX_UNDO_STEPS = 100; // Limit history to prevent memory issues
+
+        function recordAction(action) {
+            undoHistory.push(action);
+            // Limit history size
+            if (undoHistory.length > MAX_UNDO_STEPS) {
+                undoHistory.shift();
+            }
+        }
+
+        function undo() {
+            if (undoHistory.length === 0) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.innerHTML = '<span style="color: #ff9800;">Nothing to undo</span>';
+                setTimeout(() => { messageDiv.innerHTML = ''; }, 2000);
+                return;
+            }
+
+            const action = undoHistory.pop();
+
+            if (action.type === 'number') {
+                // Undo number entry
+                const input = document.querySelector(`input[data-row="${action.row}"][data-col="${action.col}"]`);
+                if (input) {
+                    input.value = action.oldValue;
+                    const cell = input.parentElement;
+                    cell.classList.remove('correct', 'incorrect');
+                }
+            } else if (action.type === 'note') {
+                // Undo note action
+                const key = `${action.row},${action.col}`;
+                if (action.operation === 'add') {
+                    // Remove the note that was added
+                    if (cellNotes[key]) {
+                        cellNotes[key].delete(action.value);
+                        if (cellNotes[key].size === 0) {
+                            delete cellNotes[key];
+                        }
+                    }
+                } else if (action.operation === 'clear') {
+                    // Restore the notes that were cleared
+                    cellNotes[key] = new Set(action.oldNotes);
+                }
+                updateNotesDisplay(action.row, action.col);
+            }
+        }
+
+        // Toggle notes mode function
+        function toggleNotesMode() {
+            notesMode = !notesMode;
+            const btn = document.getElementById('notesToggle');
+            if (notesMode) {
+                btn.classList.add('active');
+                btn.innerHTML = '📝 Notes Mode <span class="hotkey">(Space)</span> - ON';
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '📝 Notes Mode <span class="hotkey">(Space)</span>';
+            }
+        }
+
+        // Add global spacebar listener
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                toggleNotesMode();
+            }
+        });
+
+        // Add event listeners for checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const rowColCheckbox = document.getElementById('toggleRowCol');
+            const sameNumberCheckbox = document.getElementById('toggleSameNumber');
+
+            rowColCheckbox.addEventListener('change', function() {
+                highlightRowColEnabled = this.checked;
+                // Refresh highlights if a cell is currently selected
+                const selectedInput = document.querySelector('.sudoku input:focus');
+                const selectedPrefilled = document.querySelector('.sudoku td.prefilled:focus');
+                if (selectedInput) {
+                    highlightSameNumbersAndRowCol(selectedInput, selectedInput.value);
+                } else if (selectedPrefilled) {
+                    highlightSameNumbersAndRowCol(selectedPrefilled, selectedPrefilled.textContent.trim());
+                }
+            });
+
+            sameNumberCheckbox.addEventListener('change', function() {
+                highlightSameNumberEnabled = this.checked;
+                // Refresh highlights if a cell is currently selected
+                const selectedInput = document.querySelector('.sudoku input:focus');
+                const selectedPrefilled = document.querySelector('.sudoku td.prefilled:focus');
+                if (selectedInput) {
+                    highlightSameNumbersAndRowCol(selectedInput, selectedInput.value);
+                } else if (selectedPrefilled) {
+                    highlightSameNumbersAndRowCol(selectedPrefilled, selectedPrefilled.textContent.trim());
+                }
+            });
+
+            applySpecialCellHighlighting();
+            drawArgyleDiagonals();
+        });
+
         function applySpecialCellHighlighting() {
             const rule = metadata.rule;
 
@@ -558,12 +806,12 @@
                 });
             }
 
-            // Consecutive pairs
-            if (rule.consecutive_pairs) {
-                rule.consecutive_pairs.forEach(pair => {
-                    pair.forEach(([row, col]) => {
+            // Consecutive lines
+            if (rule.consecutive_lines) {
+                rule.consecutive_lines.forEach((line, lineIndex) => {
+                    line.forEach(([row, col]) => {
                         const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) cell.classList.add('consecutive-cell');
+                        if (cell) cell.classList.add(`consecutive-line-${lineIndex % 8}`);
                     });
                 });
             }
@@ -743,10 +991,68 @@
         document.querySelectorAll('.sudoku input').forEach(input => {
             input.addEventListener('input', function(e) {
                 const value = e.target.value;
-                if (value && (!/^[1-9]$/.test(value))) {
-                    e.target.value = '';
+                const row = parseInt(e.target.dataset.row);
+                const col = parseInt(e.target.dataset.col);
+                const key = `${row},${col}`;
+
+                if (notesMode) {
+                    // Notes mode: add number to notes
+                    if (value && /^[1-9]$/.test(value)) {
+                        if (!cellNotes[key]) {
+                            cellNotes[key] = new Set();
+                        }
+                        // Record action before adding note
+                        recordAction({
+                            type: 'note',
+                            operation: 'add',
+                            row: row,
+                            col: col,
+                            value: value
+                        });
+                        cellNotes[key].add(value);
+                        updateNotesDisplay(row, col);
+                        e.target.value = ''; // Clear input after adding note
+                    } else {
+                        e.target.value = '';
+                    }
                 } else {
-                    highlightSameNumbersAndRowCol(e.target, value);
+                    // Normal mode: single number entry
+                    if (value && (!/^[1-9]$/.test(value))) {
+                        e.target.value = '';
+                    } else if (value) {
+                        // Record the old value before changing
+                        const oldValue = e.target.getAttribute('data-old-value') || '';
+                        recordAction({
+                            type: 'number',
+                            row: row,
+                            col: col,
+                            oldValue: oldValue,
+                            newValue: value
+                        });
+                        // Store current value for next change
+                        e.target.setAttribute('data-old-value', value);
+
+                        // Clear notes when entering a number in normal mode
+                        if (cellNotes[key]) {
+                            delete cellNotes[key];
+                            updateNotesDisplay(row, col);
+                        }
+                        highlightSameNumbersAndRowCol(e.target, value);
+                    } else {
+                        // Clearing the cell (backspace/delete)
+                        const oldValue = e.target.getAttribute('data-old-value') || '';
+                        if (oldValue) {
+                            recordAction({
+                                type: 'number',
+                                row: row,
+                                col: col,
+                                oldValue: oldValue,
+                                newValue: ''
+                            });
+                            e.target.setAttribute('data-old-value', '');
+                        }
+                        highlightSameNumbersAndRowCol(e.target, value);
+                    }
                 }
             });
 
@@ -761,6 +1067,35 @@
 
             // Add keyboard navigation
             input.addEventListener('keydown', function(e) {
+                // Allow spacebar to toggle notes mode even in input fields
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    toggleNotesMode();
+                    return;
+                }
+
+                // Handle Delete/Backspace in notes mode
+                if (notesMode && (e.key === 'Delete' || e.key === 'Backspace')) {
+                    e.preventDefault();
+                    const row = parseInt(e.target.dataset.row);
+                    const col = parseInt(e.target.dataset.col);
+                    const key = `${row},${col}`;
+                    // Clear all notes for this cell
+                    if (cellNotes[key]) {
+                        // Record action before clearing
+                        recordAction({
+                            type: 'note',
+                            operation: 'clear',
+                            row: row,
+                            col: col,
+                            oldNotes: Array.from(cellNotes[key])
+                        });
+                        delete cellNotes[key];
+                        updateNotesDisplay(row, col);
+                    }
+                    return;
+                }
+
                 handleKeyboardNavigation(e, e.target);
             });
         });
@@ -885,13 +1220,38 @@
         function clearAll() {
             document.querySelectorAll('.sudoku input').forEach(input => {
                 input.value = '';
+                input.removeAttribute('data-old-value');
                 input.parentElement.classList.remove('correct', 'incorrect');
+                const row = parseInt(input.dataset.row);
+                const col = parseInt(input.dataset.col);
+                const key = `${row},${col}`;
+                if (cellNotes[key]) {
+                    delete cellNotes[key];
+                    updateNotesDisplay(row, col);
+                }
             });
             document.getElementById('message').innerHTML = '';
         }
 
         function resetBoard() {
             clearAll();
+            // Clear undo history on reset
+            undoHistory.length = 0;
+        }
+
+        // Function to update the notes display for a cell
+        function updateNotesDisplay(row, col) {
+            const key = `${row},${col}`;
+            const notesDiv = document.querySelector(`.notes[data-row="${row}"][data-col="${col}"]`);
+            if (notesDiv) {
+                if (cellNotes[key] && cellNotes[key].size > 0) {
+                    // Sort and display notes
+                    const sortedNotes = Array.from(cellNotes[key]).sort().join(' ');
+                    notesDiv.textContent = sortedNotes;
+                } else {
+                    notesDiv.textContent = '';
+                }
+            }
         }
 
         function generateNewPuzzle() {
@@ -949,14 +1309,16 @@
                 col = parseInt(selectedCell.getAttribute('data-col'));
             }
 
-            // Highlight row and column
-            document.querySelectorAll('.sudoku td').forEach(cell => {
-                const cellRow = parseInt(cell.getAttribute('data-row'));
-                const cellCol = parseInt(cell.getAttribute('data-col'));
-                if (cellRow === row || cellCol === col) {
-                    cell.classList.add('rowcol-highlight');
-                }
-            });
+            // Highlight row and column (only if enabled)
+            if (highlightRowColEnabled) {
+                document.querySelectorAll('.sudoku td').forEach(cell => {
+                    const cellRow = parseInt(cell.getAttribute('data-row'));
+                    const cellCol = parseInt(cell.getAttribute('data-col'));
+                    if (cellRow === row || cellCol === col) {
+                        cell.classList.add('rowcol-highlight');
+                    }
+                });
+            }
 
             // Highlight selected cell
             if (selectedCell.tagName === 'INPUT') {
@@ -965,16 +1327,18 @@
                 selectedCell.classList.add('selected-cell');
             }
 
-            // Highlight all cells with the same number
-            document.querySelectorAll('.sudoku td').forEach(cell => {
-                const text = cell.textContent.trim();
-                const input = cell.querySelector('input');
-                if (text === number && cell.classList.contains('prefilled')) {
-                    cell.classList.add('highlighted-prefilled');
-                } else if (input && input.value === number && input.value !== '' && !cell.classList.contains('prefilled')) {
-                    cell.classList.add('highlighted-user');
-                }
-            });
+            // Highlight all cells with the same number (only if enabled)
+            if (highlightSameNumberEnabled && number) {
+                document.querySelectorAll('.sudoku td').forEach(cell => {
+                    const text = cell.textContent.trim();
+                    const input = cell.querySelector('input');
+                    if (text === number && cell.classList.contains('prefilled')) {
+                        cell.classList.add('highlighted-prefilled');
+                    } else if (input && input.value === number && input.value !== '' && !cell.classList.contains('prefilled')) {
+                        cell.classList.add('highlighted-user');
+                    }
+                });
+            }
         }
 
         function clearHighlights() {

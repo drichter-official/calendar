@@ -94,12 +94,41 @@ class SudokuGenerator:
     # Remove clues while ensuring unique solution
     def remove_numbers(self, attempts=5):
         grid = copy.deepcopy(self.grid)
+
+        # Get priority cells from the rule (cells that should be removed first)
+        priority_cells = []
+        if hasattr(self.custom_rule_instance, 'get_priority_removal_cells'):
+            priority_cells = self.custom_rule_instance.get_priority_removal_cells()
+            # Filter to only cells that are currently filled
+            priority_cells = [(r, c) for r, c in priority_cells if grid[r][c] != 0]
+            random.shuffle(priority_cells)  # Randomize order within priority cells
+
+        cells_attempted = 0
+        priority_index = 0
+
         while attempts > 0:
-            row = random.randint(0, self.size - 1)
-            col = random.randint(0, self.size - 1)
-            while grid[row][col] == 0:
+            # First try priority cells, then fall back to random cells
+            if priority_index < len(priority_cells):
+                row, col = priority_cells[priority_index]
+                priority_index += 1
+            else:
+                # Random selection after priority cells are exhausted
                 row = random.randint(0, self.size - 1)
                 col = random.randint(0, self.size - 1)
+                # Find a filled cell
+                max_tries = 100
+                tries = 0
+                while grid[row][col] == 0 and tries < max_tries:
+                    row = random.randint(0, self.size - 1)
+                    col = random.randint(0, self.size - 1)
+                    tries += 1
+                if tries >= max_tries:
+                    break  # No more cells to remove
+
+            # Skip if cell is already empty
+            if grid[row][col] == 0:
+                continue
+
             backup = grid[row][col]
             grid[row][col] = 0
 
