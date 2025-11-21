@@ -1,10 +1,22 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
+from flask_babel import Babel
 import random
 import os
 import ast
 import sys
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.config['BABEL_DEFAULT_LOCALE'] = 'de'
+app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'de']
+
+def get_locale():
+    # Try to get locale from session first, then from request
+    if 'language' in session:
+        return session['language']
+    return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES']) or 'de'
+
+babel = Babel(app, locale_selector=get_locale)
 
 # Error handler for all exceptions on /generate routes
 @app.errorhandler(Exception)
@@ -71,6 +83,48 @@ def load_metadata(door_number):
             }
         }
 
+def get_translated_rule_info(door_number):
+    """Get translated rule name and description based on current locale."""
+    locale = get_locale()
+    
+    # German translations for all rules
+    german_translations = {
+        1: {'name': 'Ritter-Sudoku', 'description': 'Gleiche Zahlen dürfen nicht durch einen Ritter-Sprung (Schach) verbunden sein'},
+        2: {'name': 'Diagonales Sudoku', 'description': 'Beide Hauptdiagonalen müssen alle Ziffern von 1 bis 9 enthalten'},
+        3: {'name': 'Windoku', 'description': 'Vier zusätzliche 3x3-Regionen müssen ebenfalls alle Ziffern von 1 bis 9 enthalten'},
+        4: {'name': 'Sternchen-Sudoku', 'description': 'Die 9 Sternchen-Zellen müssen alle Ziffern von 1 bis 9 enthalten'},
+        5: {'name': 'König-Sudoku', 'description': 'Gleiche Zahlen dürfen nicht durch einen König-Zug (Schach) verbunden sein'},
+        6: {'name': 'Argyle-Sudoku', 'description': 'Diagonalen innerhalb jeder 3x3-Box müssen eindeutige Zahlen haben'},
+        7: {'name': 'Mittelpunkt-Sudoku', 'description': 'Die mittlere Zelle jeder 3x3-Box muss eine eindeutige Zahl enthalten'},
+        8: {'name': 'Stern-Sudoku', 'description': 'Die Stern-Form muss alle Ziffern von 1 bis 9 enthalten'},
+        9: {'name': 'Magisches Quadrat-Sudoku', 'description': 'Das 3x3-Quadrat in der Mitte muss ein magisches Quadrat sein (Summe 15)'},
+        10: {'name': 'Nicht-Aufeinanderfolgendes Sudoku', 'description': 'Aufeinanderfolgende Zahlen dürfen sich nicht orthogonal berühren'},
+        11: {'name': 'Aufeinanderfolgendes Sudoku', 'description': 'Markierte Linien enthalten aufeinanderfolgende Zahlen'},
+        12: {'name': 'Gerade-Ungerade-Sudoku', 'description': 'Markierte Zellen müssen gerade oder ungerade Zahlen enthalten'},
+        13: {'name': 'Kropki-Sudoku', 'description': 'Weiße Punkte: aufeinanderfolgende Zahlen, Schwarze Punkte: Verhältnis 1:2'},
+        14: {'name': 'XV-Sudoku', 'description': 'Bestimmte benachbarte Zellen müssen sich zu 10 (X) oder 5 (V) summieren'},
+        15: {'name': 'Sandwich-Sudoku', 'description': 'Zahlen zwischen 1 und 9 in einer Reihe/Spalte summieren sich zu gegebenen Hinweisen'},
+        16: {'name': 'Wolkenkratzer-Sudoku', 'description': 'Zahlen geben an, wie viele "Gebäude" von außen sichtbar sind'},
+        17: {'name': 'Futoshiki-Sudoku', 'description': 'Ungleichheitszeichen zeigen Beziehungen zwischen benachbarten Zellen'},
+        18: {'name': 'Killer-Sudoku', 'description': 'Käfige müssen sich zu angegebenen Summen addieren, ohne wiederholte Ziffern'},
+        19: {'name': 'Pfeil-Sudoku', 'description': 'Die Summe entlang des Pfeils muss gleich der Zahl im Kreis sein'},
+        20: {'name': 'Ketten-Sudoku', 'description': 'Eckzellen jeder 3x3-Box müssen eindeutige Zahlen haben'},
+        21: {'name': 'Thermometer-Sudoku', 'description': 'Zahlen müssen entlang von Thermometern von der Zwiebel aufsteigen'},
+        22: {'name': 'Flüster-Sudoku', 'description': 'Benachbarte Zellen auf Linien müssen sich um mindestens 5 unterscheiden'},
+        23: {'name': 'Renban-Sudoku', 'description': 'Linien enthalten aufeinanderfolgende Zahlen in beliebiger Reihenfolge'},
+        24: {'name': 'Puzzle-Sudoku', 'description': 'Unregelmäßige Regionen ersetzen 3x3-Boxen, müssen alle Ziffern 1-9 enthalten'},
+    }
+    
+    # Load metadata to get English names
+    metadata = load_metadata(door_number)
+    english_name = metadata['rule']['name']
+    english_description = metadata['rule']['description']
+    
+    if locale == 'de' and door_number in german_translations:
+        return german_translations[door_number]['name'], german_translations[door_number]['description']
+    else:
+        return english_name, english_description
+
 position_classes = [
     'pos1', 'pos2', 'pos3', 'pos4', 'pos5', 'pos6',
     'pos7', 'pos8', 'pos9', 'pos10', 'pos11', 'pos12',
@@ -106,12 +160,19 @@ def load_solution(door_number=1):
             grid.append(row)
     return grid
 
+@app.route('/set_language/<language>')
+def set_language(language):
+    if language in app.config['BABEL_SUPPORTED_LOCALES']:
+        session['language'] = language
+    # Redirect back to the referrer or home page
+    return jsonify({'success': True, 'language': language})
+
 @app.route('/')
 def calendar():
     doors = list(range(1, 25))
     # Pass list of tuples (door_number, position_class)
     door_positions = list(zip(doors, position_classes))
-    return render_template("calendar.html", door_positions=door_positions)
+    return render_template("calendar.html", door_positions=door_positions, get_locale=get_locale)
 
 @app.route('/door/<int:door_number>')
 def door(door_number):
@@ -124,12 +185,18 @@ def door(door_number):
     sudoku_grid = load_sudoku(door_number)
     solution_grid = load_solution(door_number)
     
+    # Get translated rule name and description
+    rule_name, rule_description = get_translated_rule_info(door_number)
+    
     # Use a generic template for all doors
     return render_template("door.html", 
                          door=door_number, 
                          metadata=metadata,
+                         rule_name=rule_name,
+                         rule_description=rule_description,
                          sudoku=sudoku_grid, 
-                         solution=solution_grid)
+                         solution=solution_grid,
+                         get_locale=get_locale)
 
 @app.route('/generate/<int:door_number>')
 def generate_puzzle(door_number):

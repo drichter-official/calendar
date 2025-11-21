@@ -1,8 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Door {{door}} - Interactive Sudoku</title>
+    <title>{{ _('Door') }} {{door}} - {{ _('Interactive Sudoku') }}</title>
     <style>
+        /* Language switcher styles */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .language-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .language-btn:active {
+            transform: translateY(0);
+        }
+        
+        .language-icon {
+            font-size: 18px;
+        }
+        
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .language-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+        
+        .language-dropdown.active .language-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .language-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .language-option:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+        
+        .language-option.active {
+            background: linear-gradient(135deg, #667eea25 0%, #764ba225 100%);
+            color: #667eea;
+        }
+        
+        .flag-icon {
+            font-size: 20px;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             max-width: 800px;
@@ -465,8 +562,29 @@
     </style>
 </head>
 <body>
-    <h1>Day {{ door }} - {{ metadata.rule.name }}</h1>
-    <p style="text-align: center;">{{ metadata.rule.description }}</p>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <div class="language-dropdown" id="languageDropdown">
+            <button class="language-btn" onclick="toggleLanguageMenu()">
+                <span class="language-icon">🌐</span>
+                <span id="currentLanguage">{{ get_locale().upper() }}</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="language-menu">
+                <div class="language-option {% if get_locale() == 'de' %}active{% endif %}" onclick="changeLanguage('de')">
+                    <span class="flag-icon">🇩🇪</span>
+                    <span>Deutsch</span>
+                </div>
+                <div class="language-option {% if get_locale() == 'en' %}active{% endif %}" onclick="changeLanguage('en')">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span>English</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h1>{{ _('Day') }} {{ door }} - {{ rule_name }}</h1>
+    <p style="text-align: center;">{{ rule_description }}</p>
 
     <div class="sudoku-container">
         <div class="sudoku-wrapper">
@@ -494,32 +612,32 @@
 
     <!-- Fixed position highlight controls at bottom right -->
     <div class="highlight-controls">
-        <h3>Highlights</h3>
+        <h3>{{ _('Highlights') }}</h3>
         <div class="checkbox-option">
             <input type="checkbox" id="toggleRowCol" checked>
-            <label for="toggleRowCol">Row/Column</label>
+            <label for="toggleRowCol">{{ _('Row/Column') }}</label>
         </div>
         <div class="checkbox-option">
             <input type="checkbox" id="toggleSameNumber" checked>
-            <label for="toggleSameNumber">Same Number</label>
+            <label for="toggleSameNumber">{{ _('Same Number') }}</label>
         </div>
     </div>
 
     <div class="controls">
         <button id="notesToggle" onclick="toggleNotesMode()" class="notes-toggle">
-            📝 Notes Mode <span class="hotkey">(Space)</span>
+            📝 {{ _('Notes Mode') }} <span class="hotkey">(Space)</span>
         </button>
         <br>
-        <button onclick="checkSolution()">Check Solution</button>
-        <button onclick="undo()" class="secondary">↶ Undo</button>
-        <button onclick="resetBoard()" class="secondary">Reset</button>
-        <button onclick="generateNewPuzzle()" class="secondary">Generate New Puzzle</button>
+        <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
+        <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
+        <button onclick="resetBoard()" class="secondary">{{ _('Reset') }}</button>
+        <button onclick="generateNewPuzzle()" class="secondary">{{ _('Generate New Puzzle') }}</button>
     </div>
 
     <div id="message"></div>
     <div id="generation-message" style="text-align: center; margin: 10px 0; padding: 10px; font-size: 1rem;"></div>
 
-    <a href="/" class="back-link">← Back to Calendar</a>
+    <a href="/" class="back-link">← {{ _('Back to Calendar') }}</a>
 
     <script>
         // Store the solution and metadata
@@ -1346,6 +1464,29 @@
                 cell.classList.remove('highlighted', 'highlighted-prefilled', 'highlighted-user', 'rowcol-highlight', 'selected-cell');
             });
         }
+        
+        function toggleLanguageMenu() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function changeLanguage(lang) {
+            fetch('/set_language/' + lang)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('languageDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
     </script>
 </body>
 </html>

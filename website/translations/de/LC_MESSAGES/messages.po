@@ -1,0 +1,72 @@
+# German translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-11-21 14:47+0000\n"
+"PO-Revision-Date: 2025-11-21 14:48+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: website/templates/calendar.html:4 website/templates/calendar.html:128
+msgid "Advent Calendar"
+msgstr "Adventskalender"
+
+#: website/templates/door.html:4
+msgid "Door"
+msgstr "Tür"
+
+#: website/templates/door.html:4
+msgid "Interactive Sudoku"
+msgstr "Interaktives Sudoku"
+
+#: website/templates/door.html:586
+msgid "Day"
+msgstr "Tag"
+
+#: website/templates/door.html:615
+msgid "Highlights"
+msgstr "Hervorhebungen"
+
+#: website/templates/door.html:618
+msgid "Row/Column"
+msgstr "Zeile/Spalte"
+
+#: website/templates/door.html:622
+msgid "Same Number"
+msgstr "Gleiche Zahl"
+
+#: website/templates/door.html:628
+msgid "Notes Mode"
+msgstr "Notizen-Modus"
+
+#: website/templates/door.html:631
+msgid "Check Solution"
+msgstr "Lösung Prüfen"
+
+#: website/templates/door.html:632
+msgid "Undo"
+msgstr "Rückgängig"
+
+#: website/templates/door.html:633
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: website/templates/door.html:634
+msgid "Generate New Puzzle"
+msgstr "Neues Rätsel Generieren"
+
+#: website/templates/door.html:640
+msgid "Back to Calendar"
+msgstr "Zurück zum Kalender"
+

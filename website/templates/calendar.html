@@ -1,12 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advent Calendar</title>
+    <title>{{ _('Advent Calendar') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Language switcher styles */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .language-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .language-btn:active {
+            transform: translateY(0);
+        }
+        
+        .language-icon {
+            font-size: 18px;
+        }
+        
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+        
+        .language-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+        
+        .language-dropdown.active .language-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .language-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .language-option:hover {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+        
+        .language-option.active {
+            background: linear-gradient(135deg, #667eea25 0%, #764ba225 100%);
+            color: #667eea;
+        }
+        
+        .flag-icon {
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <div class="language-dropdown" id="languageDropdown">
+            <button class="language-btn" onclick="toggleLanguageMenu()">
+                <span class="language-icon">🌐</span>
+                <span id="currentLanguage">{{ get_locale().upper() }}</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="language-menu">
+                <div class="language-option {% if get_locale() == 'de' %}active{% endif %}" onclick="changeLanguage('de')">
+                    <span class="flag-icon">🇩🇪</span>
+                    <span>Deutsch</span>
+                </div>
+                <div class="language-option {% if get_locale() == 'en' %}active{% endif %}" onclick="changeLanguage('en')">
+                    <span class="flag-icon">🇬🇧</span>
+                    <span>English</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="calendar-container">
-        <img src="/static/lottas_background.png" class="calendar-bg" alt="Advent Calendar" />
+        <img src="/static/lottas_background.png" class="calendar-bg" alt="{{ _('Advent Calendar') }}" />
         {% for door_number, pos_class in door_positions %}
           <a href="{{ url_for('door', door_number=door_number) }}" class="door-btn {{ pos_class }}">
             {{ door_number }}
@@ -14,5 +133,29 @@
         {% endfor %}
     </div>
 
+    <script>
+        function toggleLanguageMenu() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function changeLanguage(lang) {
+            fetch('/set_language/' + lang)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('languageDropdown');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
