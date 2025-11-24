@@ -18,7 +18,7 @@ class ArgyleRule(BaseRule):
     def __init__(self, size=9, box_size=3):
         super().__init__(size, box_size)
         self.name = "Argyle Sudoku"
-        self.description = ("No repeated digits on marked diagonals")
+        self.description = "No repeated digits on marked diagonals"
 
         # Define the 8 argyle diagonals
         # 4 diagonals going down-right (/)

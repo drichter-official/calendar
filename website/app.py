@@ -83,45 +83,72 @@ def load_metadata(door_number):
             }
         }
 
+
+german_translations = {
+        'sudoku_knights_rule': {'name': 'Anti-Springer Sudoku',
+                                'description': 'Gleiche Zahlen dürfen nicht durch einen Springer-Sprung (Schach) verbunden sein'},
+        'sudoku_diagonal_rule': {'name': 'Diagonal Sudoku',
+                                 'description': 'Beide Hauptdiagonalen müssen alle Ziffern von 1 bis 9 enthalten'},
+        'sudoku_windoku_rule': {'name': 'Windoku',
+                                'description': 'Vier zusätzliche 3x3-Regionen müssen ebenfalls alle Ziffern von 1 bis 9 enthalten'},
+        'sudoku_asterisk_rule': {'name': 'Sternchen Sudoku',
+                                 'description': 'Die 9 Sternchen-Zellen müssen alle Ziffern von 1 bis 9 enthalten'},
+        'sudoku_kings_rule': {'name': 'Anti Königs Sudoku',
+                              'description': 'Gleiche Zahlen dürfen nicht durch einen König-Zug (Schach) verbunden sein'},
+        'sudoku_argyle_rule': {'name': 'Argyle Sudoku',
+                               'description': 'Diagonalen innerhalb jeder 3x3-Box müssen eindeutige Zahlen haben'},
+        'sudoku_center_dot_rule': {'name': 'Mittelpunkt Sudoku',
+                                   'description': 'Die mittlere Zelle jeder 3x3-Box muss eine eindeutige Zahl enthalten'},
+        'sudoku_star_rule': {'name': 'Stern Sudoku',
+                             'description': 'Der Stern muss alle Ziffern von 1 bis 9 enthalten'},
+        'sudoku_magic_square_rule': {'name': 'Magisches Quadrat Sudoku',
+                                     'description': 'Das 3x3-Quadrat in der Mitte muss ein magisches Quadrat sein (Summe 15)'},
+        'sudoku_nonconsecutive_rule': {'name': 'Nicht Aufeinanderfolgendes Sudoku',
+                                       'description': 'Aufeinanderfolgende Zahlen dürfen sich nicht orthogonal berühren'},
+        'sudoku_consecutive_rule': {'name': 'Aufeinanderfolgendes Sudoku',
+                                    'description': 'Markierte Linien enthalten aufeinanderfolgende Zahlen'},
+        'sudoku_even_odd_rule': {'name': 'Gerade Ungerade Sudoku',
+                                 'description': 'Markierte Zellen müssen gerade oder ungerade Zahlen enthalten'},
+        'sudoku_kropki_rule': {'name': 'Kropki Sudoku',
+                               'description': 'Weiße Punkte: aufeinanderfolgende Zahlen, Schwarze Punkte: Verhältnis 1:2'},
+        'sudoku_xv_rule': {'name': 'XV Sudoku',
+                           'description': 'Bestimmte benachbarte Zellen müssen sich zu 10 (X) oder 5 (V) summieren'},
+        'sudoku_sandwich_rule': {'name': 'Sandwich-Sudoku',
+                                 'description': 'Zahlen zwischen 1 und 9 in einer Reihe/Spalte summieren sich zu gegebenen Hinweisen'},
+        'sudoku_skyscraper_rule': {'name': 'Wolkenkratzer Sudoku',
+                                   'description': 'Zahlen geben an, wie viele "Gebäude" von außen sichtbar sind'},
+        'sudoku_futoshiki_rule': {'name': 'Futoshiki Sudoku',
+                                  'description': 'Ungleichheitszeichen zeigen Beziehungen zwischen benachbarten Zellen'},
+        'sudoku_killer_rule': {'name': 'Killer Sudoku',
+                               'description': 'Käfige müssen sich zu angegebenen Summen addieren, ohne wiederholte Ziffern'},
+        'sudoku_arrow_rule': {'name': 'Pfeil Sudoku',
+                              'description': 'Die Summe entlang des Pfeils muss gleich der Zahl im Kreis sein'},
+        'sudoku_chain_rule': {'name': 'Ketten Sudoku',
+                              'description': 'Eckzellen jeder 3x3-Box müssen eindeutige Zahlen haben'},
+        'sudoku_thermo_rule': {'name': 'Thermometer Sudoku',
+                               'description': 'Zahlen müssen entlang von Thermometern von der Zwiebel aufsteigen'},
+        'sudoku_whisper_rule': {'name': 'Flüster Sudoku',
+                                'description': 'Benachbarte Zellen auf Linien müssen sich um mindestens 5 unterscheiden'},
+        'sudoku_renban_rule': {'name': 'Renban Sudoku',
+                               'description': 'Linien enthalten aufeinanderfolgende Zahlen in beliebiger Reihenfolge'},
+        'sudoku_jigsaw_rule': {'name': 'Puzzle Sudoku',
+                               'description': 'Unregelmäßige Regionen ersetzen 3x3-Boxen, müssen alle Ziffern 1-9 enthalten'},
+}
+
 def get_translated_rule_info(door_number):
     """Get translated rule name and description based on current locale."""
     locale = get_locale()
-    
-    # German translations for all rules
-    german_translations = {
-        1: {'name': 'Ritter-Sudoku', 'description': 'Gleiche Zahlen dürfen nicht durch einen Ritter-Sprung (Schach) verbunden sein'},
-        2: {'name': 'Diagonales Sudoku', 'description': 'Beide Hauptdiagonalen müssen alle Ziffern von 1 bis 9 enthalten'},
-        3: {'name': 'Windoku', 'description': 'Vier zusätzliche 3x3-Regionen müssen ebenfalls alle Ziffern von 1 bis 9 enthalten'},
-        4: {'name': 'Sternchen-Sudoku', 'description': 'Die 9 Sternchen-Zellen müssen alle Ziffern von 1 bis 9 enthalten'},
-        5: {'name': 'König-Sudoku', 'description': 'Gleiche Zahlen dürfen nicht durch einen König-Zug (Schach) verbunden sein'},
-        6: {'name': 'Argyle-Sudoku', 'description': 'Diagonalen innerhalb jeder 3x3-Box müssen eindeutige Zahlen haben'},
-        7: {'name': 'Mittelpunkt-Sudoku', 'description': 'Die mittlere Zelle jeder 3x3-Box muss eine eindeutige Zahl enthalten'},
-        8: {'name': 'Stern-Sudoku', 'description': 'Die Stern-Form muss alle Ziffern von 1 bis 9 enthalten'},
-        9: {'name': 'Magisches Quadrat-Sudoku', 'description': 'Das 3x3-Quadrat in der Mitte muss ein magisches Quadrat sein (Summe 15)'},
-        10: {'name': 'Nicht-Aufeinanderfolgendes Sudoku', 'description': 'Aufeinanderfolgende Zahlen dürfen sich nicht orthogonal berühren'},
-        11: {'name': 'Aufeinanderfolgendes Sudoku', 'description': 'Markierte Linien enthalten aufeinanderfolgende Zahlen'},
-        12: {'name': 'Gerade-Ungerade-Sudoku', 'description': 'Markierte Zellen müssen gerade oder ungerade Zahlen enthalten'},
-        13: {'name': 'Kropki-Sudoku', 'description': 'Weiße Punkte: aufeinanderfolgende Zahlen, Schwarze Punkte: Verhältnis 1:2'},
-        14: {'name': 'XV-Sudoku', 'description': 'Bestimmte benachbarte Zellen müssen sich zu 10 (X) oder 5 (V) summieren'},
-        15: {'name': 'Sandwich-Sudoku', 'description': 'Zahlen zwischen 1 und 9 in einer Reihe/Spalte summieren sich zu gegebenen Hinweisen'},
-        16: {'name': 'Wolkenkratzer-Sudoku', 'description': 'Zahlen geben an, wie viele "Gebäude" von außen sichtbar sind'},
-        17: {'name': 'Futoshiki-Sudoku', 'description': 'Ungleichheitszeichen zeigen Beziehungen zwischen benachbarten Zellen'},
-        18: {'name': 'Killer-Sudoku', 'description': 'Käfige müssen sich zu angegebenen Summen addieren, ohne wiederholte Ziffern'},
-        19: {'name': 'Pfeil-Sudoku', 'description': 'Die Summe entlang des Pfeils muss gleich der Zahl im Kreis sein'},
-        20: {'name': 'Ketten-Sudoku', 'description': 'Eckzellen jeder 3x3-Box müssen eindeutige Zahlen haben'},
-        21: {'name': 'Thermometer-Sudoku', 'description': 'Zahlen müssen entlang von Thermometern von der Zwiebel aufsteigen'},
-        22: {'name': 'Flüster-Sudoku', 'description': 'Benachbarte Zellen auf Linien müssen sich um mindestens 5 unterscheiden'},
-        23: {'name': 'Renban-Sudoku', 'description': 'Linien enthalten aufeinanderfolgende Zahlen in beliebiger Reihenfolge'},
-        24: {'name': 'Puzzle-Sudoku', 'description': 'Unregelmäßige Regionen ersetzen 3x3-Boxen, müssen alle Ziffern 1-9 enthalten'},
-    }
-    
+
+    # Get the rule folder name for this door
+    rule_folder_name = DOOR_TO_RULE.get(door_number, 'sudoku_knights_rule')
+
     # Load metadata to get English names
     metadata = load_metadata(door_number)
     english_name = metadata['rule']['name']
     english_description = metadata['rule']['description']
-    
-    if locale == 'de' and door_number in german_translations:
-        return german_translations[door_number]['name'], german_translations[door_number]['description']
+
+    if locale == 'de' and rule_folder_name in german_translations:
+        return german_translations[rule_folder_name]['name'], german_translations[rule_folder_name]['description']
     else:
         return english_name, english_description
 
