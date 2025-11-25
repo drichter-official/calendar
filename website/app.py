@@ -226,8 +226,19 @@ def api_check_door_opened(door_number):
 @app.route('/')
 def calendar():
     doors = list(range(1, 25))
+
+    # Check if we already have a shuffled order in the session
+    if 'door_shuffle' not in session:
+        # Create a new shuffled order and store it
+        shuffled_positions = position_classes.copy()
+        random.shuffle(shuffled_positions)
+        session['door_shuffle'] = shuffled_positions
+        session.modified = True
+    else:
+        shuffled_positions = session['door_shuffle']
+
     # Pass list of tuples (door_number, position_class)
-    door_positions = list(zip(doors, position_classes))
+    door_positions = list(zip(doors, shuffled_positions))
     opened_doors = get_opened_doors()
     return render_template("calendar.html", door_positions=door_positions, opened_doors=opened_doors, get_locale=get_locale)
 
