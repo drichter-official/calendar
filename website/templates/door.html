@@ -169,6 +169,15 @@
         .sudoku td:nth-child(7) {
             border-left: 2px solid #000;
         }
+        /* When standard boxes are not used, remove the thick 3x3 box separator lines */
+        .sudoku.no-box-borders tr:nth-child(4) td,
+        .sudoku.no-box-borders tr:nth-child(7) td {
+            border-top: 1px solid #bbb;
+        }
+        .sudoku.no-box-borders td:nth-child(4),
+        .sudoku.no-box-borders td:nth-child(7) {
+            border-left: 1px solid #bbb;
+        }
         /* No bottom border for last row (table border only) */
         .sudoku tr:last-child td {
             border-bottom: none;
@@ -597,7 +606,7 @@
         <div class="sudoku-wrapper">
             <div style="position: relative;">
                 <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
-                <table class="sudoku" id="sudokuGrid">
+                <table class="sudoku{% if metadata.rule.use_standard_boxes == false %} no-box-borders{% endif %}" id="sudokuGrid">
             {% for i in range(9) %}
             <tr>
                 {% for j in range(9) %}
