@@ -147,6 +147,10 @@
             border-right: 0;
             border-bottom: 0;
         }
+        /* Apply cream background to cells with inputs (editable cells) */
+        .sudoku td:has(input) {
+            background-color: #fffef0;
+        }
         /* Remove top border for first row (leave for table) */
         .sudoku tr:first-child td {
             border-top: none;
@@ -181,7 +185,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             outline: none;
-            background-color: #fffef0;
+            background-color: transparent;
         }
         .sudoku td .notes {
             position: absolute;
