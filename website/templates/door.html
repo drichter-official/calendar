@@ -652,6 +652,11 @@
         const initialPuzzle = {{ sudoku | tojson }};
         const metadata = {{ metadata | tojson }};
 
+        // Translated strings for Notes Mode button
+        const notesModeText = "{{ _('Notes Mode') }}";
+        const notesModeOffHTML = '📝 ' + notesModeText + ' <span class="hotkey">(Space)</span>';
+        const notesModeOnHTML = '📝 ' + notesModeText + ' <span class="hotkey">(Space)</span> - ON';
+
         // Highlight settings (default enabled)
         let highlightRowColEnabled = true;
         let highlightSameNumberEnabled = true;
@@ -701,6 +706,12 @@
                             delete cellNotes[key];
                         }
                     }
+                } else if (action.operation === 'remove') {
+                    // Re-add the note that was removed
+                    if (!cellNotes[key]) {
+                        cellNotes[key] = new Set();
+                    }
+                    cellNotes[key].add(action.value);
                 } else if (action.operation === 'clear') {
                     // Restore the notes that were cleared
                     cellNotes[key] = new Set(action.oldNotes);
@@ -715,10 +726,10 @@
             const btn = document.getElementById('notesToggle');
             if (notesMode) {
                 btn.classList.add('active');
-                btn.innerHTML = '📝 Notes Mode <span class="hotkey">(Space)</span> - ON';
+                btn.innerHTML = notesModeOnHTML;
             } else {
                 btn.classList.remove('active');
-                btn.innerHTML = '📝 Notes Mode <span class="hotkey">(Space)</span>';
+                btn.innerHTML = notesModeOffHTML;
             }
         }
 
@@ -1121,22 +1132,38 @@
                 const key = `${row},${col}`;
 
                 if (notesMode) {
-                    // Notes mode: add number to notes
+                    // Notes mode: toggle number in notes (add if not present, remove if present)
                     if (value && /^[1-9]$/.test(value)) {
                         if (!cellNotes[key]) {
                             cellNotes[key] = new Set();
                         }
-                        // Record action before adding note
-                        recordAction({
-                            type: 'note',
-                            operation: 'add',
-                            row: row,
-                            col: col,
-                            value: value
-                        });
-                        cellNotes[key].add(value);
+                        
+                        if (cellNotes[key].has(value)) {
+                            // Note already exists, remove it
+                            recordAction({
+                                type: 'note',
+                                operation: 'remove',
+                                row: row,
+                                col: col,
+                                value: value
+                            });
+                            cellNotes[key].delete(value);
+                            if (cellNotes[key].size === 0) {
+                                delete cellNotes[key];
+                            }
+                        } else {
+                            // Note doesn't exist, add it
+                            recordAction({
+                                type: 'note',
+                                operation: 'add',
+                                row: row,
+                                col: col,
+                                value: value
+                            });
+                            cellNotes[key].add(value);
+                        }
                         updateNotesDisplay(row, col);
-                        e.target.value = ''; // Clear input after adding note
+                        e.target.value = ''; // Clear input after toggling note
                     } else {
                         e.target.value = '';
                     }
