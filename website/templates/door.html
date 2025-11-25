@@ -502,6 +502,45 @@
             opacity: 0.8;
             margin-left: 5px;
         }
+        button.hint-btn {
+            background-color: #FFC107;
+            font-weight: bold;
+            position: relative;
+        }
+        button.hint-btn:hover {
+            background-color: #FFB300;
+        }
+        button.hint-btn.active {
+            background-color: #FF9800;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+        button.hint-btn.active:hover {
+            background-color: #F57C00;
+        }
+        button.hint-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button.hint-btn .hint-count {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            margin-left: 8px;
+            font-size: 0.85rem;
+        }
+        /* Hint cell styling - light yellow background */
+        .sudoku td.hint-cell {
+            background-color: #fff9c4 !important;
+            color: inherit;
+        }
+        .sudoku td.hint-cell input {
+            background-color: transparent;
+            color: #333;
+        }
         #message {
             text-align: center;
             margin: 20px 0;
@@ -643,6 +682,9 @@
         <button id="notesToggle" onclick="toggleNotesMode()" class="notes-toggle">
             📝 {{ _('Notes Mode') }} <span class="hotkey">(Space)</span>
         </button>
+        <button id="hintBtn" onclick="toggleHintMode()" class="hint-btn">
+            💡 {{ _('Hint') }} <span class="hint-count" id="hintCount">3</span>
+        </button>
         <br>
         <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
         <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
@@ -674,6 +716,12 @@
         // Notes mode (default disabled)
         let notesMode = false;
         const cellNotes = {}; // Store notes for each cell: {row,col: Set of numbers}
+
+        // Hint mode (default disabled)
+        let hintMode = false;
+        let hintsRemaining = 3;
+        const hintModeText = "{{ _('Hint') }}";
+        const hintModeOnText = "{{ _('Select a cell') }}";
 
         // Undo system - track all user actions
         const undoHistory = [];
@@ -737,10 +785,97 @@
             if (notesMode) {
                 btn.classList.add('active');
                 btn.innerHTML = notesModeOnHTML;
+                // Disable hint mode when enabling notes mode
+                if (hintMode) {
+                    disableHintMode();
+                }
             } else {
                 btn.classList.remove('active');
                 btn.innerHTML = notesModeOffHTML;
             }
+        }
+
+        // Toggle hint mode function
+        function toggleHintMode() {
+            if (hintsRemaining <= 0) {
+                return;
+            }
+            hintMode = !hintMode;
+            const btn = document.getElementById('hintBtn');
+            const messageDiv = document.getElementById('message');
+            if (hintMode) {
+                btn.classList.add('active');
+                updateHintButtonDisplay();
+                messageDiv.innerHTML = '<span style="color: #FFC107;">{{ _("Click on an empty cell to reveal its correct number") }}</span>';
+                // Disable notes mode when enabling hint mode
+                if (notesMode) {
+                    notesMode = false;
+                    const notesBtn = document.getElementById('notesToggle');
+                    notesBtn.classList.remove('active');
+                    notesBtn.innerHTML = notesModeOffHTML;
+                }
+            } else {
+                disableHintMode();
+            }
+        }
+
+        // Disable hint mode helper
+        function disableHintMode() {
+            hintMode = false;
+            const btn = document.getElementById('hintBtn');
+            btn.classList.remove('active');
+            updateHintButtonDisplay();
+            document.getElementById('message').innerHTML = '';
+        }
+
+        // Update the hint button display (centralized function)
+        function updateHintButtonDisplay() {
+            const btn = document.getElementById('hintBtn');
+            if (hintsRemaining <= 0) {
+                btn.disabled = true;
+                btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">0</span>';
+            } else {
+                btn.disabled = false;
+                if (hintMode) {
+                    btn.innerHTML = '💡 ' + hintModeOnText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+                } else {
+                    btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+                }
+            }
+        }
+
+        // Apply hint to a cell
+        function applyHint(row, col) {
+            if (!hintMode || hintsRemaining <= 0) return false;
+            
+            // Get the input element for this cell
+            const input = document.querySelector(`input[data-row="${row}"][data-col="${col}"]`);
+            if (!input) return false; // Prefilled cell
+            
+            // Get the correct value from the solution
+            const correctValue = solution[row][col];
+            
+            // Fill in the correct value (hints are not undoable)
+            input.value = correctValue;
+            input.setAttribute('data-old-value', String(correctValue));
+            
+            // Add hint cell styling (light yellow)
+            const cell = input.parentElement;
+            cell.classList.add('hint-cell');
+            cell.classList.remove('correct', 'incorrect');
+            
+            // Clear any notes for this cell
+            const key = `${row},${col}`;
+            if (cellNotes[key]) {
+                delete cellNotes[key];
+                updateNotesDisplay(row, col);
+            }
+            
+            // Decrement hints remaining and update display
+            hintsRemaining--;
+            disableHintMode();
+            
+            return true;
         }
 
         // Add global spacebar listener
@@ -1219,6 +1354,15 @@
             });
 
             input.addEventListener('focus', function(e) {
+                const row = parseInt(e.target.dataset.row);
+                const col = parseInt(e.target.dataset.col);
+                
+                // If hint mode is active, apply hint to this cell
+                if (hintMode) {
+                    applyHint(row, col);
+                    return;
+                }
+                
                 const value = e.target.value;
                 highlightSameNumbersAndRowCol(e.target, value);
             });
@@ -1383,7 +1527,7 @@
             document.querySelectorAll('.sudoku input').forEach(input => {
                 input.value = '';
                 input.removeAttribute('data-old-value');
-                input.parentElement.classList.remove('correct', 'incorrect');
+                input.parentElement.classList.remove('correct', 'incorrect', 'hint-cell');
                 const row = parseInt(input.dataset.row);
                 const col = parseInt(input.dataset.col);
                 const key = `${row},${col}`;
@@ -1399,6 +1543,12 @@
             clearAll();
             // Clear undo history on reset
             undoHistory.length = 0;
+            // Reset hints
+            hintsRemaining = 3;
+            hintMode = false;
+            const hintBtn = document.getElementById('hintBtn');
+            hintBtn.classList.remove('active');
+            updateHintButtonDisplay();
         }
 
         // Function to update the notes display for a cell
