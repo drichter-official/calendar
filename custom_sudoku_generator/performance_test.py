@@ -13,7 +13,6 @@ Usage:
 import time
 import sys
 import os
-import signal
 from multiprocessing import Process, Queue
 from run import load_custom_rule, generate_sudoku_forward, generate_sudoku_reverse, discover_rules
 
@@ -27,9 +26,9 @@ def _generation_worker(rule_folder, result_queue):
     Worker function to run generation in a separate process.
     This allows us to implement a timeout.
     """
+    start_time = time.time()
     try:
         custom_rule = load_custom_rule(rule_folder)
-        start_time = time.time()
         
         if custom_rule.supports_reverse_generation():
             puzzle, solution = generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5)
@@ -40,7 +39,7 @@ def _generation_worker(rule_folder, result_queue):
         success = puzzle is not None and solution is not None
         result_queue.put((elapsed, success, None))
     except Exception as e:
-        elapsed = time.time() - start_time if 'start_time' in locals() else 0
+        elapsed = time.time() - start_time
         result_queue.put((elapsed, False, str(e)))
 
 
