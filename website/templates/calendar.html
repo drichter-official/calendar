@@ -133,9 +133,7 @@
             {% for door_number, pos_class in door_positions %}
               <a href="{{ url_for('door', door_number=door_number) }}" class="door-wrapper {{ pos_class }}" data-door="{{ door_number }}" data-opened="{{ 'true' if door_number in opened_doors else 'false' }}">
                 <span class="door-number">{{ door_number }}</span>
-                <div class="door-panel{% if door_number in opened_doors %} doorOpen{% endif %}">
-                  {{ door_number }}
-                </div>
+                <div class="door-panel{% if door_number in opened_doors %} doorOpen{% endif %}"></div>
               </a>
             {% endfor %}
         </div>
@@ -163,18 +161,6 @@
             if (!dropdown.contains(event.target)) {
                 dropdown.classList.remove('active');
             }
-        });
-
-        // Initialize door states based on data-opened attribute
-        document.addEventListener('DOMContentLoaded', function() {
-            const doors = document.querySelectorAll('.door-wrapper');
-            doors.forEach(function(doorWrapper) {
-                const isOpened = doorWrapper.getAttribute('data-opened') === 'true';
-                const doorPanel = doorWrapper.querySelector('.door-panel');
-                if (isOpened && doorPanel) {
-                    doorPanel.classList.add('doorOpen');
-                }
-            });
         });
     </script>
 </body>
