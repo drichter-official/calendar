@@ -194,18 +194,52 @@ def set_language(language):
     # Redirect back to the referrer or home page
     return jsonify({'success': True, 'language': language})
 
+def get_opened_doors():
+    """Get the set of opened door numbers from the session."""
+    if 'opened_doors' not in session:
+        session['opened_doors'] = []
+    return set(session['opened_doors'])
+
+def mark_door_opened(door_number):
+    """Mark a door as opened in the session."""
+    if 'opened_doors' not in session:
+        session['opened_doors'] = []
+    if door_number not in session['opened_doors']:
+        opened = list(session['opened_doors'])
+        opened.append(door_number)
+        session['opened_doors'] = opened
+    return True
+
+@app.route('/api/opened_doors')
+def api_get_opened_doors():
+    """API endpoint to get the list of opened doors."""
+    opened = list(get_opened_doors())
+    return jsonify({'opened_doors': sorted(opened)})
+
+@app.route('/api/door/<int:door_number>/opened', methods=['GET'])
+def api_check_door_opened(door_number):
+    """API endpoint to check if a specific door is opened."""
+    if door_number < 1 or door_number > 24:
+        return jsonify({'error': 'Invalid door number'}), 400
+    opened = door_number in get_opened_doors()
+    return jsonify({'door': door_number, 'opened': opened})
+
 @app.route('/')
 def calendar():
     doors = list(range(1, 25))
     # Pass list of tuples (door_number, position_class)
     door_positions = list(zip(doors, position_classes))
-    return render_template("calendar.html", door_positions=door_positions, get_locale=get_locale)
+    opened_doors = get_opened_doors()
+    return render_template("calendar.html", door_positions=door_positions, opened_doors=opened_doors, get_locale=get_locale)
 
 @app.route('/door/<int:door_number>')
 def door(door_number):
     # Validate door number
     if door_number < 1 or door_number > 24:
         return "Invalid door number", 404
+    
+    # Mark this door as opened
+    mark_door_opened(door_number)
     
     # Load metadata, sudoku grid, and solution for the door
     metadata = load_metadata(door_number)
