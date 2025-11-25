@@ -162,6 +162,31 @@
                 dropdown.classList.remove('active');
             }
         });
+
+        // Handle door clicks - animate first, then navigate
+        document.querySelectorAll('.door-wrapper').forEach(function(doorWrapper) {
+            doorWrapper.addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                const doorPanel = doorWrapper.querySelector('.door-panel');
+                const targetUrl = doorWrapper.getAttribute('href');
+                const isAlreadyOpen = doorWrapper.getAttribute('data-opened') === 'true';
+                
+                if (isAlreadyOpen) {
+                    // Door already open, navigate immediately
+                    window.location.href = targetUrl;
+                } else {
+                    // Animate the door opening, then navigate after animation completes
+                    doorPanel.classList.add('doorOpen');
+                    doorWrapper.setAttribute('data-opened', 'true');
+                    
+                    // Wait for animation to complete (0.5s transition + small buffer)
+                    setTimeout(function() {
+                        window.location.href = targetUrl;
+                    }, 600);
+                }
+            });
+        });
     </script>
 </body>
 </html>
