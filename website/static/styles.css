@@ -71,34 +71,34 @@ body {
     transform-origin: left;
     /* Speed of the Door animation */
     transition: all 0.5s ease-in-out;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Varied door colors for a prettier advent calendar look */
-.door-wrapper[data-door="1"] .door-panel { background: linear-gradient(145deg, #c74b50, #9e3b3f); border-color: rgba(80, 30, 30, 0.6); }
-.door-wrapper[data-door="2"] .door-panel { background: linear-gradient(145deg, #2e7d32, #1b5e20); border-color: rgba(20, 60, 20, 0.6); }
-.door-wrapper[data-door="3"] .door-panel { background: linear-gradient(145deg, #1976d2, #0d47a1); border-color: rgba(10, 40, 80, 0.6); }
-.door-wrapper[data-door="4"] .door-panel { background: linear-gradient(145deg, #f9a825, #f57f17); border-color: rgba(100, 70, 10, 0.6); }
-.door-wrapper[data-door="5"] .door-panel { background: linear-gradient(145deg, #7b1fa2, #4a148c); border-color: rgba(50, 10, 60, 0.6); }
-.door-wrapper[data-door="6"] .door-panel { background: linear-gradient(145deg, #00897b, #004d40); border-color: rgba(0, 40, 35, 0.6); }
-.door-wrapper[data-door="7"] .door-panel { background: linear-gradient(145deg, #e64a19, #bf360c); border-color: rgba(80, 30, 10, 0.6); }
-.door-wrapper[data-door="8"] .door-panel { background: linear-gradient(145deg, #5c6bc0, #303f9f); border-color: rgba(30, 30, 80, 0.6); }
-.door-wrapper[data-door="9"] .door-panel { background: linear-gradient(145deg, #d81b60, #ad1457); border-color: rgba(80, 10, 40, 0.6); }
-.door-wrapper[data-door="10"] .door-panel { background: linear-gradient(145deg, #43a047, #2e7d32); border-color: rgba(30, 60, 30, 0.6); }
-.door-wrapper[data-door="11"] .door-panel { background: linear-gradient(145deg, #fbc02d, #f9a825); border-color: rgba(100, 80, 20, 0.6); }
-.door-wrapper[data-door="12"] .door-panel { background: linear-gradient(145deg, #8e24aa, #6a1b9a); border-color: rgba(60, 20, 70, 0.6); }
-.door-wrapper[data-door="13"] .door-panel { background: linear-gradient(145deg, #0288d1, #01579b); border-color: rgba(10, 50, 80, 0.6); }
-.door-wrapper[data-door="14"] .door-panel { background: linear-gradient(145deg, #ef5350, #c62828); border-color: rgba(90, 20, 20, 0.6); }
-.door-wrapper[data-door="15"] .door-panel { background: linear-gradient(145deg, #26a69a, #00897b); border-color: rgba(0, 60, 50, 0.6); }
-.door-wrapper[data-door="16"] .door-panel { background: linear-gradient(145deg, #ab47bc, #8e24aa); border-color: rgba(70, 20, 80, 0.6); }
-.door-wrapper[data-door="17"] .door-panel { background: linear-gradient(145deg, #66bb6a, #43a047); border-color: rgba(40, 70, 40, 0.6); }
-.door-wrapper[data-door="18"] .door-panel { background: linear-gradient(145deg, #42a5f5, #1976d2); border-color: rgba(20, 60, 100, 0.6); }
-.door-wrapper[data-door="19"] .door-panel { background: linear-gradient(145deg, #ff7043, #e64a19); border-color: rgba(100, 50, 20, 0.6); }
-.door-wrapper[data-door="20"] .door-panel { background: linear-gradient(145deg, #ec407a, #d81b60); border-color: rgba(100, 20, 50, 0.6); }
-.door-wrapper[data-door="21"] .door-panel { background: linear-gradient(145deg, #29b6f6, #0288d1); border-color: rgba(10, 70, 100, 0.6); }
-.door-wrapper[data-door="22"] .door-panel { background: linear-gradient(145deg, #9ccc65, #7cb342); border-color: rgba(70, 100, 40, 0.6); }
-.door-wrapper[data-door="23"] .door-panel { background: linear-gradient(145deg, #ffca28, #fbc02d); border-color: rgba(120, 100, 30, 0.6); }
-.door-wrapper[data-door="24"] .door-panel { background: linear-gradient(145deg, #ffd700, #ffb300); border-color: rgba(140, 110, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 2px 8px rgba(255, 215, 0, 0.5); }
+/* Varied door colors for a prettier advent calendar look - with strong colored glow */
+.door-wrapper[data-door="1"] .door-panel { background: linear-gradient(145deg, #c74b50, #9e3b3f); border-color: rgba(80, 30, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(199, 75, 80, 0.8), 0 0 50px rgba(199, 75, 80, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="2"] .door-panel { background: linear-gradient(145deg, #2e7d32, #1b5e20); border-color: rgba(20, 60, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(46, 125, 50, 0.8), 0 0 50px rgba(46, 125, 50, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="3"] .door-panel { background: linear-gradient(145deg, #1976d2, #0d47a1); border-color: rgba(10, 40, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(25, 118, 210, 0.8), 0 0 50px rgba(25, 118, 210, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="4"] .door-panel { background: linear-gradient(145deg, #f9a825, #f57f17); border-color: rgba(100, 70, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(249, 168, 37, 0.8), 0 0 50px rgba(249, 168, 37, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="5"] .door-panel { background: linear-gradient(145deg, #7b1fa2, #4a148c); border-color: rgba(50, 10, 60, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(123, 31, 162, 0.8), 0 0 50px rgba(123, 31, 162, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="6"] .door-panel { background: linear-gradient(145deg, #00897b, #004d40); border-color: rgba(0, 40, 35, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(0, 137, 123, 0.8), 0 0 50px rgba(0, 137, 123, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="7"] .door-panel { background: linear-gradient(145deg, #e64a19, #bf360c); border-color: rgba(80, 30, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(230, 74, 25, 0.8), 0 0 50px rgba(230, 74, 25, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="8"] .door-panel { background: linear-gradient(145deg, #5c6bc0, #303f9f); border-color: rgba(30, 30, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(92, 107, 192, 0.8), 0 0 50px rgba(92, 107, 192, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="9"] .door-panel { background: linear-gradient(145deg, #d81b60, #ad1457); border-color: rgba(80, 10, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(216, 27, 96, 0.8), 0 0 50px rgba(216, 27, 96, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="10"] .door-panel { background: linear-gradient(145deg, #43a047, #2e7d32); border-color: rgba(30, 60, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(67, 160, 71, 0.8), 0 0 50px rgba(67, 160, 71, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="11"] .door-panel { background: linear-gradient(145deg, #fbc02d, #f9a825); border-color: rgba(100, 80, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(251, 192, 45, 0.8), 0 0 50px rgba(251, 192, 45, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="12"] .door-panel { background: linear-gradient(145deg, #8e24aa, #6a1b9a); border-color: rgba(60, 20, 70, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(142, 36, 170, 0.8), 0 0 50px rgba(142, 36, 170, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="13"] .door-panel { background: linear-gradient(145deg, #0288d1, #01579b); border-color: rgba(10, 50, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(2, 136, 209, 0.8), 0 0 50px rgba(2, 136, 209, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="14"] .door-panel { background: linear-gradient(145deg, #ef5350, #c62828); border-color: rgba(90, 20, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(239, 83, 80, 0.8), 0 0 50px rgba(239, 83, 80, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="15"] .door-panel { background: linear-gradient(145deg, #26a69a, #00897b); border-color: rgba(0, 60, 50, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(38, 166, 154, 0.8), 0 0 50px rgba(38, 166, 154, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="16"] .door-panel { background: linear-gradient(145deg, #ab47bc, #8e24aa); border-color: rgba(70, 20, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(171, 71, 188, 0.8), 0 0 50px rgba(171, 71, 188, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="17"] .door-panel { background: linear-gradient(145deg, #66bb6a, #43a047); border-color: rgba(40, 70, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(102, 187, 106, 0.8), 0 0 50px rgba(102, 187, 106, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="18"] .door-panel { background: linear-gradient(145deg, #42a5f5, #1976d2); border-color: rgba(20, 60, 100, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(66, 165, 245, 0.8), 0 0 50px rgba(66, 165, 245, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="19"] .door-panel { background: linear-gradient(145deg, #ff7043, #e64a19); border-color: rgba(100, 50, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(255, 112, 67, 0.8), 0 0 50px rgba(255, 112, 67, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="20"] .door-panel { background: linear-gradient(145deg, #ec407a, #d81b60); border-color: rgba(100, 20, 50, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(236, 64, 122, 0.8), 0 0 50px rgba(236, 64, 122, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="21"] .door-panel { background: linear-gradient(145deg, #29b6f6, #0288d1); border-color: rgba(10, 70, 100, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(41, 182, 246, 0.8), 0 0 50px rgba(41, 182, 246, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="22"] .door-panel { background: linear-gradient(145deg, #9ccc65, #7cb342); border-color: rgba(70, 100, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(156, 204, 101, 0.8), 0 0 50px rgba(156, 204, 101, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="23"] .door-panel { background: linear-gradient(145deg, #ffca28, #fbc02d); border-color: rgba(120, 100, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 25px rgba(255, 202, 40, 0.8), 0 0 50px rgba(255, 202, 40, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="24"] .door-panel { background: linear-gradient(145deg, #ffd700, #ffb300); border-color: rgba(140, 110, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 0 35px rgba(255, 215, 0, 0.9), 0 0 70px rgba(255, 215, 0, 0.6), 0 0 100px rgba(255, 215, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
 
 /* Door opened state - 3D rotation effect */
 .door-panel.doorOpen {
@@ -106,10 +106,10 @@ body {
     transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px) rotateY(-105deg);
 }
 
-/* Hover effect for closed doors */
+/* Hover effect for closed doors - intensified glow */
 .door-wrapper:hover .door-panel:not(.doorOpen) {
-    filter: brightness(1.15);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.2);
+    filter: brightness(1.2);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 0 40px rgba(255, 255, 255, 0.9), 0 0 80px rgba(255, 255, 255, 0.6), 0 0 120px rgba(255, 255, 255, 0.3), 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 /* Door number label */
