@@ -42,14 +42,25 @@ body {
     display: block;
 }
 
-/* Common door button style */
-.door-btn {
+/* Door wrapper - shows the opened state (transparent gray background) */
+.door-wrapper {
     position: absolute;
-    opacity: 0.5;            /* semi-visible for debugging, set to 0 when ready */
-    background: rgba(255, 0, 0, 0.3);
-    border: 2px solid #ff0000;
+    background-color: rgba(128, 128, 128, 0.5); /* transparent gray for opened state */
+    border-radius: 4px;
     cursor: pointer;
-    text-align: center;
+    text-decoration: none;
+}
+
+/* The door element - animated panel */
+.door-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(139, 69, 19, 0.7); /* slightly transparent brown/colored door */
+    border: 2px solid rgba(100, 50, 10, 0.8);
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -57,14 +68,34 @@ body {
     color: white;
     font-weight: bold;
     user-select: none;
-    text-decoration: none;
-    border-radius: 4px;
+    transform-origin: left;
+    /* Speed of the Door animation */
+    transition: all 0.5s ease-in-out;
 }
 
-.door-btn:hover {
-    background: rgba(255, 0, 0, 0.5);
-    transform: scale(1.05);
-    transition: all 0.2s ease;
+/* Door opened state - 3D rotation effect */
+.door-panel.doorOpen {
+    /* perspective creates the door open effect */
+    transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px) rotateY(-105deg);
+}
+
+/* Hover effect for closed doors */
+.door-wrapper:hover .door-panel:not(.doorOpen) {
+    background: rgba(139, 69, 19, 0.85);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Door number label */
+.door-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1rem;
+    color: white;
+    font-weight: bold;
+    z-index: 1;
+    pointer-events: none;
 }
 
 /* Position and size classes for each door - scattered randomly across entire calendar */
