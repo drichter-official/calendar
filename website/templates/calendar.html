@@ -130,7 +130,7 @@
     <div class="calendar-container">
         <img src="/static/lottas_background.png" class="calendar-bg" alt="{{ _('Advent Calendar') }}" />
         {% for door_number, pos_class in door_positions %}
-          <a href="{{ url_for('door', door_number=door_number) }}" class="door-btn {{ pos_class }}">
+          <a href="{{ url_for('door', door_number=door_number) }}" class="door-btn {{ pos_class }}{% if door_number in opened_doors %} door-opened{% endif %}" data-door="{{ door_number }}" data-opened="{{ 'true' if door_number in opened_doors else 'false' }}">
             {{ door_number }}
           </a>
         {% endfor %}
