@@ -205,9 +205,8 @@ def mark_door_opened(door_number):
     if 'opened_doors' not in session:
         session['opened_doors'] = []
     if door_number not in session['opened_doors']:
-        opened = list(session['opened_doors'])
-        opened.append(door_number)
-        session['opened_doors'] = opened
+        session['opened_doors'].append(door_number)
+        session.modified = True
     return True
 
 @app.route('/api/opened_doors')
