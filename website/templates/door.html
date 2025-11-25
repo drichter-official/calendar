@@ -805,7 +805,7 @@
             const messageDiv = document.getElementById('message');
             if (hintMode) {
                 btn.classList.add('active');
-                btn.innerHTML = '💡 ' + hintModeOnText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+                updateHintButtonDisplay();
                 messageDiv.innerHTML = '<span style="color: #FFC107;">{{ _("Click on an empty cell to reveal its correct number") }}</span>';
                 // Disable notes mode when enabling hint mode
                 if (notesMode) {
@@ -1547,9 +1547,8 @@
             hintsRemaining = 3;
             hintMode = false;
             const hintBtn = document.getElementById('hintBtn');
-            hintBtn.disabled = false;
             hintBtn.classList.remove('active');
-            hintBtn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">3</span>';
+            updateHintButtonDisplay();
         }
 
         // Function to update the notes display for a cell
