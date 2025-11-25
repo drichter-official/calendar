@@ -824,8 +824,24 @@
             hintMode = false;
             const btn = document.getElementById('hintBtn');
             btn.classList.remove('active');
-            btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+            updateHintButtonDisplay();
             document.getElementById('message').innerHTML = '';
+        }
+
+        // Update the hint button display (centralized function)
+        function updateHintButtonDisplay() {
+            const btn = document.getElementById('hintBtn');
+            if (hintsRemaining <= 0) {
+                btn.disabled = true;
+                btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">0</span>';
+            } else {
+                btn.disabled = false;
+                if (hintMode) {
+                    btn.innerHTML = '💡 ' + hintModeOnText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+                } else {
+                    btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+                }
+            }
         }
 
         // Apply hint to a cell
@@ -839,17 +855,7 @@
             // Get the correct value from the solution
             const correctValue = solution[row][col];
             
-            // Record action for undo
-            const oldValue = input.value;
-            recordAction({
-                type: 'number',
-                row: row,
-                col: col,
-                oldValue: oldValue,
-                newValue: String(correctValue)
-            });
-            
-            // Fill in the correct value
+            // Fill in the correct value (hints are not undoable)
             input.value = correctValue;
             input.setAttribute('data-old-value', String(correctValue));
             
@@ -865,19 +871,9 @@
                 updateNotesDisplay(row, col);
             }
             
-            // Decrement hints remaining
+            // Decrement hints remaining and update display
             hintsRemaining--;
-            document.getElementById('hintCount').textContent = hintsRemaining;
-            
-            // Disable hint mode
             disableHintMode();
-            
-            // Disable hint button if no hints remaining
-            if (hintsRemaining <= 0) {
-                const btn = document.getElementById('hintBtn');
-                btn.disabled = true;
-                btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">0</span>';
-            }
             
             return true;
         }
