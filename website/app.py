@@ -222,6 +222,13 @@ def api_check_door_opened(door_number):
     opened = door_number in get_opened_doors()
     return jsonify({'door': door_number, 'opened': opened})
 
+@app.route('/api/close_all_doors', methods=['POST'])
+def api_close_all_doors():
+    """API endpoint to close all doors (clear the session)."""
+    session['opened_doors'] = []
+    session.modified = True
+    return jsonify({'success': True, 'message': 'All doors closed'})
+
 @app.route('/')
 def calendar():
     doors = list(range(1, 25))

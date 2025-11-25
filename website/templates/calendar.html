@@ -103,6 +103,33 @@
         .flag-icon {
             font-size: 15px;
         }
+
+        /* Close All Doors button styles */
+        .close-all-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .close-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+        }
+
+        .close-all-btn:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -126,6 +153,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Close All Doors Button -->
+    <button class="close-all-btn" onclick="closeAllDoors()">🔒 Close All Doors</button>
 
     <div class="calendar-container">
         <div class="calendar-bg-wrapper">
@@ -154,7 +184,29 @@
                     }
                 });
         }
-        
+
+        function closeAllDoors() {
+            if (confirm('Are you sure you want to close all doors? This will reset your progress.')) {
+                fetch('/api/close_all_doors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Failed to close doors: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    alert('Error: ' + error.message);
+                });
+            }
+        }
+
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('languageDropdown');
