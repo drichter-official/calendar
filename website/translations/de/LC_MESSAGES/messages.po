@@ -50,6 +50,10 @@ msgstr "Gleiche Zahl"
 msgid "Notes Mode"
 msgstr "Notizen-Modus"
 
+#: website/templates/door.html:658
+msgid "ON"
+msgstr "AN"
+
 #: website/templates/door.html:631
 msgid "Check Solution"
 msgstr "Lösung Prüfen"

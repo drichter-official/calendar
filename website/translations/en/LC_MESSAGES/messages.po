@@ -50,6 +50,10 @@ msgstr "Same Number"
 msgid "Notes Mode"
 msgstr "Notes Mode"
 
+#: website/templates/door.html:658
+msgid "ON"
+msgstr "ON"
+
 #: website/templates/door.html:631
 msgid "Check Solution"
 msgstr "Check Solution"
