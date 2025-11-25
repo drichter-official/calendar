@@ -5,17 +5,15 @@
     "size": 9,
     "box_size": 3,
     "sandwich_clues": {
-      "col_4": 5,
-      "row_3": 9,
-      "row_0": 5,
-      "col_1": 19,
-      "row_7": 11,
-      "row_6": 4,
-      "col_2": 12
+      "col_6": 7,
+      "col_0": 11,
+      "col_3": 6,
+      "row_2": 25,
+      "row_8": 12
     },
     "generation_mode": "reverse"
   },
-  "generated_at": "2025-11-11T21:42:40.785971",
+  "generated_at": "2025-11-25T10:32:31.447384",
   "size": 9,
   "box_size": 3
 }
