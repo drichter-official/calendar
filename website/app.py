@@ -35,7 +35,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'custom_sudoku_
 
 # Mapping of door numbers to rule folders
 DOOR_TO_RULE = {
-    1: 'sudoku_knights_rule',
+    1: 'sudoku_standard_rule',
     2: 'sudoku_diagonal_rule',
     3: 'sudoku_windoku_rule',
     4: 'sudoku_asterisk_rule',
@@ -50,7 +50,7 @@ DOOR_TO_RULE = {
     13: 'sudoku_kropki_rule',
     14: 'sudoku_xv_rule',
     15: 'sudoku_sandwich_rule',
-    16: 'sudoku_skyscraper_rule',
+    16: 'sudoku_knights_rule',
     17: 'sudoku_futoshiki_rule',
     18: 'sudoku_killer_rule',
     19: 'sudoku_arrow_rule',
@@ -85,6 +85,8 @@ def load_metadata(door_number):
 
 
 german_translations = {
+        'sudoku_standard_rule': {'name': 'Standard Sudoku',
+                                 'description': 'Fülle das Gitter so aus, dass jede Zeile, Spalte und 3x3-Box die Ziffern 1-9 enthält'},
         'sudoku_knights_rule': {'name': 'Anti-Springer Sudoku',
                                 'description': 'Gleiche Zahlen dürfen nicht durch einen Springer-Sprung (Schach) verbunden sein'},
         'sudoku_diagonal_rule': {'name': 'Diagonal Sudoku',
@@ -115,8 +117,6 @@ german_translations = {
                            'description': 'Bestimmte benachbarte Zellen müssen sich zu 10 (X) oder 5 (V) summieren'},
         'sudoku_sandwich_rule': {'name': 'Sandwich-Sudoku',
                                  'description': 'Zahlen zwischen 1 und 9 in einer Reihe/Spalte summieren sich zu gegebenen Hinweisen'},
-        'sudoku_skyscraper_rule': {'name': 'Wolkenkratzer Sudoku',
-                                   'description': 'Zahlen geben an, wie viele "Gebäude" von außen sichtbar sind'},
         'sudoku_futoshiki_rule': {'name': 'Futoshiki Sudoku',
                                   'description': 'Ungleichheitszeichen zeigen Beziehungen zwischen benachbarten Zellen'},
         'sudoku_killer_rule': {'name': 'Killer Sudoku',
