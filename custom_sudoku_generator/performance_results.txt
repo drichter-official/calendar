@@ -1,0 +1,236 @@
+======================================================================
+PERFORMANCE RANKING (Fastest to Slowest)
+======================================================================
+
+Rank  Rule                                     Avg Time     Success Rate
+----------------------------------------------------------------------
+1     sudoku_standard_rule                     0.062s       100%
+2     sudoku_consecutive_rule                  0.164s       100%
+3     sudoku_thermo_rule                       0.167s       100%
+4     sudoku_star_rule                         0.368s       100%
+5     sudoku_chain_rule                        0.414s       100%
+6     sudoku_futoshiki_rule                    0.624s       100%
+7     sudoku_kings_rule                        2.239s       100%
+8     sudoku_asterisk_rule                     2.418s       100%
+9     sudoku_center_dot_rule                   2.563s       100%
+10    sudoku_magic_square_rule                 2.927s       100%
+11    sudoku_diagonal_rule                     4.716s       100%
+12    sudoku_whisper_rule                      5.856s       100%
+13    sudoku_killer_rule                       12.023s      80%
+14    sudoku_arrow_rule                        12.284s      80%
+15    sudoku_even_odd_rule                     16.639s      80%
+16    sudoku_windoku_rule                      18.689s      80%
+17    sudoku_renban_rule                       19.738s      80%
+18    sudoku_jigsaw_rule                       20.610s      80%
+19    sudoku_kropki_rule                       27.771s      80%
+20    sudoku_knights_rule                      37.909s      40%
+21    sudoku_argyle_rule                       45.439s      40%
+22    sudoku_sandwich_rule                     52.801s      40%
+23    sudoku_xv_rule                           56.690s      20%
+24    sudoku_nonconsecutive_rule               60.004s      0%
+
+======================================================================
+DETAILED STATISTICS
+======================================================================
+
+1. sudoku_standard_rule
+   Display Name: Standard Sudoku
+   Average Time: 0.062s
+   Min Time:     0.040s
+   Max Time:     0.122s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.058s', '0.040s', '0.041s', '0.122s', '0.050s']
+
+2. sudoku_consecutive_rule
+   Display Name: Consecutive Sudoku
+   Average Time: 0.164s
+   Min Time:     0.002s
+   Max Time:     0.451s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.004s', '0.003s', '0.002s', '0.361s', '0.451s']
+
+3. sudoku_thermo_rule
+   Display Name: Thermo Sudoku
+   Average Time: 0.167s
+   Min Time:     0.033s
+   Max Time:     0.606s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.033s', '0.088s', '0.043s', '0.606s', '0.066s']
+
+4. sudoku_star_rule
+   Display Name: Star Sudoku
+   Average Time: 0.368s
+   Min Time:     0.040s
+   Max Time:     0.827s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.096s', '0.238s', '0.827s', '0.637s', '0.040s']
+
+5. sudoku_chain_rule
+   Display Name: Chain Sudoku
+   Average Time: 0.414s
+   Min Time:     0.049s
+   Max Time:     1.371s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.280s', '1.371s', '0.301s', '0.049s', '0.070s']
+
+6. sudoku_futoshiki_rule
+   Display Name: Futoshiki Sudoku
+   Average Time: 0.624s
+   Min Time:     0.176s
+   Max Time:     0.945s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.873s', '0.931s', '0.945s', '0.196s', '0.176s']
+
+7. sudoku_kings_rule
+   Display Name: King's Rule
+   Average Time: 2.239s
+   Min Time:     0.124s
+   Max Time:     4.793s
+   Success Rate: 5/5 (100%)
+   All Times:    ['0.272s', '4.627s', '4.793s', '0.124s', '1.376s']
+
+8. sudoku_asterisk_rule
+   Display Name: Asterisk Sudoku
+   Average Time: 2.418s
+   Min Time:     0.193s
+   Max Time:     8.430s
+   Success Rate: 5/5 (100%)
+   All Times:    ['1.235s', '1.643s', '0.588s', '8.430s', '0.193s']
+
+9. sudoku_center_dot_rule
+   Display Name: Center Dot Sudoku
+   Average Time: 2.563s
+   Min Time:     0.233s
+   Max Time:     7.830s
+   Success Rate: 5/5 (100%)
+   All Times:    ['1.945s', '7.830s', '0.321s', '2.484s', '0.233s']
+
+10. sudoku_magic_square_rule
+   Display Name: Magic Square Sudoku
+   Average Time: 2.927s
+   Min Time:     0.191s
+   Max Time:     10.613s
+   Success Rate: 5/5 (100%)
+   All Times:    ['3.295s', '0.244s', '10.613s', '0.191s', '0.294s']
+
+11. sudoku_diagonal_rule
+   Display Name: Diagonal Rule (Sudoku X)
+   Average Time: 4.716s
+   Min Time:     0.995s
+   Max Time:     10.299s
+   Success Rate: 5/5 (100%)
+   All Times:    ['4.153s', '1.599s', '6.534s', '10.299s', '0.995s']
+
+12. sudoku_whisper_rule
+   Display Name: Whisper Sudoku
+   Average Time: 5.856s
+   Min Time:     0.287s
+   Max Time:     16.123s
+   Success Rate: 5/5 (100%)
+   All Times:    ['1.868s', '16.123s', '1.476s', '0.287s', '9.526s']
+
+13. sudoku_killer_rule
+   Display Name: Killer Sudoku
+   Average Time: 12.023s
+   Min Time:     0.020s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['0.020s', '0.027s', '0.031s', '60.004s', '0.033s']
+
+14. sudoku_arrow_rule
+   Display Name: Arrow Sudoku
+   Average Time: 12.284s
+   Min Time:     0.041s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['0.620s', '0.214s', '0.542s', '60.004s', '0.041s']
+
+15. sudoku_even_odd_rule
+   Display Name: Even-Odd Sudoku
+   Average Time: 16.639s
+   Min Time:     2.819s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['2.819s', '60.004s', '10.223s', '4.071s', '6.076s']
+
+16. sudoku_windoku_rule
+   Display Name: Windoku
+   Average Time: 18.689s
+   Min Time:     1.201s
+   Max Time:     60.003s
+   Success Rate: 4/5 (80%)
+   All Times:    ['1.500s', '13.726s', '1.201s', '60.003s', '17.014s']
+
+17. sudoku_renban_rule
+   Display Name: Renban Sudoku
+   Average Time: 19.738s
+   Min Time:     0.138s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['33.679s', '60.004s', '0.725s', '4.143s', '0.138s']
+
+18. sudoku_jigsaw_rule
+   Display Name: Jigsaw Sudoku
+   Average Time: 20.610s
+   Min Time:     0.546s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['60.004s', '34.008s', '0.546s', '4.100s', '4.394s']
+
+19. sudoku_kropki_rule
+   Display Name: Kropki Sudoku
+   Average Time: 27.771s
+   Min Time:     5.555s
+   Max Time:     60.004s
+   Success Rate: 4/5 (80%)
+   All Times:    ['43.950s', '7.615s', '60.004s', '5.555s', '21.731s']
+
+20. sudoku_knights_rule
+   Display Name: Knight's Rule
+   Average Time: 37.909s
+   Min Time:     4.598s
+   Max Time:     60.004s
+   Success Rate: 2/5 (40%)
+   All Times:    ['60.003s', '4.598s', '4.936s', '60.004s', '60.004s']
+
+21. sudoku_argyle_rule
+   Display Name: Argyle Sudoku
+   Average Time: 45.439s
+   Min Time:     20.658s
+   Max Time:     60.005s
+   Success Rate: 2/5 (40%)
+   All Times:    ['60.005s', '20.658s', '26.523s', '60.004s', '60.004s']
+
+22. sudoku_sandwich_rule
+   Display Name: Sandwich Sudoku
+   Average Time: 52.801s
+   Min Time:     28.138s
+   Max Time:     60.005s
+   Success Rate: 2/5 (40%)
+   All Times:    ['60.005s', '60.004s', '28.138s', '55.856s', '60.005s']
+
+23. sudoku_xv_rule
+   Display Name: XV Sudoku
+   Average Time: 56.690s
+   Min Time:     43.434s
+   Max Time:     60.005s
+   Success Rate: 1/5 (20%)
+   All Times:    ['43.434s', '60.004s', '60.005s', '60.005s', '60.003s']
+
+24. sudoku_nonconsecutive_rule
+   Display Name: Nonconsecutive Sudoku
+   Average Time: 60.004s
+   Min Time:     60.003s
+   Max Time:     60.005s
+   Success Rate: 0/5 (0%)
+   All Times:    ['60.005s', '60.003s', '60.004s', '60.005s', '60.005s']
+
+======================================================================
+SUMMARY
+======================================================================
+
+Fastest rule: sudoku_standard_rule (0.062s average)
+Slowest rule: sudoku_nonconsecutive_rule (60.004s average)
+Speed difference: 966.6x
+
+Total average time across all rules: 403.116s
