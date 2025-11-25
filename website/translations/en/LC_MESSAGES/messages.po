@@ -74,3 +74,15 @@ msgstr "Generate New Puzzle"
 msgid "Back to Calendar"
 msgstr "Back to Calendar"
 
+#: website/templates/door.html:685
+msgid "Hint"
+msgstr "Hint"
+
+#: website/templates/door.html:799
+msgid "Select a cell"
+msgstr "Select a cell"
+
+#: website/templates/door.html:812
+msgid "Click on an empty cell to reveal its correct number"
+msgstr "Click on an empty cell to reveal its correct number"
+
