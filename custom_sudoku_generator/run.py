@@ -3,6 +3,7 @@ import copy
 import os
 import json
 import importlib.util
+import time
 from datetime import datetime
 from base_rule import BaseRule
 
@@ -12,6 +13,9 @@ class SudokuGenerator:
         self.box_size = box_size      # 3 for classic Sudoku (3x3 boxes)
         self.grid = [[0]*size for _ in range(size)]
         self.custom_rule_instance = custom_rule if custom_rule else BaseRule(size, box_size)
+        self.timeout_start = None
+        self.timeout_duration = 30  # Default 30 seconds timeout
+        self.timed_out = False
 
 
     def is_valid(self, grid, row, col, num):
@@ -41,6 +45,21 @@ class SudokuGenerator:
         Delegate to the custom rule instance for validation.
         """
         return self.custom_rule_instance.validate(grid, row, col, num)
+
+    def check_timeout(self):
+        """
+        Check if the timeout has been exceeded.
+        Returns True if timeout has been exceeded, False otherwise.
+        """
+        if self.timeout_start is None:
+            return False
+        elapsed = time.time() - self.timeout_start
+        if elapsed > self.timeout_duration:
+            if not self.timed_out:
+                print(f"\n⏱️  Timeout reached ({self.timeout_duration}s). Saving best puzzle found so far...")
+                self.timed_out = True
+            return True
+        return False
 
 
     def solve(self, grid):
@@ -92,7 +111,7 @@ class SudokuGenerator:
         return None
 
     # Remove clues while ensuring unique solution
-    def remove_numbers(self, attempts=5, difficulty='hard'):
+    def remove_numbers(self, attempts=1, difficulty='hard'):
         """
         Remove numbers from the grid while maintaining a unique solution.
         
@@ -106,6 +125,10 @@ class SudokuGenerator:
         Returns:
             The puzzle grid with numbers removed
         """
+        # Start timeout tracking
+        if self.timeout_start is None:
+            self.timeout_start = time.time()
+
         grid = copy.deepcopy(self.grid)
         total_cells = self.size * self.size  # 81 for 9x9 grid
         
@@ -113,9 +136,9 @@ class SudokuGenerator:
         if difficulty == 'easy':
             target_empty_cells = int(total_cells * 0.50)  # ~40 cells empty
         elif difficulty == 'medium':
-            target_empty_cells = int(total_cells * 0.75)  # ~60 cells empty
+            target_empty_cells = int(total_cells * 0.70)  # ~57 cells empty
         else:  # 'hard' - no early termination
-            target_empty_cells = total_cells  # Try to remove as many as possible
+            target_empty_cells = int(total_cells * 0.90)  # ~73 cells empty
 
         # Get priority cells from the rule (cells that should be removed first)
         priority_cells = []
@@ -130,6 +153,10 @@ class SudokuGenerator:
         cells_removed = 0
 
         while attempts > 0:
+            # Check timeout
+            if self.check_timeout():
+                break
+
             # Check if we've reached our target for easy/medium difficulty
             if difficulty in ('easy', 'medium') and cells_removed >= target_empty_cells:
                 break
@@ -170,6 +197,10 @@ class SudokuGenerator:
         return grid
 
     def count_solutions(self, grid, count):
+        # Check timeout before continuing
+        if self.check_timeout():
+            return count
+
         for row in range(self.size):
             for col in range(self.size):
                 if grid[row][col] == 0:
@@ -288,9 +319,9 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None, difficulty='
             difficulty_attempts = 1 # Very few attempts for highly restrictive rules
         # Reverse generation rules have complex constraints - use fewer attempts
         elif custom_rule.supports_reverse_generation():
-            difficulty_attempts = 5  # Fewer attempts for complex rules
+            difficulty_attempts = 2  # Fewer attempts for complex rules
         else:
-            difficulty_attempts = 5  # Standard attempts for simple rules
+            difficulty_attempts = 2  # Standard attempts for simple rules
 
     # Check if this rule supports reverse generation
     if custom_rule.supports_reverse_generation():
@@ -331,7 +362,7 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, dif
     return puzzle_grid, solution_grid
 
 
-def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max_regeneration_attempts=10, difficulty='hard'):
+def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max_regeneration_attempts=10, difficulty='hard'):
     """
     Reverse generation: Generate a standard Sudoku solution first, then derive constraints from it.
 
@@ -415,14 +446,14 @@ if __name__ == "__main__":
     elif len(sys.argv) > 2 and sys.argv[1] == "--index":
         idx = int(sys.argv[2]) - 1
         if 0 <= idx < len(rule_folders):
-            difficulty = int(sys.argv[3]) if len(sys.argv) > 3 else 5
+            difficulty = int(sys.argv[3]) if len(sys.argv) > 3 else 1
             generate_sudoku_for_rule(rule_folders[idx], difficulty)
         else:
             print(f"Error: Invalid index. Choose between 1 and {len(rule_folders)}")
     elif len(sys.argv) > 1:
         # Check if a specific rule folder is provided
         rule_folder = sys.argv[1]
-        difficulty = int(sys.argv[2]) if len(sys.argv) > 2 else 5
+        difficulty = int(sys.argv[2]) if len(sys.argv) > 2 else 1
 
         if os.path.exists(rule_folder):
             generate_sudoku_for_rule(rule_folder, difficulty)

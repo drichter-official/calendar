@@ -5,20 +5,20 @@
     "size": 9,
     "box_size": 3,
     "sandwich_clues": {
+      "col_6": 12,
+      "col_1": 7,
+      "col_2": 12,
+      "row_8": 33,
+      "col_3": 24,
+      "col_5": 21,
       "col_4": 4,
-      "row_2": 8,
-      "row_7": 19,
-      "row_8": 7,
-      "col_1": 35,
-      "col_2": 8,
-      "row_6": 21,
-      "row_3": 3,
-      "col_0": 7,
-      "row_0": 8
+      "row_7": 20,
+      "row_6": 8,
+      "col_0": 13
     },
     "generation_mode": "reverse"
   },
-  "generated_at": "2025-11-27T20:10:03.707940",
+  "generated_at": "2025-11-27T22:52:30.750182",
   "size": 9,
   "box_size": 3
 }
