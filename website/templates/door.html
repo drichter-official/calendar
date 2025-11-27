@@ -1158,6 +1158,27 @@
             }
         }
 
+        // Helper function to get cell center coordinates (shared by overlay drawing functions)
+        function getCellCenter(row, col, cellSize, borderWidth) {
+            // Account for different border widths
+            let x = borderWidth + col * cellSize;
+            let y = borderWidth + row * cellSize;
+
+            // Add thicker borders after columns 3 and 6
+            if (col >= 3) x += 1;
+            if (col >= 6) x += 1;
+
+            // Add thicker borders after rows 3 and 6
+            if (row >= 3) y += 1;
+            if (row >= 6) y += 1;
+
+            // Add half cell size to get center
+            x += cellSize / 2;
+            y += cellSize / 2;
+
+            return { x, y };
+        }
+
         // Draw argyle diagonal lines
         function drawArgyleDiagonals() {
             const rule = metadata.rule;
@@ -1181,27 +1202,6 @@
             const cellSize = 50; // Cell size from CSS
             const borderWidth = 3; // Table border width
 
-            // Helper function to get cell center coordinates
-            function getCellCenter(row, col) {
-                // Account for different border widths
-                let x = borderWidth + col * cellSize;
-                let y = borderWidth + row * cellSize;
-
-                // Add thicker borders after columns 3 and 6
-                if (col >= 3) x += 1;
-                if (col >= 6) x += 1;
-
-                // Add thicker borders after rows 3 and 6
-                if (row >= 3) y += 1;
-                if (row >= 6) y += 1;
-
-                // Add half cell size to get center
-                x += cellSize / 2;
-                y += cellSize / 2;
-
-                return { x, y };
-            }
-
             // Color palette for different diagonals
             const colors = ['#FF4F4F7C', '#FF4F4F7C', '#FF4F4F7C', '#FF4F4F7C'];
 
@@ -1216,7 +1216,7 @@
                 let pathData = '';
                 diagonal.forEach((cell, cellIndex) => {
                     const [row, col] = cell;
-                    const center = getCellCenter(row, col);
+                    const center = getCellCenter(row, col, cellSize, borderWidth);
 
                     if (cellIndex === 0) {
                         pathData += `M ${center.x} ${center.y}`;
@@ -1261,32 +1261,12 @@
             const borderWidth = 3; // Table border width
             const markerSize = 18; // Size of the white box
 
-            // Helper function to get cell center coordinates
-            function getCellCenter(row, col) {
-                let x = borderWidth + col * cellSize;
-                let y = borderWidth + row * cellSize;
-
-                // Add thicker borders after columns 3 and 6
-                if (col >= 3) x += 1;
-                if (col >= 6) x += 1;
-
-                // Add thicker borders after rows 3 and 6
-                if (row >= 3) y += 1;
-                if (row >= 6) y += 1;
-
-                // Add half cell size to get center
-                x += cellSize / 2;
-                y += cellSize / 2;
-
-                return { x, y };
-            }
-
             // Helper function to draw a marker between two cells
             function drawMarker(pair, text) {
                 const [r1, c1] = pair[0];
                 const [r2, c2] = pair[1];
-                const center1 = getCellCenter(r1, c1);
-                const center2 = getCellCenter(r2, c2);
+                const center1 = getCellCenter(r1, c1, cellSize, borderWidth);
+                const center2 = getCellCenter(r2, c2, cellSize, borderWidth);
 
                 // Calculate midpoint between the two cells
                 const midX = (center1.x + center2.x) / 2;

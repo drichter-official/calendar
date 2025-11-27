@@ -47,13 +47,6 @@ class XVRule(BaseRule):
                     pairs.append(((r, c), (r + 1, c)))
         return pairs
 
-    def _normalize_pair(self, pair):
-        """
-        Normalize a pair to ensure consistent ordering for overlap detection.
-        Returns the pair as a frozenset of the two cell tuples.
-        """
-        return frozenset([pair[0], pair[1]])
-
     def derive_constraints_from_solution(self, solution_grid):
         """
         Derive X and V pairs from a completed Sudoku solution.
