@@ -1,7 +1,7 @@
 {
   "rule": {
-    "name": "Even-Odd Sudoku",
-    "description": "Specific cells must contain even or odd digits",
+    "name": "Even-Odd Sudoku (Spiral)",
+    "description": "Spiral pattern from center outward",
     "size": 9,
     "box_size": 3,
     "even_cells": [
@@ -10,106 +10,43 @@
         4
       ],
       [
-        8,
-        8
-      ],
-      [
         6,
         2
-      ],
-      [
-        4,
-        0
-      ],
-      [
-        0,
-        4
-      ],
-      [
-        8,
-        4
-      ],
-      [
-        0,
-        0
-      ],
-      [
-        8,
-        0
       ],
       [
         2,
         6
       ],
       [
-        4,
-        8
+        5,
+        3
       ],
       [
-        2,
-        2
-      ],
-      [
-        6,
-        6
-      ],
-      [
-        0,
-        8
+        3,
+        5
       ]
     ],
     "odd_cells": [
       [
-        2,
-        4
-      ],
-      [
         6,
-        8
-      ],
-      [
-        4,
         6
       ],
       [
-        2,
-        0
+        5,
+        5
       ],
       [
-        6,
-        4
-      ],
-      [
-        4,
-        2
-      ],
-      [
-        0,
-        6
-      ],
-      [
-        0,
-        2
-      ],
-      [
-        8,
-        6
-      ],
-      [
-        6,
-        0
-      ],
-      [
-        8,
-        2
+        3,
+        3
       ],
       [
         2,
-        8
+        2
       ]
-    ]
+    ],
+    "pattern_name": "spiral"
   },
-  "generated_at": "2025-11-27T19:14:21.162389",
+  "generated_at": "2025-11-27T19:27:55.969468",
   "size": 9,
   "box_size": 3
 }
