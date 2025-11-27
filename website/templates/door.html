@@ -1079,6 +1079,9 @@
             input.value = correctValue;
             input.setAttribute('data-old-value', String(correctValue));
             
+            // Make the input read-only so the hint cannot be removed
+            input.readOnly = true;
+            
             // Add hint cell styling (light yellow)
             const cell = input.parentElement;
             cell.classList.add('hint-cell');
@@ -2166,6 +2169,7 @@
             document.querySelectorAll('.sudoku input').forEach(input => {
                 input.value = '';
                 input.removeAttribute('data-old-value');
+                input.readOnly = false; // Allow editing after reset (for hint cells)
                 input.parentElement.classList.remove('correct', 'incorrect', 'hint-cell');
                 const row = parseInt(input.dataset.row);
                 const col = parseInt(input.dataset.col);
