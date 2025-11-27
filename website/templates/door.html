@@ -957,6 +957,9 @@
 
             applySpecialCellHighlighting();
             drawArgyleDiagonals();
+            drawXVMarkers();
+            drawKropkiDots();
+            drawArrows();
         });
 
         function applySpecialCellHighlighting() {
@@ -1407,13 +1410,99 @@
             }
         }
 
-        // Apply highlighting when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            applySpecialCellHighlighting();
-            drawArgyleDiagonals();
-            drawXVMarkers();
-            drawKropkiDots();
-        });
+        // Draw Arrow Sudoku arrows (transparent lines with arrowheads from circle to arrow cells)
+        function drawArrows() {
+            const rule = metadata.rule;
+            if (!rule.arrows) return;
+
+            const svg = document.getElementById('diagonalOverlay');
+            const table = document.getElementById('sudokuGrid');
+
+            // Get table dimensions
+            const tableRect = table.getBoundingClientRect();
+            const containerRect = table.parentElement.getBoundingClientRect();
+
+            // Set SVG dimensions to match table
+            svg.setAttribute('width', tableRect.width);
+            svg.setAttribute('height', tableRect.height);
+            svg.style.width = tableRect.width + 'px';
+            svg.style.height = tableRect.height + 'px';
+            svg.style.left = (tableRect.left - containerRect.left) + 'px';
+            svg.style.top = (tableRect.top - containerRect.top) + 'px';
+
+            const cellSize = 50; // Cell size from CSS
+            const borderWidth = 3; // Table border width
+            const arrowColor = '#666666'; // Gray color for arrows
+
+            // Create defs for arrowhead marker if not exists
+            let defs = svg.querySelector('defs');
+            if (!defs) {
+                defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                svg.appendChild(defs);
+            }
+
+            // Create arrowhead marker
+            const markerId = 'arrowhead';
+            if (!document.getElementById(markerId)) {
+                const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                marker.setAttribute('id', markerId);
+                marker.setAttribute('markerWidth', '10');
+                marker.setAttribute('markerHeight', '7');
+                marker.setAttribute('refX', '9');
+                marker.setAttribute('refY', '3.5');
+                marker.setAttribute('orient', 'auto');
+                marker.setAttribute('markerUnits', 'strokeWidth');
+
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+                polygon.setAttribute('fill', arrowColor);
+                polygon.setAttribute('fill-opacity', '0.6');
+
+                marker.appendChild(polygon);
+                defs.appendChild(marker);
+            }
+
+            // Draw each arrow
+            rule.arrows.forEach((arrow) => {
+                const [circleRow, circleCol] = arrow.circle;
+                const circleCenter = getCellCenter(circleRow, circleCol, cellSize, borderWidth);
+
+                // Create a path from circle through all arrow cells
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+                // Build path data starting from circle
+                let pathData = `M ${circleCenter.x} ${circleCenter.y}`;
+                
+                arrow.arrow_cells.forEach((cell) => {
+                    const [row, col] = cell;
+                    const center = getCellCenter(row, col, cellSize, borderWidth);
+                    pathData += ` L ${center.x} ${center.y}`;
+                });
+
+                path.setAttribute('d', pathData);
+                path.setAttribute('stroke', arrowColor);
+                path.setAttribute('stroke-width', '3');
+                path.setAttribute('stroke-opacity', '0.6');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('marker-end', `url(#${markerId})`);
+
+                svg.appendChild(path);
+
+                // Draw a circle (ring) around the circle cell to indicate it's the sum cell
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', circleCenter.x);
+                circle.setAttribute('cy', circleCenter.y);
+                circle.setAttribute('r', cellSize / 2 - 5);
+                circle.setAttribute('fill', 'none');
+                circle.setAttribute('stroke', arrowColor);
+                circle.setAttribute('stroke-width', '2');
+                circle.setAttribute('stroke-opacity', '0.6');
+
+                svg.appendChild(circle);
+            });
+        }
 
         // Only allow numbers 1-9
         document.querySelectorAll('.sudoku input').forEach(input => {
