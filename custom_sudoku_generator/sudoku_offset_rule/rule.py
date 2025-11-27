@@ -24,8 +24,18 @@ class OffsetRule(BaseRule):
         self.name = "Offset Sudoku"
         self.description = "Cells at same positions within each 3x3 box must contain digits 1-9"
 
-        # Define the 9 offset groups (one for each position within a 3x3 box)
-        # Each group contains 9 cells - one from each 3x3 box
+        # Define the 9 offset groups (one for each position within a 3x3 box).
+        # Each group contains 9 cells - one from each 3x3 box at the same relative position.
+        #
+        # Group 0: All top-left cells (position 0,0 within each box)
+        # Group 1: All top-center cells (position 0,1 within each box)
+        # Group 2: All top-right cells (position 0,2 within each box)
+        # Group 3: All middle-left cells (position 1,0 within each box)
+        # Group 4: All center cells (position 1,1 within each box)
+        # Group 5: All middle-right cells (position 1,2 within each box)
+        # Group 6: All bottom-left cells (position 2,0 within each box)
+        # Group 7: All bottom-center cells (position 2,1 within each box)
+        # Group 8: All bottom-right cells (position 2,2 within each box)
         self.offset_groups = []
         for offset_row in range(3):
             for offset_col in range(3):
