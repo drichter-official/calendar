@@ -1132,30 +1132,7 @@
                 });
             }
 
-            // Kropki dots - mark cells with white or black dots
-            if (rule.white_dots) {
-                rule.white_dots.forEach(pair => {
-                    pair.forEach(([row, col]) => {
-                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) {
-                            cell.style.borderColor = '#ffffff';
-                            cell.style.borderWidth = '2px';
-                        }
-                    });
-                });
-            }
-
-            if (rule.black_dots) {
-                rule.black_dots.forEach(pair => {
-                    pair.forEach(([row, col]) => {
-                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) {
-                            cell.style.borderColor = '#000000';
-                            cell.style.borderWidth = '3px';
-                        }
-                    });
-                });
-            }
+            // Kropki dots - drawn via SVG in drawKropkiDots()
         }
 
         // Helper function to get cell center coordinates (shared by overlay drawing functions)
@@ -1319,11 +1296,83 @@
             }
         }
 
+        // Draw Kropki dots (white circles for consecutive, black circles for ratio)
+        function drawKropkiDots() {
+            const rule = metadata.rule;
+            if (!rule.white_dots && !rule.black_dots) return;
+
+            const svg = document.getElementById('diagonalOverlay');
+            const table = document.getElementById('sudokuGrid');
+
+            // Get table dimensions
+            const tableRect = table.getBoundingClientRect();
+            const containerRect = table.parentElement.getBoundingClientRect();
+
+            // Set SVG dimensions to match table
+            svg.setAttribute('width', tableRect.width);
+            svg.setAttribute('height', tableRect.height);
+            svg.style.width = tableRect.width + 'px';
+            svg.style.height = tableRect.height + 'px';
+            svg.style.left = (tableRect.left - containerRect.left) + 'px';
+            svg.style.top = (tableRect.top - containerRect.top) + 'px';
+
+            const cellSize = 50; // Cell size from CSS
+            const borderWidth = 3; // Table border width
+            const dotRadius = 8; // Radius of the dot
+
+            // Helper function to draw a dot between two cells
+            function drawDot(pair, isWhite) {
+                const [r1, c1] = pair[0];
+                const [r2, c2] = pair[1];
+                const center1 = getCellCenter(r1, c1, cellSize, borderWidth);
+                const center2 = getCellCenter(r2, c2, cellSize, borderWidth);
+
+                // Calculate midpoint between the two cells
+                const midX = (center1.x + center2.x) / 2;
+                const midY = (center1.y + center2.y) / 2;
+
+                // Create the dot circle
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', midX);
+                circle.setAttribute('cy', midY);
+                circle.setAttribute('r', dotRadius);
+                
+                if (isWhite) {
+                    // White dot (consecutive - differ by 1)
+                    circle.setAttribute('fill', 'white');
+                    circle.setAttribute('stroke', '#333');
+                    circle.setAttribute('stroke-width', '1.5');
+                } else {
+                    // Black dot (ratio 1:2)
+                    circle.setAttribute('fill', '#333');
+                    circle.setAttribute('stroke', '#333');
+                    circle.setAttribute('stroke-width', '1');
+                }
+
+                svg.appendChild(circle);
+            }
+
+            // Draw white dots (consecutive pairs)
+            if (rule.white_dots) {
+                rule.white_dots.forEach(pair => {
+                    drawDot(pair, true);
+                });
+            }
+
+            // Draw black dots (ratio pairs)
+            if (rule.black_dots) {
+                rule.black_dots.forEach(pair => {
+                    drawDot(pair, false);
+                });
+            }
+        }
+
         // Apply highlighting when page loads
         document.addEventListener('DOMContentLoaded', function() {
             applySpecialCellHighlighting();
             drawArgyleDiagonals();
             drawXVMarkers();
+            drawKropkiDots();
         });
 
         // Only allow numbers 1-9
