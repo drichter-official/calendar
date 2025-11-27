@@ -118,10 +118,39 @@
             text-align: center;
             color: #333;
         }
+        /* Three-column layout for sudoku with side controls */
+        .sudoku-layout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .side-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-width: 130px;
+        }
+        .side-controls button {
+            width: 100%;
+        }
+        .left-controls,
+        .right-controls {
+            align-items: center;
+        }
+        .right-controls .difficulty-label {
+            margin-bottom: 5px;
+            text-align: center;
+        }
         .sudoku-container {
             display: flex;
             justify-content: center;
-            margin: 20px 0;
+            margin: 0;
             position: relative;
         }
         .sudoku {
@@ -887,43 +916,60 @@
     <h1>{{ _('Day') }} {{ door }} - {{ rule_name }}</h1>
     <p style="text-align: center;">{{ rule_description }}</p>
 
-    <div class="sudoku-container">
-        <div class="sudoku-wrapper">
-            <div class="sandwich-grid-wrapper">
-                <!-- Column clues for sandwich sudoku (shown above the grid) -->
-                <div class="sandwich-col-clues" id="sandwichColClues" style="display: none;">
-                    {% for j in range(9) %}
-                    <div class="sandwich-col-clue" id="sandwich-col-{{j}}"></div>
-                    {% endfor %}
-                </div>
-                <div class="sandwich-container">
-                    <!-- Row clues for sandwich sudoku (shown to the left of the grid) -->
-                    <div class="sandwich-row-clues" id="sandwichRowClues" style="display: none;">
-                        {% for i in range(9) %}
-                        <div class="sandwich-row-clue" id="sandwich-row-{{i}}"></div>
+    <div class="sudoku-layout">
+        <!-- Left side controls: Check Solution, Undo, Reset -->
+        <div class="side-controls left-controls">
+            <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
+            <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
+            <button onclick="resetBoard()" class="secondary">{{ _('Reset') }}</button>
+        </div>
+
+        <div class="sudoku-container">
+            <div class="sudoku-wrapper">
+                <div class="sandwich-grid-wrapper">
+                    <!-- Column clues for sandwich sudoku (shown above the grid) -->
+                    <div class="sandwich-col-clues" id="sandwichColClues" style="display: none;">
+                        {% for j in range(9) %}
+                        <div class="sandwich-col-clue" id="sandwich-col-{{j}}"></div>
                         {% endfor %}
                     </div>
-                    <div style="position: relative;">
-                        <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
-                        <table class="sudoku{% if metadata.rule.use_standard_boxes == false %} no-box-borders{% endif %}" id="sudokuGrid">
-                    {% for i in range(9) %}
-                    <tr>
-                        {% for j in range(9) %}
-                        <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}" {% if sudoku[i][j] != 0 %}tabindex="0"{% endif %}>
-                            {% if sudoku[i][j] != 0 %}
-                                {{ sudoku[i][j] }}
-                            {% else %}
-                                <div class="notes" data-row="{{i}}" data-col="{{j}}"></div>
-                                <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
-                            {% endif %}
-                        </td>
+                    <div class="sandwich-container">
+                        <!-- Row clues for sandwich sudoku (shown to the left of the grid) -->
+                        <div class="sandwich-row-clues" id="sandwichRowClues" style="display: none;">
+                            {% for i in range(9) %}
+                            <div class="sandwich-row-clue" id="sandwich-row-{{i}}"></div>
+                            {% endfor %}
+                        </div>
+                        <div style="position: relative;">
+                            <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
+                            <table class="sudoku{% if metadata.rule.use_standard_boxes == false %} no-box-borders{% endif %}" id="sudokuGrid">
+                        {% for i in range(9) %}
+                        <tr>
+                            {% for j in range(9) %}
+                            <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}" {% if sudoku[i][j] != 0 %}tabindex="0"{% endif %}>
+                                {% if sudoku[i][j] != 0 %}
+                                    {{ sudoku[i][j] }}
+                                {% else %}
+                                    <div class="notes" data-row="{{i}}" data-col="{{j}}"></div>
+                                    <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </table>
+                    </table>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Right side controls: Difficulty generation buttons -->
+        <div class="side-controls right-controls">
+            <span class="difficulty-label">{{ _('Generate New:') }}</span>
+            <button onclick="generateNewPuzzle(this, 'easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
+            <button onclick="generateNewPuzzle(this, 'medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
+            <button onclick="generateNewPuzzle(this, 'hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
         </div>
     </div>
 
@@ -947,17 +993,6 @@
         <button id="hintBtn" onclick="toggleHintMode()" class="hint-btn">
             💡 {{ _('Hint') }} <span class="hint-count" id="hintCount">3</span>
         </button>
-        <br>
-        <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
-        <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
-        <button onclick="resetBoard()" class="secondary">{{ _('Reset') }}</button>
-        <br>
-        <div class="difficulty-section">
-            <span class="difficulty-label">{{ _('Generate New:') }}</span>
-            <button onclick="generateNewPuzzle(this, 'easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
-            <button onclick="generateNewPuzzle(this, 'medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
-            <button onclick="generateNewPuzzle(this, 'hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
-        </div>
     </div>
 
     <div id="message"></div>
