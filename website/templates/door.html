@@ -395,20 +395,7 @@
             background-color: #fff59d !important;
             color: inherit;
         }
-        .sudoku td.killer-cage {
-            border-style: dashed;
-            border-width: 2px;
-            border-color: #9c27b0 !important;
-        }
-
-        .sudoku td.cage-sum {
-            font-size: 0.7rem;
-            color: #9c27b0;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            font-weight: normal;
-        }
+        /* Killer cage styles removed - now using SVG overlay for proper dashed borders */
 
         /* Make all special field inputs transparent so background shows through */
         .sudoku td.diagonal-cell input,
@@ -959,6 +946,7 @@
             drawXVMarkers();
             drawKropkiDots();
             drawArrows();
+            drawKillerCages();
         });
 
         function applySpecialCellHighlighting() {
@@ -1046,24 +1034,7 @@
                 }
             }
 
-            // Killer Sudoku cages
-            if (rule.cages) {
-                rule.cages.forEach((cage, index) => {
-                    cage.cells.forEach(([row, col], cellIndex) => {
-                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) {
-                            cell.classList.add('killer-cage');
-                            // Add sum label to first cell in cage
-                            if (cellIndex === 0) {
-                                const sumLabel = document.createElement('div');
-                                sumLabel.className = 'cage-sum';
-                                sumLabel.textContent = cage.sum;
-                                cell.insertBefore(sumLabel, cell.firstChild);
-                            }
-                        }
-                    });
-                });
-            }
+            // Killer Sudoku cages - now handled by drawKillerCages() using SVG overlay
 
             // Thermometer cells
             if (rule.thermometers) {
@@ -1515,6 +1486,117 @@
                 path.setAttribute('marker-end', `url(#${markerId})`);
 
                 svg.appendChild(path);
+            });
+        }
+
+        // Draw Killer Sudoku cages with proper dashed borders and sum labels
+        function drawKillerCages() {
+            const rule = metadata.rule;
+            if (!rule.cages) return;
+
+            const svg = document.getElementById('diagonalOverlay');
+            const table = document.getElementById('sudokuGrid');
+
+            // Get table dimensions
+            const tableRect = table.getBoundingClientRect();
+            const containerRect = table.parentElement.getBoundingClientRect();
+
+            // Set SVG dimensions to match table
+            svg.setAttribute('width', tableRect.width);
+            svg.setAttribute('height', tableRect.height);
+            svg.style.width = tableRect.width + 'px';
+            svg.style.height = tableRect.height + 'px';
+            svg.style.left = (tableRect.left - containerRect.left) + 'px';
+            svg.style.top = (tableRect.top - containerRect.top) + 'px';
+
+            const cellSize = 50; // Cell size from CSS
+            const borderWidth = 3; // Table border width
+            const inset = 3; // Inset from cell edge for dashed border
+
+            // Helper to get cell top-left corner coordinates
+            function getCellTopLeft(row, col) {
+                let x = borderWidth + col * cellSize;
+                let y = borderWidth + row * cellSize;
+
+                // Add thicker borders after columns 3 and 6
+                if (col >= 3) x += 1;
+                if (col >= 6) x += 1;
+
+                // Add thicker borders after rows 3 and 6
+                if (row >= 3) y += 1;
+                if (row >= 6) y += 1;
+
+                return { x, y };
+            }
+
+            // Draw each cage
+            rule.cages.forEach((cage, index) => {
+                const cells = cage.cells;
+                const cageSet = new Set(cells.map(([r, c]) => `${r},${c}`));
+
+                // Build the cage outline path by finding edges
+                // An edge should be drawn if the adjacent cell is NOT in the same cage
+                let pathData = '';
+
+                cells.forEach(([row, col]) => {
+                    const topLeft = getCellTopLeft(row, col);
+                    const x = topLeft.x + inset;
+                    const y = topLeft.y + inset;
+                    const w = cellSize - 2 * inset;
+                    const h = cellSize - 2 * inset;
+
+                    // Check each edge
+                    // Top edge: draw if cell above is not in cage
+                    if (!cageSet.has(`${row - 1},${col}`)) {
+                        pathData += `M ${x} ${y} L ${x + w} ${y} `;
+                    }
+                    // Bottom edge: draw if cell below is not in cage
+                    if (!cageSet.has(`${row + 1},${col}`)) {
+                        pathData += `M ${x} ${y + h} L ${x + w} ${y + h} `;
+                    }
+                    // Left edge: draw if cell to left is not in cage
+                    if (!cageSet.has(`${row},${col - 1}`)) {
+                        pathData += `M ${x} ${y} L ${x} ${y + h} `;
+                    }
+                    // Right edge: draw if cell to right is not in cage
+                    if (!cageSet.has(`${row},${col + 1}`)) {
+                        pathData += `M ${x + w} ${y} L ${x + w} ${y + h} `;
+                    }
+                });
+
+                // Create the path element for the cage outline
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', pathData);
+                path.setAttribute('stroke', '#9c27b0');
+                path.setAttribute('stroke-width', '1.5');
+                path.setAttribute('stroke-dasharray', '4,3');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(path);
+
+                // Find the top-left cell of the cage for the sum label
+                let minRow = 9, minCol = 9;
+                cells.forEach(([r, c]) => {
+                    if (r < minRow || (r === minRow && c < minCol)) {
+                        minRow = r;
+                        minCol = c;
+                    }
+                });
+
+                // Draw sum label in top-left corner of the top-left cell
+                const labelTopLeft = getCellTopLeft(minRow, minCol);
+                const labelX = labelTopLeft.x + 4;
+                const labelY = labelTopLeft.y + 12;
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', labelX);
+                text.setAttribute('y', labelY);
+                text.setAttribute('font-size', '10');
+                text.setAttribute('font-weight', 'normal');
+                text.setAttribute('font-family', 'Arial, sans-serif');
+                text.setAttribute('fill', '#9c27b0');
+                text.textContent = cage.sum;
+                svg.appendChild(text);
             });
         }
 
