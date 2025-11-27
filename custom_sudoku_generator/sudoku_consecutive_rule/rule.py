@@ -117,7 +117,7 @@ class ConsecutiveRule(BaseRule):
             for line in all_found_lines:
                 line_cells = set(line)
                 # Check if this line overlaps with any already used cells
-                if not line_cells.intersection(used_cells):
+                if line_cells.isdisjoint(used_cells):
                     self.consecutive_lines.append(line)
                     used_cells.update(line_cells)
 

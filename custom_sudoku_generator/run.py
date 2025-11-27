@@ -314,9 +314,9 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max
     Returns:
         tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
     """
-    for attempt in range(1, max_regeneration_attempts + 1):
+    for attempt in range(max_regeneration_attempts):
         # First, generate a standard Sudoku solution (no custom constraints)
-        print(f"Step 1: Generating standard Sudoku solution (attempt {attempt}/{max_regeneration_attempts})...")
+        print(f"Step 1: Generating standard Sudoku solution (attempt {attempt + 1}/{max_regeneration_attempts})...")
         base_gen = SudokuGenerator(custom_rule=BaseRule())
         solution_grid = base_gen.generate_full_grid()
 
