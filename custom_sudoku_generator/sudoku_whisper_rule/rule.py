@@ -20,6 +20,10 @@ class WhisperRule(BaseRule):
     Lines are filtered to be longer than 5 cells and non-crossing.
     """
 
+    # Constants for line generation
+    MIN_LINE_LENGTH = 6  # Lines must be longer than 5 cells
+    MAX_PATH_LENGTH = 15  # Maximum path length during exploration
+
     def __init__(self, size=9, box_size=3):
         super().__init__(size, box_size)
         self.name = "Whisper Sudoku"
@@ -51,8 +55,8 @@ class WhisperRule(BaseRule):
         # Find all whisper lines using bidirectional path finding
         all_lines = self._find_all_whisper_lines(solution_grid)
 
-        # Sort by length (prefer longer lines) and filter for length > 5
-        all_lines = [line for line in all_lines if len(line) > 5]
+        # Sort by length (prefer longer lines) and filter for minimum length
+        all_lines = [line for line in all_lines if len(line) >= self.MIN_LINE_LENGTH]
         all_lines.sort(key=lambda x: len(x), reverse=True)
 
         # Select non-crossing lines
@@ -63,7 +67,7 @@ class WhisperRule(BaseRule):
                 self.whisper_lines.append(line)
                 used_cells.update(line_cells)
 
-        print(f"  Created {len(self.whisper_lines)} whisper lines (length > 5, non-crossing)")
+        print(f"  Created {len(self.whisper_lines)} whisper lines (length >= {self.MIN_LINE_LENGTH}, non-crossing)")
         for i, line in enumerate(self.whisper_lines):
             print(f"    Line {i+1}: length {len(line)}")
 
@@ -81,7 +85,8 @@ class WhisperRule(BaseRule):
             for start_c in range(self.size):
                 # Find the longest path starting from this cell using greedy DFS
                 line = self._find_longest_path_greedy((start_r, start_c), solution_grid)
-                if len(line) >= 4:  # Only consider paths of length 4+
+                # Keep paths that might become valid after filtering (at least MIN_LINE_LENGTH - 2)
+                if len(line) >= self.MIN_LINE_LENGTH - 2:
                     all_lines.append(line)
 
         return all_lines
@@ -134,7 +139,7 @@ class WhisperRule(BaseRule):
         dr, dc = direction
         current_value = solution_grid[r][c]
         
-        while len(path) < 15:  # Maximum path length
+        while len(path) < self.MAX_PATH_LENGTH:
             # Try preferred direction first
             preferred = (r + dr, c + dc)
             
@@ -184,7 +189,7 @@ class WhisperRule(BaseRule):
         r, c = start_cell
         current_value = solution_grid[r][c]
         
-        while len(path) < 15:  # Maximum path length
+        while len(path) < self.MAX_PATH_LENGTH:
             # Find all valid neighbors
             candidates = []
             for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
