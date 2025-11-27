@@ -675,6 +675,48 @@
             margin-left: 8px;
             font-size: 0.85rem;
         }
+        /* Difficulty button styles */
+        .difficulty-section {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .difficulty-label {
+            font-weight: bold;
+            color: #333;
+            margin-right: 5px;
+        }
+        button.difficulty-btn {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        button.difficulty-btn.easy {
+            background-color: #4CAF50;
+        }
+        button.difficulty-btn.easy:hover {
+            background-color: #45a049;
+        }
+        button.difficulty-btn.medium {
+            background-color: #FF9800;
+        }
+        button.difficulty-btn.medium:hover {
+            background-color: #F57C00;
+        }
+        button.difficulty-btn.hard {
+            background-color: #f44336;
+        }
+        button.difficulty-btn.hard:hover {
+            background-color: #d32f2f;
+        }
+        button.difficulty-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
         /* Hint cell styling - light yellow background */
         .sudoku td.hint-cell {
             background-color: #fff9c4 !important;
@@ -909,7 +951,13 @@
         <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
         <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
         <button onclick="resetBoard()" class="secondary">{{ _('Reset') }}</button>
-        <button onclick="generateNewPuzzle()" class="secondary">{{ _('Generate New Puzzle') }}</button>
+        <br>
+        <div class="difficulty-section">
+            <span class="difficulty-label">{{ _('Generate New:') }}</span>
+            <button onclick="generateNewPuzzle(this, 'easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
+            <button onclick="generateNewPuzzle(this, 'medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
+            <button onclick="generateNewPuzzle(this, 'hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
+        </div>
     </div>
 
     <div id="message"></div>
@@ -2209,7 +2257,7 @@
             }
         }
 
-        function generateNewPuzzle() {
+        function generateNewPuzzle(button, difficulty = 'hard') {
             // Show confirmation dialog before generating a new puzzle
             const confirmMessage = "{{ _('Are you sure you want to generate a new puzzle? This will reset your progress.') }}";
             if (!confirm(confirmMessage)) {
@@ -2219,14 +2267,17 @@
             const messageDiv = document.getElementById('generation-message');
             const doorNumber = {{ door }};
 
-            // Disable button and show loading message
-            const button = event.target;
-            button.disabled = true;
-            button.textContent = 'Generating...';
-            messageDiv.innerHTML = '<span style="color: #2196F3;">Generating new puzzle... This may take a moment.</span>';
+            // Disable all difficulty buttons and show loading message
+            const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            difficultyBtns.forEach(btn => {
+                btn.disabled = true;
+            });
+            const originalText = button.textContent;
+            button.textContent = '{{ _("Generating...") }}';
+            messageDiv.innerHTML = '<span style="color: #2196F3;">{{ _("Generating new puzzle... This may take a moment.") }}</span>';
 
-            // Call the Flask route to generate a new puzzle
-            fetch(`/generate/${doorNumber}`)
+            // Call the Flask route to generate a new puzzle with difficulty parameter
+            fetch(`/generate/${doorNumber}?difficulty=${difficulty}`)
                 .then(response => {
                     // Check if response is JSON
                     const contentType = response.headers.get('content-type');
@@ -2237,22 +2288,26 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        messageDiv.innerHTML = '<span style="color: #4CAF50;">✓ ' + data.message + ' Reloading...</span>';
+                        messageDiv.innerHTML = '<span style="color: #4CAF50;">✓ ' + data.message + ' {{ _("Reloading...") }}</span>';
                         // Reload the page after a short delay to show the new puzzle
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
                     } else {
                         messageDiv.innerHTML = '<span style="color: #f44336;">✗ ' + data.message + '</span>';
-                        button.disabled = false;
-                        button.textContent = 'Generate New Puzzle';
+                        difficultyBtns.forEach(btn => {
+                            btn.disabled = false;
+                        });
+                        button.textContent = originalText;
                     }
                 })
                 .catch(error => {
                     console.error('Generation error:', error);
                     messageDiv.innerHTML = '<span style="color: #f44336;">✗ Error: ' + error.message + '</span>';
-                    button.disabled = false;
-                    button.textContent = 'Generate New Puzzle';
+                    difficultyBtns.forEach(btn => {
+                        btn.disabled = false;
+                    });
+                    button.textContent = originalText;
                 });
         }
 

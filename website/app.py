@@ -270,6 +270,11 @@ def door(door_number):
 def generate_puzzle(door_number):
     """Generate a new sudoku puzzle for the specified door."""
     try:
+        # Get difficulty from query parameter (default to 'hard')
+        difficulty = request.args.get('difficulty', 'hard')
+        if difficulty not in ('easy', 'medium', 'hard'):
+            difficulty = 'hard'
+        
         # Check if we have write permissions
         rule_folder = get_rule_folder(door_number)
 
@@ -304,7 +309,8 @@ def generate_puzzle(door_number):
         # Generate new puzzle
         print(f"Generating new puzzle for door {door_number}...")
         print(f"Rule folder: {rule_folder}")
-        puzzle_grid, solution_grid = generate_sudoku_for_rule(rule_folder)
+        print(f"Difficulty: {difficulty}")
+        puzzle_grid, solution_grid = generate_sudoku_for_rule(rule_folder, difficulty=difficulty)
 
         return jsonify({
             'success': True,
