@@ -758,6 +758,66 @@
             color: #444;
             user-select: none;
         }
+        /* Sandwich Sudoku clue styles */
+        .sandwich-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+        .sandwich-row-clues {
+            display: flex;
+            flex-direction: column;
+            margin-right: 5px;
+            margin-top: 3px; /* Align with table border */
+        }
+        .sandwich-row-clue {
+            width: 30px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2196F3;
+            border-radius: 4px;
+            margin-bottom: 1px;
+        }
+        .sandwich-row-clue:not(:empty) {
+            background-color: #e3f2fd;
+        }
+        .sandwich-row-clue:nth-child(3),
+        .sandwich-row-clue:nth-child(6) {
+            margin-bottom: 2px; /* Extra space after box boundaries */
+        }
+        .sandwich-col-clues {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 5px;
+            margin-left: 35px; /* Offset for row clues container */
+        }
+        .sandwich-col-clue {
+            width: 50px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #2196F3;
+            border-radius: 4px;
+            margin-right: 1px;
+        }
+        .sandwich-col-clue:not(:empty) {
+            background-color: #e3f2fd;
+        }
+        .sandwich-col-clue:nth-child(3),
+        .sandwich-col-clue:nth-child(6) {
+            margin-right: 2px; /* Extra space after box boundaries */
+        }
+        .sandwich-grid-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
@@ -787,24 +847,40 @@
 
     <div class="sudoku-container">
         <div class="sudoku-wrapper">
-            <div style="position: relative;">
-                <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
-                <table class="sudoku{% if metadata.rule.use_standard_boxes == false %} no-box-borders{% endif %}" id="sudokuGrid">
-            {% for i in range(9) %}
-            <tr>
-                {% for j in range(9) %}
-                <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}" {% if sudoku[i][j] != 0 %}tabindex="0"{% endif %}>
-                    {% if sudoku[i][j] != 0 %}
-                        {{ sudoku[i][j] }}
-                    {% else %}
-                        <div class="notes" data-row="{{i}}" data-col="{{j}}"></div>
-                        <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
-                    {% endif %}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+            <div class="sandwich-grid-wrapper">
+                <!-- Column clues for sandwich sudoku (shown above the grid) -->
+                <div class="sandwich-col-clues" id="sandwichColClues" style="display: none;">
+                    {% for j in range(9) %}
+                    <div class="sandwich-col-clue" id="sandwich-col-{{j}}"></div>
+                    {% endfor %}
+                </div>
+                <div class="sandwich-container">
+                    <!-- Row clues for sandwich sudoku (shown to the left of the grid) -->
+                    <div class="sandwich-row-clues" id="sandwichRowClues" style="display: none;">
+                        {% for i in range(9) %}
+                        <div class="sandwich-row-clue" id="sandwich-row-{{i}}"></div>
+                        {% endfor %}
+                    </div>
+                    <div style="position: relative;">
+                        <svg class="diagonal-overlay" id="diagonalOverlay"></svg>
+                        <table class="sudoku{% if metadata.rule.use_standard_boxes == false %} no-box-borders{% endif %}" id="sudokuGrid">
+                    {% for i in range(9) %}
+                    <tr>
+                        {% for j in range(9) %}
+                        <td class="{{ 'prefilled' if sudoku[i][j] != 0 else '' }}" data-row="{{i}}" data-col="{{j}}" {% if sudoku[i][j] != 0 %}tabindex="0"{% endif %}>
+                            {% if sudoku[i][j] != 0 %}
+                                {{ sudoku[i][j] }}
+                            {% else %}
+                                <div class="notes" data-row="{{i}}" data-col="{{j}}"></div>
+                                <input type="text" maxlength="1" data-row="{{i}}" data-col="{{j}}" />
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1066,6 +1142,7 @@
             drawArrows();
             drawKillerCages();
             drawFutoshikiInequalities();
+            drawSandwichClues();
         });
 
         function applySpecialCellHighlighting() {
@@ -1791,6 +1868,43 @@
 
                 svg.appendChild(g);
             });
+        }
+
+        // Draw Sandwich Sudoku clues (row and column sums displayed outside the grid)
+        function drawSandwichClues() {
+            const rule = metadata.rule;
+            if (!rule.sandwich_clues) return;
+
+            // Show the clue containers
+            const rowCluesContainer = document.getElementById('sandwichRowClues');
+            const colCluesContainer = document.getElementById('sandwichColClues');
+            
+            if (rowCluesContainer) {
+                rowCluesContainer.style.display = 'flex';
+            }
+            if (colCluesContainer) {
+                colCluesContainer.style.display = 'flex';
+            }
+
+            // Parse and display the clues
+            // Format: { "row_0": 3, "col_5": 17, ... }
+            for (const [key, value] of Object.entries(rule.sandwich_clues)) {
+                const parts = key.split('_');
+                const type = parts[0]; // 'row' or 'col'
+                const index = parseInt(parts[1]); // 0-8
+
+                if (type === 'row') {
+                    const clueEl = document.getElementById(`sandwich-row-${index}`);
+                    if (clueEl) {
+                        clueEl.textContent = value;
+                    }
+                } else if (type === 'col') {
+                    const clueEl = document.getElementById(`sandwich-col-${index}`);
+                    if (clueEl) {
+                        clueEl.textContent = value;
+                    }
+                }
+            }
         }
 
         // Only allow numbers 1-9
