@@ -42,10 +42,10 @@ body {
     display: block;
 }
 
-/* Door wrapper - shows the opened state (transparent gray background) */
+/* Door wrapper - shows the opened state (transparent background) */
 .door-wrapper {
     position: absolute;
-    background-color: rgba(128, 128, 128, 0.5); /* transparent gray for opened state */
+    background-color: rgba(0, 0, 0, 0.3); /* subtle dark transparent for opened state */
     border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
@@ -69,42 +69,43 @@ body {
     font-weight: bold;
     user-select: none;
     transform-origin: left;
-    opacity: 0.40; /* Make doors more transparent */
+    opacity: 0.95; /* High opacity for vibrant colors */
     /* Speed of the Door animation */
     transition: all 0.5s ease-in-out;
     box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Varied door colors for a prettier advent calendar look - with reduced colored glow */
-.door-wrapper[data-door="1"] .door-panel { background: linear-gradient(145deg, #c74b50, #9e3b3f); border-color: rgba(80, 30, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(199, 75, 80, 0.75), 0 0 25px rgba(199, 75, 80, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="2"] .door-panel { background: linear-gradient(145deg, #2e7d32, #1b5e20); border-color: rgba(20, 60, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(46, 125, 50, 0.75), 0 0 25px rgba(46, 125, 50, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="3"] .door-panel { background: linear-gradient(145deg, #1976d2, #0d47a1); border-color: rgba(10, 40, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(25, 118, 210, 0.75), 0 0 25px rgba(25, 118, 210, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="4"] .door-panel { background: linear-gradient(145deg, #f9a825, #f57f17); border-color: rgba(100, 70, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(249, 168, 37, 0.75), 0 0 25px rgba(249, 168, 37, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="5"] .door-panel { background: linear-gradient(145deg, #7b1fa2, #4a148c); border-color: rgba(50, 10, 60, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(123, 31, 162, 0.75), 0 0 25px rgba(123, 31, 162, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="6"] .door-panel { background: linear-gradient(145deg, #00897b, #004d40); border-color: rgba(0, 40, 35, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(0, 137, 123, 0.75), 0 0 25px rgba(0, 137, 123, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="7"] .door-panel { background: linear-gradient(145deg, #e64a19, #bf360c); border-color: rgba(80, 30, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(230, 74, 25, 0.75), 0 0 25px rgba(230, 74, 25, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="8"] .door-panel { background: linear-gradient(145deg, #5c6bc0, #303f9f); border-color: rgba(30, 30, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(92, 107, 192, 0.75), 0 0 25px rgba(92, 107, 192, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="9"] .door-panel { background: linear-gradient(145deg, #d81b60, #ad1457); border-color: rgba(80, 10, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(216, 27, 96, 0.75), 0 0 25px rgba(216, 27, 96, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="10"] .door-panel { background: linear-gradient(145deg, #43a047, #2e7d32); border-color: rgba(30, 60, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(67, 160, 71, 0.75), 0 0 25px rgba(67, 160, 71, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="11"] .door-panel { background: linear-gradient(145deg, #fbc02d, #f9a825); border-color: rgba(100, 80, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(251, 192, 45, 0.75), 0 0 25px rgba(251, 192, 45, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="12"] .door-panel { background: linear-gradient(145deg, #8e24aa, #6a1b9a); border-color: rgba(60, 20, 70, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(142, 36, 170, 0.75), 0 0 25px rgba(142, 36, 170, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="13"] .door-panel { background: linear-gradient(145deg, #0288d1, #01579b); border-color: rgba(10, 50, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(2, 136, 209, 0.75), 0 0 25px rgba(2, 136, 209, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="14"] .door-panel { background: linear-gradient(145deg, #ef5350, #c62828); border-color: rgba(90, 20, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(239, 83, 80, 0.75), 0 0 25px rgba(239, 83, 80, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="15"] .door-panel { background: linear-gradient(145deg, #26a69a, #00897b); border-color: rgba(0, 60, 50, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(38, 166, 154, 0.75), 0 0 25px rgba(38, 166, 154, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="16"] .door-panel { background: linear-gradient(145deg, #ab47bc, #8e24aa); border-color: rgba(70, 20, 80, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(171, 71, 188, 0.75), 0 0 25px rgba(171, 71, 188, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="17"] .door-panel { background: linear-gradient(145deg, #66bb6a, #43a047); border-color: rgba(40, 70, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(102, 187, 106, 0.75), 0 0 25px rgba(102, 187, 106, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="18"] .door-panel { background: linear-gradient(145deg, #42a5f5, #1976d2); border-color: rgba(20, 60, 100, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(66, 165, 245, 0.75), 0 0 25px rgba(66, 165, 245, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="19"] .door-panel { background: linear-gradient(145deg, #ff7043, #e64a19); border-color: rgba(100, 50, 20, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 112, 67, 0.75), 0 0 25px rgba(255, 112, 67, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="20"] .door-panel { background: linear-gradient(145deg, #ec407a, #d81b60); border-color: rgba(100, 20, 50, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(236, 64, 122, 0.75), 0 0 25px rgba(236, 64, 122, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="21"] .door-panel { background: linear-gradient(145deg, #29b6f6, #0288d1); border-color: rgba(10, 70, 100, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(41, 182, 246, 0.75), 0 0 25px rgba(41, 182, 246, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="22"] .door-panel { background: linear-gradient(145deg, #9ccc65, #7cb342); border-color: rgba(70, 100, 40, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(156, 204, 101, 0.75), 0 0 25px rgba(156, 204, 101, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="23"] .door-panel { background: linear-gradient(145deg, #ffca28, #fbc02d); border-color: rgba(120, 100, 30, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 202, 40, 0.75), 0 0 25px rgba(255, 202, 40, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
-.door-wrapper[data-door="24"] .door-panel { background: linear-gradient(145deg, #ffd700, #ffb300); border-color: rgba(140, 110, 10, 0.6); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 0 18px rgba(255, 215, 0, 0.75), 0 0 35px rgba(255, 215, 0, 0.4), 0 0 50px rgba(255, 215, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3); }
+/* Varied door colors for a prettier advent calendar look - vibrant and festive */
+.door-wrapper[data-door="1"] .door-panel { background: linear-gradient(145deg, #ff1744, #c62828); border-color: rgba(120, 20, 20, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 23, 68, 0.85), 0 0 25px rgba(255, 23, 68, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="2"] .door-panel { background: linear-gradient(145deg, #00e676, #00c853); border-color: rgba(0, 80, 40, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(0, 230, 118, 0.85), 0 0 25px rgba(0, 230, 118, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="3"] .door-panel { background: linear-gradient(145deg, #2979ff, #0d47a1); border-color: rgba(10, 50, 120, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(41, 121, 255, 0.85), 0 0 25px rgba(41, 121, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="4"] .door-panel { background: linear-gradient(145deg, #ffc400, #ff6f00); border-color: rgba(150, 80, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 196, 0, 0.85), 0 0 25px rgba(255, 196, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="5"] .door-panel { background: linear-gradient(145deg, #d500f9, #aa00ff); border-color: rgba(100, 0, 120, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(213, 0, 249, 0.85), 0 0 25px rgba(213, 0, 249, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="6"] .door-panel { background: linear-gradient(145deg, #00e5ff, #00b8d4); border-color: rgba(0, 80, 100, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(0, 229, 255, 0.85), 0 0 25px rgba(0, 229, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="7"] .door-panel { background: linear-gradient(145deg, #ff3d00, #dd2c00); border-color: rgba(150, 30, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 61, 0, 0.85), 0 0 25px rgba(255, 61, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="8"] .door-panel { background: linear-gradient(145deg, #651fff, #6200ea); border-color: rgba(60, 0, 120, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(101, 31, 255, 0.85), 0 0 25px rgba(101, 31, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="9"] .door-panel { background: linear-gradient(145deg, #ff0080, #c51162); border-color: rgba(120, 0, 60, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 0, 128, 0.85), 0 0 25px rgba(255, 0, 128, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="10"] .door-panel { background: linear-gradient(145deg, #76ff03, #64dd17); border-color: rgba(60, 120, 10, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(118, 255, 3, 0.85), 0 0 25px rgba(118, 255, 3, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="11"] .door-panel { background: linear-gradient(145deg, #ffea00, #ffd600); border-color: rgba(150, 130, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 234, 0, 0.85), 0 0 25px rgba(255, 234, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="12"] .door-panel { background: linear-gradient(145deg, #e040fb, #d500f9); border-color: rgba(120, 0, 130, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(224, 64, 251, 0.85), 0 0 25px rgba(224, 64, 251, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="13"] .door-panel { background: linear-gradient(145deg, #00b0ff, #0091ea); border-color: rgba(0, 80, 140, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(0, 176, 255, 0.85), 0 0 25px rgba(0, 176, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="14"] .door-panel { background: linear-gradient(145deg, #ff1744, #d50000); border-color: rgba(140, 0, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 23, 68, 0.85), 0 0 25px rgba(255, 23, 68, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="15"] .door-panel { background: linear-gradient(145deg, #1de9b6, #00bfa5); border-color: rgba(0, 100, 80, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(29, 233, 182, 0.85), 0 0 25px rgba(29, 233, 182, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="16"] .door-panel { background: linear-gradient(145deg, #e040fb, #aa00ff); border-color: rgba(100, 0, 140, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(224, 64, 251, 0.85), 0 0 25px rgba(224, 64, 251, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="17"] .door-panel { background: linear-gradient(145deg, #69f0ae, #00e676); border-color: rgba(0, 120, 60, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(105, 240, 174, 0.85), 0 0 25px rgba(105, 240, 174, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="18"] .door-panel { background: linear-gradient(145deg, #40c4ff, #00b0ff); border-color: rgba(0, 100, 180, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(64, 196, 255, 0.85), 0 0 25px rgba(64, 196, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="19"] .door-panel { background: linear-gradient(145deg, #ff6e40, #ff3d00); border-color: rgba(180, 40, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 110, 64, 0.85), 0 0 25px rgba(255, 110, 64, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="20"] .door-panel { background: linear-gradient(145deg, #ff4081, #f50057); border-color: rgba(160, 0, 60, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 64, 129, 0.85), 0 0 25px rgba(255, 64, 129, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="21"] .door-panel { background: linear-gradient(145deg, #18ffff, #00e5ff); border-color: rgba(0, 140, 180, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(24, 255, 255, 0.85), 0 0 25px rgba(24, 255, 255, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="22"] .door-panel { background: linear-gradient(145deg, #c6ff00, #aeea00); border-color: rgba(120, 160, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(198, 255, 0, 0.85), 0 0 25px rgba(198, 255, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="23"] .door-panel { background: linear-gradient(145deg, #ffff00, #ffea00); border-color: rgba(180, 180, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 0 12px rgba(255, 255, 0, 0.85), 0 0 25px rgba(255, 255, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.3); }
+.door-wrapper[data-door="24"] .door-panel { background: linear-gradient(145deg, #ffd700, #ffb300); border-color: rgba(180, 140, 0, 0.8); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3); }
 
 /* Door opened state - 3D rotation effect */
 .door-panel.doorOpen {
     /* perspective creates the door open effect */
     transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px) rotateY(-105deg);
+    opacity: 0.3; /* Make opened door more transparent */
 }
 
 /* Hover effect for closed doors - reduced glow */
@@ -126,57 +127,28 @@ body {
     pointer-events: none;
 }
 
-/* Position and size classes for each door - scattered randomly across entire calendar */
-/* More natural advent calendar appearance with varied positions throughout */
-.pos1  { left: 3%;    top: 5%;   width: 15%;  height: 10%; }
-.pos2  { left: 14%;   top: 8%;   width: 15%;  height: 18%; }
-.pos3  { left: 27%;   top: 3%;   width: 15%;  height: 16%; }
-.pos4  { left: 38%;   top: 12%;  width: 16%;  height: 17%; }
-.pos5  { left: 52%;   top: 6%;   width: 15%;  height: 18%; }
-.pos6  { left: 65%;   top: 2%;   width: 16%;  height: 17%; }
-.pos7  { left: 79%;   top: 9%;   width: 15%;  height: 16%; }
-.pos8  { left: 90%;   top: 4%;   width: 15%;  height: 18%; }
-
-.pos9  { left: 8%;    top: 22%;  width: 6%;  height: 7%; }
-.pos10 { left: 21%;   top: 28%;  width: 5%;  height: 6%; }
-.pos11 { left: 33%;   top: 24%;  width: 6%;  height: 8%; }
-.pos12 { left: 47%;   top: 31%;  width: 5%;  height: 7%; }
-.pos13 { left: 60%;   top: 26%;  width: 6%;  height: 6%; }
-.pos14 { left: 74%;   top: 33%;  width: 5%;  height: 8%; }
-.pos15 { left: 87%;   top: 28%;  width: 6%;  height: 7%; }
-
-.pos16 { left: 2%;    top: 45%;  width: 5%;  height: 8%; }
-.pos17 { left: 16%;   top: 51%;  width: 6%;  height: 7%; }
-.pos18 { left: 29%;   top: 48%;  width: 5%;  height: 6%; }
-.pos19 { left: 42%;   top: 54%;  width: 6%;  height: 8%; }
-.pos20 { left: 56%;   top: 49%;  width: 5%;  height: 7%; }
-.pos21 { left: 70%;   top: 56%;  width: 6%;  height: 6%; }
-
-.pos22 { left: 5%;    top: 68%;  width: 6%;  height: 7%; }
-.pos23 { left: 36%;   top: 72%;  width: 5%;  height: 8%; }
-.pos24 { left: 84%;   top: 52%;  width: 6%;  height: 7%; }
-
-.pos4 { left: 57%; top: 1%; width: 16%; height: 17%; }
-.pos20 { left: 47%; top: 1%; width: 5%; height: 7%; }
-.pos1 { left: 22%; top: 3%; width: 15%; height: 10%; }
-.pos24 { left: 9%; top: 9%; width: 6%; height: 7%; }
-.pos9 { left: 82%; top: 13%; width: 6%; height: 7%; }
-.pos21 { left: 24%; top: 18%; width: 6%; height: 6%; }
-.pos6 { left: 63%; top: 22%; width: 16%; height: 17%; }
-.pos16 { left: 1%; top: 22%; width: 5%; height: 8%; }
-.pos22 { left: 31%; top: 27%; width: 6%; height: 7%; }
-.pos7 { left: 10%; top: 27%; width: 15%; height: 16%; }
-.pos18 { left: 52%; top: 32%; width: 5%; height: 6%; }
-.pos17 { left: 93%; top: 37%; width: 6%; height: 7%; }
-.pos19 { left: 28%; top: 40%; width: 6%; height: 8%; }
-.pos13 { left: 9%; top: 47%; width: 6%; height: 6%; }
-.pos15 { left: 46%; top: 49%; width: 6%; height: 7%; }
-.pos2 { left: 55%; top: 49%; width: 15%; height: 18%; }
-.pos12 { left: 73%; top: 52%; width: 5%; height: 7%; }
-.pos5 { left: 13%; top: 56%; width: 15%; height: 18%; }
-.pos10 { left: 36%; top: 61%; width: 5%; height: 6%; }
-.pos14 { left: 94%; top: 69%; width: 5%; height: 8%; }
-.pos8 { left: 62%; top: 70%; width: 15%; height: 18%; }
-.pos3 { left: 43%; top: 75%; width: 15%; height: 16%; }
-.pos11 { left: 1%; top: 85%; width: 6%; height: 8%; }
-.pos23 { left: 71%; top: 91%; width: 5%; height: 8%; }
+/* Large doors - varied heights for visual interest */
+.pos1 { left: 5%; top: 5%; width: 15%; height: 25%; }
+.pos2 { left: 22.5%; top: 5%; width: 20%; height: 15%; }
+.pos3 { left: 47.5%; top: 5%; width: 10%; height: 15%; }
+.pos4 { left: 62.5%; top: 5%; width: 20%; height: 15%; }
+.pos5 { left: 87.5%; top: 5%; width: 7.5%; height: 15%; }
+.pos6 { left: 22.5%; top: 22.5%; width: 10%; height: 15%; }
+.pos7 { left: 37.5%; top: 22.5%; width: 20%; height: 15%; }
+.pos8 { left: 62.5%; top: 22.5%; width: 15%; height: 10%; }
+.pos9 { left: 82.5%; top: 22.5%; width: 12.5%; height: 15%; }
+.pos10 { left: 5%; top: 32.5%; width: 15%; height: 20%; }
+.pos11 { left: 22.5%; top: 42.5%; width: 15%; height: 10%; }
+.pos12 { left: 42.5%; top: 42.5%; width: 15%; height: 15%; }
+.pos13 { left: 62.5%; top: 37.5%; width: 15%; height: 20%; }
+.pos14 { left: 82.5%; top: 42.5%; width: 12.5%; height: 15%; }
+.pos15 { left: 5%; top: 57.5%; width: 20%; height: 20%; }
+.pos16 { left: 27.5%; top: 57.5%; width: 10%; height: 20%; }
+.pos17 { left: 5%; top: 82.5%; width: 10%; height: 15%; }
+.pos18 { left: 17.5%; top: 82.5%; width: 20%; height: 15%; }
+.pos19 { left: 42.5%; top: 77.5%; width: 25%; height: 20%; }
+.pos20 { left: 42.5%; top: 62.5%; width: 10%; height: 10%; }
+.pos21 { left: 57.5%; top: 62.5%; width: 25%; height: 10%; }
+.pos22 { left: 87.5%; top: 62.5%; width: 7.5%; height: 15%; }
+.pos23 { left: 72.5%; top: 77.5%; width: 10%; height: 20%; }
+.pos24 { left: 87.5%; top: 82.5%; width: 7.5%; height: 15%; }
