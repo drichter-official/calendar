@@ -130,9 +130,17 @@ def test_metadata():
 
 def test_create_rule_factory():
     """Test the create_rule factory function."""
+    # Test without pattern_name (random selection)
     rule = create_rule()
     assert isinstance(rule, EvenOddRule)
     assert rule.pattern_name in PATTERNS
+    
+    # Test with specific pattern_name
+    for pattern_name in PATTERNS:
+        rule = create_rule(pattern_name=pattern_name)
+        assert isinstance(rule, EvenOddRule)
+        assert rule.pattern_name == pattern_name
+    
     print("✓ create_rule factory function works")
 
 

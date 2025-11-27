@@ -157,5 +157,5 @@ class EvenOddRule(BaseRule):
 
 
 # Factory function to create an instance of this rule
-def create_rule(size=9, box_size=3):
-    return EvenOddRule(size, box_size)
+def create_rule(size=9, box_size=3, pattern_name=None):
+    return EvenOddRule(size, box_size, pattern_name)
