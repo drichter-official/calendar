@@ -159,6 +159,8 @@
             background-color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             border: 3px solid #000000 !important;        /* Thick outer border */
+            table-layout: fixed;
+            width: 454px;  /* 9 cells * 50px + 4px for 2 thick internal borders (2px each) */
         }
         .diagonal-overlay {
             position: absolute;
@@ -170,6 +172,7 @@
         .sudoku td {
             width: 50px;
             height: 50px;
+            aspect-ratio: 1 / 1;
             text-align: center;
             font-size: 1.5rem;
             font-weight: bold;
