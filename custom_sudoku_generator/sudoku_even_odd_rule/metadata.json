@@ -1,124 +1,116 @@
 {
   "rule": {
-    "name": "Even-Odd Sudoku (Four Corners)",
-    "description": "Even cells in corner boxes, odd cells in center",
+    "name": "Even-Odd Sudoku (Checkerboard)",
+    "description": "Alternating even/odd pattern like a checkerboard",
     "size": 9,
     "box_size": 3,
     "even_cells": [
       [
-        0,
-        1
+        4,
+        4
       ],
       [
-        0,
-        7
-      ],
-      [
-        1,
-        2
-      ],
-      [
-        2,
-        1
-      ],
-      [
-        2,
-        7
-      ],
-      [
-        1,
+        8,
         8
       ],
       [
-        0,
+        6,
         2
       ],
       [
-        2,
-        2
-      ],
-      [
-        1,
+        4,
         0
       ],
       [
-        1,
-        6
-      ],
-      [
         0,
-        8
+        4
       ],
       [
-        2,
-        8
+        8,
+        4
       ],
       [
         0,
         0
       ],
       [
-        1,
-        1
-      ],
-      [
-        2,
+        8,
         0
       ],
       [
-        0,
+        2,
         6
       ],
       [
-        1,
-        7
+        4,
+        8
       ],
       [
         2,
+        2
+      ],
+      [
+        6,
         6
+      ],
+      [
+        0,
+        8
       ]
     ],
     "odd_cells": [
       [
-        4,
+        2,
         4
       ],
       [
-        5,
-        5
+        6,
+        8
       ],
       [
-        3,
+        4,
+        6
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        6,
         4
       ],
       [
         4,
-        3
+        2
       ],
       [
-        5,
-        4
+        0,
+        6
       ],
       [
-        4,
-        5
+        0,
+        2
       ],
       [
-        3,
-        3
+        8,
+        6
       ],
       [
-        5,
-        3
+        6,
+        0
       ],
       [
-        3,
-        5
+        8,
+        2
+      ],
+      [
+        2,
+        8
       ]
     ],
-    "pattern_name": "corners"
+    "pattern_name": "checkerboard"
   },
-  "generated_at": "2025-11-27T19:30:15.682624",
+  "generated_at": "2025-11-27T21:35:00.833682",
   "size": 9,
   "box_size": 3
 }
