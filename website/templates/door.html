@@ -2092,6 +2092,12 @@
         }
 
         function generateNewPuzzle() {
+            // Show confirmation dialog before generating a new puzzle
+            const confirmMessage = "{{ _('Are you sure you want to generate a new puzzle? This will reset your progress.') }}";
+            if (!confirm(confirmMessage)) {
+                return; // User cancelled
+            }
+
             const messageDiv = document.getElementById('generation-message');
             const doorNumber = {{ door }};
 
