@@ -86,3 +86,54 @@ msgstr "Wähle eine Zelle"
 msgid "Click on an empty cell to reveal its correct number"
 msgstr "Klicke auf eine leere Zelle, um die richtige Zahl anzuzeigen"
 
+#: website/templates/calendar.html
+msgid "Reset All Doors"
+msgstr "Alle Türen Zurücksetzen"
+
+#: website/templates/calendar.html
+msgid "Are you sure you want to reset all doors? This will reset your progress."
+msgstr "Bist du sicher, dass du alle Türen zurücksetzen möchtest? Dies wird deinen Fortschritt löschen."
+
+#: website/templates/door.html
+msgid "Generate New:"
+msgstr "Neu Generieren:"
+
+#: website/templates/door.html
+msgid "Easy"
+msgstr "Einfach"
+
+#: website/templates/door.html
+msgid "Medium"
+msgstr "Mittel"
+
+#: website/templates/door.html
+msgid "Hard"
+msgstr "Schwer"
+
+#: website/templates/door.html
+msgid "Please fill in all cells first!"
+msgstr "Bitte fülle zuerst alle Zellen aus!"
+
+#: website/templates/door.html
+msgid "Congratulations! You solved the Sudoku correctly!"
+msgstr "Herzlichen Glückwunsch! Du hast das Sudoku richtig gelöst!"
+
+#: website/templates/door.html
+msgid "Some cells are incorrect. Keep trying!"
+msgstr "Einige Zellen sind falsch. Versuche es weiter!"
+
+#: website/templates/door.html
+msgid "Are you sure you want to generate a new puzzle? This will reset your progress."
+msgstr "Bist du sicher, dass du ein neues Rätsel generieren möchtest? Dies wird deinen Fortschritt löschen."
+
+#: website/templates/door.html
+msgid "Generating..."
+msgstr "Generiere..."
+
+#: website/templates/door.html
+msgid "Generating new puzzle... This may take a moment."
+msgstr "Generiere neues Rätsel... Dies kann einen Moment dauern."
+
+#: website/templates/door.html
+msgid "Reloading..."
+msgstr "Wird neu geladen..."

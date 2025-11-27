@@ -2243,11 +2243,11 @@
 
             const messageDiv = document.getElementById('message');
             if (!allFilled) {
-                messageDiv.innerHTML = '<span class="error">Please fill in all cells first!</span>';
+                messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
             } else if (allCorrect) {
-                messageDiv.innerHTML = '<span class="success">🎉 Congratulations! You solved the Sudoku correctly! 🎉</span>';
+                messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>';
             } else {
-                messageDiv.innerHTML = '<span class="error">Some cells are incorrect. Keep trying!</span>';
+                messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>';
             }
         }
 

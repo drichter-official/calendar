@@ -86,3 +86,54 @@ msgstr "Select a cell"
 msgid "Click on an empty cell to reveal its correct number"
 msgstr "Click on an empty cell to reveal its correct number"
 
+#: website/templates/calendar.html
+msgid "Reset All Doors"
+msgstr "Reset All Doors"
+
+#: website/templates/calendar.html
+msgid "Are you sure you want to reset all doors? This will reset your progress."
+msgstr "Are you sure you want to reset all doors? This will reset your progress."
+
+#: website/templates/door.html
+msgid "Generate New:"
+msgstr "Generate New:"
+
+#: website/templates/door.html
+msgid "Easy"
+msgstr "Easy"
+
+#: website/templates/door.html
+msgid "Medium"
+msgstr "Medium"
+
+#: website/templates/door.html
+msgid "Hard"
+msgstr "Hard"
+
+#: website/templates/door.html
+msgid "Please fill in all cells first!"
+msgstr "Please fill in all cells first!"
+
+#: website/templates/door.html
+msgid "Congratulations! You solved the Sudoku correctly!"
+msgstr "Congratulations! You solved the Sudoku correctly!"
+
+#: website/templates/door.html
+msgid "Some cells are incorrect. Keep trying!"
+msgstr "Some cells are incorrect. Keep trying!"
+
+#: website/templates/door.html
+msgid "Are you sure you want to generate a new puzzle? This will reset your progress."
+msgstr "Are you sure you want to generate a new puzzle? This will reset your progress."
+
+#: website/templates/door.html
+msgid "Generating..."
+msgstr "Generating..."
+
+#: website/templates/door.html
+msgid "Generating new puzzle... This may take a moment."
+msgstr "Generating new puzzle... This may take a moment."
+
+#: website/templates/door.html
+msgid "Reloading..."
+msgstr "Reloading..."
