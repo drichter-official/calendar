@@ -21,7 +21,7 @@ class KropkiRule(BaseRule):
     def __init__(self, size=9, box_size=3):
         super().__init__(size, box_size)
         self.name = "Kropki Sudoku"
-        self.description = "Adjacent cells have specific difference or ratio relationships"
+        self.description = "White dots: cells differ by 1. Black dots: one cell is double the other"
 
         # White and black dots will be derived from solution or use defaults
         self.white_dots = []
