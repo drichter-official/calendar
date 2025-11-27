@@ -1644,9 +1644,9 @@
                     // Horizontal: use < or >
                     symbol = operator === '<' ? '<' : '>';
                 } else {
-                    // Vertical: use ∧ (less than, pointing up) or ∨ (greater than, pointing down)
-                    // cell1 < cell2 means value at top is less than value at bottom, so point to top cell (∧)
-                    // cell1 > cell2 means value at top is greater than value at bottom, so point to bottom cell (∨)
+                    // Vertical: use ∧ or ∨
+                    // ∧ points to the smaller value (cell1 < cell2 means cell1 is smaller)
+                    // ∨ points to the larger value (cell1 > cell2 means cell1 is larger)
                     symbol = operator === '<' ? '∧' : '∨';
                 }
 
