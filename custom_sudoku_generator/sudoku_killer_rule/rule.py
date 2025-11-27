@@ -38,10 +38,11 @@ class KillerRule(BaseRule):
         Derive killer cages from a completed Sudoku solution.
 
         Strategy:
-        1. Create random cage shapes (2-5 cells each)
-        2. Ensure no cage crosses box boundaries (optional, makes it easier)
+        1. Create random cage shapes (2-7 cells each) with soft max sum of 25
+        2. Regions are randomly selected each time
         3. Calculate the sum for each cage from the solution
         4. Ensure good coverage of the grid
+        5. Merge any single cells into adjacent cages (ignoring max sum)
         """
         print("  Deriving killer cages from solution...")
 
@@ -50,6 +51,9 @@ class KillerRule(BaseRule):
 
         # Track which cells are already in cages
         used_cells = set()
+
+        # Soft maximum sum for a cage (can be exceeded when merging single cells)
+        soft_max_sum = 25
 
         # Try to create cages for all cells
         attempts = 0
@@ -66,7 +70,11 @@ class KillerRule(BaseRule):
                 break
 
             start_cell = random.choice(available_cells)
-            cage_cells = self._create_random_cage(start_cell, used_cells, min_size=2, max_size=5)
+            # Create larger cages (2-7 cells) for more difficulty
+            cage_cells = self._create_random_cage_with_max_sum(
+                start_cell, used_cells, solution_grid, 
+                min_size=2, max_size=7, max_sum=soft_max_sum
+            )
 
             if len(cage_cells) > 0:
                 # Calculate the target sum from the solution
@@ -80,9 +88,123 @@ class KillerRule(BaseRule):
                     used_cells.add(cell)
                     self.cell_to_cage[cell] = cage_idx
 
+        # Handle remaining unclaimed cells by merging them into adjacent cages
+        remaining_cells = [(r, c) for r in range(self.size) for c in range(self.size)
+                          if (r, c) not in used_cells]
+        
+        for cell in remaining_cells:
+            self._merge_single_cell_into_adjacent_cage(cell, solution_grid, used_cells)
+
         print(f"  Created {len(self.cages)} killer cages covering {len(used_cells)}/{self.size * self.size} cells")
 
         return len(self.cages) > 0
+
+    def _merge_single_cell_into_adjacent_cage(self, cell, solution_grid, used_cells):
+        """
+        Merge a single cell into a random adjacent cage, ignoring max sum constraint.
+        
+        Args:
+            cell: (row, col) tuple of the cell to merge
+            solution_grid: The solution grid
+            used_cells: Set of cells already in cages
+        """
+        r, c = cell
+        cell_value = solution_grid[r][c]
+        
+        # Find adjacent cells that are already in cages
+        neighbors = [(r-1, c), (r+1, c), (r, c-1), (r, c+1)]
+        adjacent_cage_indices = set()
+        
+        for nr, nc in neighbors:
+            if 0 <= nr < self.size and 0 <= nc < self.size:
+                if (nr, nc) in self.cell_to_cage:
+                    cage_idx = self.cell_to_cage[(nr, nc)]
+                    adjacent_cage_indices.add(cage_idx)
+        
+        if adjacent_cage_indices:
+            # Pick a random adjacent cage to merge into
+            target_cage_idx = random.choice(list(adjacent_cage_indices))
+            old_sum, cage_cells = self.cages[target_cage_idx]
+            
+            # Add the cell to this cage (create new list to avoid modifying original)
+            new_cells = list(cage_cells)
+            new_cells.append(cell)
+            new_sum = old_sum + cell_value
+            
+            # Update the cage
+            self.cages[target_cage_idx] = (new_sum, new_cells)
+            self.cell_to_cage[cell] = target_cage_idx
+            used_cells.add(cell)
+        else:
+            # No adjacent cages found, create a single-cell cage as fallback
+            cage_idx = len(self.cages)
+            self.cages.append((cell_value, [cell]))
+            self.cell_to_cage[cell] = cage_idx
+            used_cells.add(cell)
+
+    def _create_random_cage_with_max_sum(self, start_cell, used_cells, solution_grid, 
+                                          min_size=2, max_size=7, max_sum=25):
+        """
+        Create a random contiguous cage starting from start_cell.
+        
+        Uses a soft max sum constraint: during initial cage creation, cages are limited
+        to max_sum. However, this limit can be exceeded later when single cells are
+        merged into adjacent cages to minimize single-cell cages.
+
+        Args:
+            start_cell: Starting (row, col) for the cage
+            used_cells: Set of cells already used in other cages
+            solution_grid: The solution grid to calculate sums
+            min_size: Minimum cage size
+            max_size: Maximum cage size
+            max_sum: Soft maximum sum for initial cage creation
+
+        Returns:
+            List of cells in the cage
+        """
+        if start_cell in used_cells:
+            return []
+
+        cage = [start_cell]
+        candidates = [start_cell]
+        current_sum = solution_grid[start_cell[0]][start_cell[1]]
+        target_size = random.randint(min_size, max_size)
+
+        while len(cage) < target_size and candidates:
+            # Pick a random cell from current cage to expand from
+            current = random.choice(candidates)
+            r, c = current
+
+            # Find adjacent cells (up, down, left, right)
+            neighbors = [
+                (r-1, c), (r+1, c), (r, c-1), (r, c+1)
+            ]
+
+            # Filter valid neighbors that don't exceed max sum
+            valid_neighbors = []
+            for nr, nc in neighbors:
+                if (0 <= nr < self.size and 0 <= nc < self.size
+                    and (nr, nc) not in used_cells
+                    and (nr, nc) not in cage):
+                    cell_value = solution_grid[nr][nc]
+                    if current_sum + cell_value <= max_sum:
+                        valid_neighbors.append((nr, nc))
+
+            if valid_neighbors:
+                # Add a random valid neighbor
+                new_cell = random.choice(valid_neighbors)
+                cage.append(new_cell)
+                candidates.append(new_cell)
+                current_sum += solution_grid[new_cell[0]][new_cell[1]]
+            else:
+                # This cell has no more valid neighbors
+                candidates.remove(current)
+
+        # Only return cage if it meets minimum size
+        if len(cage) >= min_size:
+            return cage
+        else:
+            return []
 
     def _create_random_cage(self, start_cell, used_cells, min_size=2, max_size=5):
         """
@@ -135,7 +257,7 @@ class KillerRule(BaseRule):
         if len(cage) >= min_size:
             return cage
         else:
-            return [start_cell] if start_cell not in used_cells else []
+            return []
 
     def validate(self, grid, row, col, num):
         """
