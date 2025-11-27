@@ -268,9 +268,8 @@
             color: inherit;
         }
         .sudoku td.arrow-circle {
-            background-color: #fff9c4 !important;
+            background-color: #c0c0c0 !important;
             color: inherit;
-            border-radius: 50%;
         }
         .sudoku td.arrow-cell {
             background-color: #fffde7 !important;
@@ -957,6 +956,9 @@
 
             applySpecialCellHighlighting();
             drawArgyleDiagonals();
+            drawXVMarkers();
+            drawKropkiDots();
+            drawArrows();
         });
 
         function applySpecialCellHighlighting() {
@@ -1407,13 +1409,114 @@
             }
         }
 
-        // Apply highlighting when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            applySpecialCellHighlighting();
-            drawArgyleDiagonals();
-            drawXVMarkers();
-            drawKropkiDots();
-        });
+        // Draw Arrow Sudoku arrows (transparent lines with arrowheads from circle to arrow cells)
+        function drawArrows() {
+            const rule = metadata.rule;
+            if (!rule.arrows) return;
+
+            const svg = document.getElementById('diagonalOverlay');
+            const table = document.getElementById('sudokuGrid');
+
+            // Get table dimensions
+            const tableRect = table.getBoundingClientRect();
+            const containerRect = table.parentElement.getBoundingClientRect();
+
+            // Set SVG dimensions to match table
+            svg.setAttribute('width', tableRect.width);
+            svg.setAttribute('height', tableRect.height);
+            svg.style.width = tableRect.width + 'px';
+            svg.style.height = tableRect.height + 'px';
+            svg.style.left = (tableRect.left - containerRect.left) + 'px';
+            svg.style.top = (tableRect.top - containerRect.top) + 'px';
+
+            const cellSize = 50; // Cell size from CSS
+            const borderWidth = 3; // Table border width
+
+            // Color palette for arrows
+            const arrowColors = [
+                '#e57373', // red
+                '#64b5f6', // blue
+                '#81c784', // green
+                '#ffb74d', // orange
+                '#ba68c8', // purple
+                '#4dd0e1', // cyan
+                '#f06292', // pink
+                '#aed581', // light green
+                '#7986cb', // indigo
+                '#ff8a65', // deep orange
+                '#4db6ac', // teal
+                '#dce775'  // lime
+            ];
+
+            // Create defs for arrowhead markers if not exists
+            let defs = svg.querySelector('defs');
+            if (!defs) {
+                defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                svg.appendChild(defs);
+            }
+
+            // Draw each arrow with a different color
+            rule.arrows.forEach((arrow, index) => {
+                const arrowColor = arrowColors[index % arrowColors.length];
+                const markerId = 'arrowhead-' + index;
+
+                // Create arrowhead marker for this color if not exists
+                if (!defs.querySelector('#' + markerId)) {
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                    marker.setAttribute('id', markerId);
+                    marker.setAttribute('markerWidth', '6');
+                    marker.setAttribute('markerHeight', '4');
+                    marker.setAttribute('refX', '5');
+                    marker.setAttribute('refY', '2');
+                    marker.setAttribute('orient', 'auto');
+                    marker.setAttribute('markerUnits', 'strokeWidth');
+
+                    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    polygon.setAttribute('points', '0 0, 6 2, 0 4');
+                    polygon.setAttribute('fill', arrowColor);
+                    polygon.setAttribute('fill-opacity', '0.8');
+
+                    marker.appendChild(polygon);
+                    defs.appendChild(marker);
+                }
+
+                const [circleRow, circleCol] = arrow.circle;
+                const circleCenter = getCellCenter(circleRow, circleCol, cellSize, borderWidth);
+
+                // Create a path from the last arrow cell to the circle (reversed direction)
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+                // Build path data starting from the last arrow cell and ending at circle
+                const arrowCells = arrow.arrow_cells;
+                if (arrowCells.length === 0) return;
+
+                // Start from the last arrow cell
+                const [lastRow, lastCol] = arrowCells[arrowCells.length - 1];
+                const lastCenter = getCellCenter(lastRow, lastCol, cellSize, borderWidth);
+                let pathData = `M ${lastCenter.x} ${lastCenter.y}`;
+
+                // Go through arrow cells in reverse order (excluding the last one we started from)
+                for (let i = arrowCells.length - 2; i >= 0; i--) {
+                    const [row, col] = arrowCells[i];
+                    const center = getCellCenter(row, col, cellSize, borderWidth);
+                    pathData += ` L ${center.x} ${center.y}`;
+                }
+
+                // End at the circle cell
+                pathData += ` L ${circleCenter.x} ${circleCenter.y}`;
+
+                path.setAttribute('d', pathData);
+                path.setAttribute('stroke', arrowColor);
+                path.setAttribute('stroke-width', '3');
+                path.setAttribute('stroke-opacity', '0.8');
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke-linecap', 'round');
+                path.setAttribute('stroke-linejoin', 'round');
+                path.setAttribute('marker-end', `url(#${markerId})`);
+
+                svg.appendChild(path);
+            });
+        }
 
         // Only allow numbers 1-9
         document.querySelectorAll('.sudoku input').forEach(input => {
