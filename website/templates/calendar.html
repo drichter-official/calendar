@@ -225,8 +225,8 @@
                 const isAlreadyOpen = doorWrapper.getAttribute('data-opened') === 'true';
                 
                 if (isAlreadyOpen) {
-                    // Door already open, navigate immediately
-                    window.location.href = targetUrl;
+                    // Door already open, do nothing (opened doors are not clickable)
+                    return;
                 } else {
                     // Animate the door opening, then navigate after animation completes
                     doorPanel.classList.add('doorOpen');
