@@ -715,6 +715,7 @@
         button.difficulty-btn:disabled {
             background-color: #ccc;
             cursor: not-allowed;
+            opacity: 0.6;
         }
         /* Hint cell styling - light yellow background */
         .sudoku td.hint-cell {
@@ -953,9 +954,9 @@
         <br>
         <div class="difficulty-section">
             <span class="difficulty-label">{{ _('Generate New:') }}</span>
-            <button onclick="generateNewPuzzle('easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
-            <button onclick="generateNewPuzzle('medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
-            <button onclick="generateNewPuzzle('hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
+            <button onclick="generateNewPuzzle(this, 'easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
+            <button onclick="generateNewPuzzle(this, 'medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
+            <button onclick="generateNewPuzzle(this, 'hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
         </div>
     </div>
 
@@ -2256,7 +2257,7 @@
             }
         }
 
-        function generateNewPuzzle(difficulty = 'hard') {
+        function generateNewPuzzle(button, difficulty = 'hard') {
             // Show confirmation dialog before generating a new puzzle
             const confirmMessage = "{{ _('Are you sure you want to generate a new puzzle? This will reset your progress.') }}";
             if (!confirm(confirmMessage)) {
@@ -2271,7 +2272,6 @@
             difficultyBtns.forEach(btn => {
                 btn.disabled = true;
             });
-            const button = event.target;
             const originalText = button.textContent;
             button.textContent = '{{ _("Generating...") }}';
             messageDiv.innerHTML = '<span style="color: #2196F3;">{{ _("Generating new puzzle... This may take a moment.") }}</span>';

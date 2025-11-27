@@ -113,7 +113,7 @@ class SudokuGenerator:
         if difficulty == 'easy':
             target_empty_cells = int(total_cells * 0.50)  # ~40 cells empty
         elif difficulty == 'medium':
-            target_empty_cells = int(total_cells * 0.75)  # ~61 cells empty
+            target_empty_cells = int(total_cells * 0.75)  # ~60 cells empty
         else:  # 'hard' - no early termination
             target_empty_cells = total_cells  # Try to remove as many as possible
 
