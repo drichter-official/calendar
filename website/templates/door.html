@@ -320,6 +320,38 @@
             background-color: #e1bee7 !important;
             color: inherit;
         }
+        .sudoku td.whisper-line-0 {
+            background-color: #ce93d8 !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-1 {
+            background-color: #b3e5fc !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-2 {
+            background-color: #c8e6c9 !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-3 {
+            background-color: #ffccbc !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-4 {
+            background-color: #fff9c4 !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-5 {
+            background-color: #d1c4e9 !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-6 {
+            background-color: #f8bbd0 !important;
+            color: inherit;
+        }
+        .sudoku td.whisper-line-7 {
+            background-color: #ffe0b2 !important;
+            color: inherit;
+        }
         .sudoku td.chain-corner-cell {
             background-color: #ffecb3 !important;
             color: inherit;
@@ -392,6 +424,14 @@
         .sudoku td.arrow-cell input,
         .sudoku td.renban-cell input,
         .sudoku td.whisper-cell input,
+        .sudoku td.whisper-line-0 input,
+        .sudoku td.whisper-line-1 input,
+        .sudoku td.whisper-line-2 input,
+        .sudoku td.whisper-line-3 input,
+        .sudoku td.whisper-line-4 input,
+        .sudoku td.whisper-line-5 input,
+        .sudoku td.whisper-line-6 input,
+        .sudoku td.whisper-line-7 input,
         .sudoku td.chain-corner-cell input,
         .sudoku td.consecutive-line-0 input,
         .sudoku td.consecutive-line-1 input,
@@ -1069,12 +1109,12 @@
                 });
             }
 
-            // Whisper lines
+            // Whisper lines - each line gets a different color
             if (rule.whisper_lines) {
-                rule.whisper_lines.forEach(line => {
+                rule.whisper_lines.forEach((line, lineIndex) => {
                     line.forEach(([row, col]) => {
                         const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) cell.classList.add('whisper-cell');
+                        if (cell) cell.classList.add(`whisper-line-${lineIndex % 8}`);
                     });
                 });
             }
