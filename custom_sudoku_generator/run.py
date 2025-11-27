@@ -297,46 +297,49 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
     return puzzle_grid, solution_grid
 
 
-def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5):
+def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max_regeneration_attempts=10):
     """
     Reverse generation: Generate a standard Sudoku solution first, then derive constraints from it.
 
     This is much faster for complex rules like Killer, Sandwich, Arrow, etc.
+    If constraints cannot be derived (e.g., not enough non-overlapping lines),
+    regenerates a new solution and retries.
 
     Args:
         custom_rule: The custom rule instance (must support reverse generation)
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
+        max_regeneration_attempts: Maximum number of times to regenerate the solution
 
     Returns:
-        tuple: (puzzle_grid, solution_grid)
+        tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
     """
-    # First, generate a standard Sudoku solution (no custom constraints)
-    print("Step 1: Generating standard Sudoku solution...")
-    base_gen = SudokuGenerator(custom_rule=BaseRule())
-    solution_grid = base_gen.generate_full_grid()
+    for attempt in range(max_regeneration_attempts):
+        # First, generate a standard Sudoku solution (no custom constraints)
+        print(f"Step 1: Generating standard Sudoku solution (attempt {attempt + 1}/{max_regeneration_attempts})...")
+        base_gen = SudokuGenerator(custom_rule=BaseRule())
+        solution_grid = base_gen.generate_full_grid()
 
-    print("Step 2: Deriving constraints from solution...")
-    # Derive constraints from the solution
-    if not custom_rule.derive_constraints_from_solution(solution_grid):
-        print("ERROR: Failed to derive constraints from solution!")
-        return None, None
+        print("Step 2: Deriving constraints from solution...")
+        # Derive constraints from the solution
+        if custom_rule.derive_constraints_from_solution(solution_grid):
+            print("Step 3: Creating puzzle by removing numbers...")
+            # Now create a generator with the custom rule that has derived constraints
+            gen = SudokuGenerator(custom_rule=custom_rule)
+            gen.grid = copy.deepcopy(solution_grid)
 
-    print("Step 3: Creating puzzle by removing numbers...")
-    # Now create a generator with the custom rule that has derived constraints
-    gen = SudokuGenerator(custom_rule=custom_rule)
-    gen.grid = copy.deepcopy(solution_grid)
+            # Create puzzle by removing numbers
+            puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts)
 
-    # Create puzzle by removing numbers
-    puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts)
+            # Save the puzzle
+            gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
 
-    # Save the puzzle
-    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+            return puzzle_grid, solution_grid
+        else:
+            print(f"  Constraints could not be derived, regenerating solution...")
 
-    return puzzle_grid, solution_grid
-
-
-    return puzzle_grid, solution_grid
+    print(f"ERROR: Failed to derive constraints after {max_regeneration_attempts} attempts!")
+    return None, None
 
 
 def discover_rules(base_folder=None):

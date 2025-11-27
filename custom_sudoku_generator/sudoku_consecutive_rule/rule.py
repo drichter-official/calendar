@@ -39,10 +39,15 @@ class ConsecutiveRule(BaseRule):
         1. Find all consecutive sequences in the solution (horizontal, vertical, and diagonal)
         2. Prefer longer lines (length 3 or more)
         3. Ensure good variety and coverage
+        4. Ensure no overlapping cells between lines
+        5. Ensure at least 3 lines are generated
+
+        Returns:
+            bool: True if at least 3 non-overlapping lines were found, False otherwise
         """
         print("  Deriving consecutive line constraints from solution...")
 
-        self.consecutive_lines = []
+        all_found_lines = []
 
         # Find all consecutive sequences (horizontal)
         for r in range(self.size):
@@ -54,7 +59,7 @@ class ConsecutiveRule(BaseRule):
                     line.append((r, c))
 
                 if len(line) >= 3:  # Keep lines of length 3 or more
-                    self.consecutive_lines.append(line)
+                    all_found_lines.append(line)
 
                 c += 1
 
@@ -68,7 +73,7 @@ class ConsecutiveRule(BaseRule):
                     line.append((r, c))
 
                 if len(line) >= 3:  # Keep lines of length 3 or more
-                    self.consecutive_lines.append(line)
+                    all_found_lines.append(line)
 
                 r += 1
 
@@ -84,7 +89,7 @@ class ConsecutiveRule(BaseRule):
                         line.append((r, c))
 
                     if len(line) >= 3:
-                        self.consecutive_lines.append(line)
+                        all_found_lines.append(line)
 
         # Find diagonal consecutive sequences (down-left)
         for start_r in range(self.size):
@@ -98,32 +103,38 @@ class ConsecutiveRule(BaseRule):
                         line.append((r, c))
 
                     if len(line) >= 3:
-                        self.consecutive_lines.append(line)
+                        all_found_lines.append(line)
 
-        # Sort by length (prefer longer lines) and randomly select subset
-        if len(self.consecutive_lines) > 0:
+        # Sort by length (prefer longer lines) and select non-overlapping subset
+        if len(all_found_lines) > 0:
             # Sort by length descending
-            self.consecutive_lines.sort(key=lambda x: len(x), reverse=True)
+            all_found_lines.sort(key=lambda x: len(x), reverse=True)
 
-            # Keep the best ones (40-60% of found lines, minimum 3, maximum 8)
-            num_to_keep = max(3, min(8, len(self.consecutive_lines) * random.randint(40, 60) // 100))
+            # Select non-overlapping lines greedily (prefer longer lines first)
+            used_cells = set()
+            self.consecutive_lines = []
 
-            # Bias towards longer lines by keeping more from the top
-            if len(self.consecutive_lines) > num_to_keep:
-                # Keep 80% from top half (longer lines) and 20% from bottom half (shorter lines)
-                top_count = int(num_to_keep * 0.8)
-                bottom_count = num_to_keep - top_count
+            for line in all_found_lines:
+                line_cells = set(line)
+                # Check if this line overlaps with any already used cells
+                if line_cells.isdisjoint(used_cells):
+                    self.consecutive_lines.append(line)
+                    used_cells.update(line_cells)
 
-                mid_point = len(self.consecutive_lines) // 2
-                selected = random.sample(self.consecutive_lines[:mid_point], min(top_count, mid_point))
-                if bottom_count > 0 and len(self.consecutive_lines) > mid_point:
-                    selected += random.sample(self.consecutive_lines[mid_point:], min(bottom_count, len(self.consecutive_lines) - mid_point))
+            # Limit to 8 lines maximum
+            if len(self.consecutive_lines) > 8:
+                self.consecutive_lines = self.consecutive_lines[:8]
+        else:
+            self.consecutive_lines = []
 
-                self.consecutive_lines = selected
-
-        print(f"  Created {len(self.consecutive_lines)} consecutive lines")
+        print(f"  Created {len(self.consecutive_lines)} non-overlapping consecutive lines")
         for i, line in enumerate(self.consecutive_lines):
             print(f"    Line {i+1}: length {len(line)}")
+
+        # Return False if we don't have at least 3 lines, triggering regeneration
+        if len(self.consecutive_lines) < 3:
+            print("  WARNING: Could not find at least 3 non-overlapping consecutive lines!")
+            return False
 
         return True
 
