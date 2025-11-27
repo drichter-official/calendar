@@ -155,7 +155,7 @@
     </div>
 
     <!-- Close All Doors Button -->
-    <button class="close-all-btn" onclick="closeAllDoors()">🔒 Close All Doors</button>
+    <button class="close-all-btn" onclick="closeAllDoors()">🔒 {{ _('Reset All Doors') }}</button>
 
     <div class="calendar-container">
         <div class="calendar-bg-wrapper">
@@ -186,7 +186,7 @@
         }
 
         function closeAllDoors() {
-            if (confirm('Are you sure you want to close all doors? This will reset your progress.')) {
+            if (confirm("{{ _('Are you sure you want to reset all doors? This will reset your progress.') }}")) {
                 fetch('/api/close_all_doors', {
                     method: 'POST',
                     headers: {
