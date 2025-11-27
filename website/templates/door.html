@@ -1575,7 +1575,7 @@
                 svg.appendChild(path);
 
                 // Find the top-left cell of the cage for the sum label
-                let minRow = 9, minCol = 9;
+                let minRow = Number.MAX_SAFE_INTEGER, minCol = Number.MAX_SAFE_INTEGER;
                 cells.forEach(([r, c]) => {
                     if (r < minRow || (r === minRow && c < minCol)) {
                         minRow = r;

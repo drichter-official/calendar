@@ -149,7 +149,7 @@ class KillerRule(BaseRule):
         if len(cage) >= min_size:
             return cage
         else:
-            return [start_cell] if start_cell not in used_cells else []
+            return []
 
     def _create_random_cage(self, start_cell, used_cells, min_size=2, max_size=5):
         """
@@ -202,7 +202,7 @@ class KillerRule(BaseRule):
         if len(cage) >= min_size:
             return cage
         else:
-            return [start_cell] if start_cell not in used_cells else []
+            return []
 
     def validate(self, grid, row, col, num):
         """
