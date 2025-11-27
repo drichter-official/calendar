@@ -108,6 +108,12 @@ body {
     opacity: 0.3; /* Make opened door more transparent */
 }
 
+/* Door wrapper with opened door - not clickable */
+.door-wrapper[data-opened="true"] {
+    cursor: default;
+    pointer-events: none;
+}
+
 /* Hover effect for closed doors - reduced glow */
 .door-wrapper:hover .door-panel:not(.doorOpen) {
     filter: brightness(1.2);
@@ -120,7 +126,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1rem;
+    font-size: 1.5rem;
     color: white;
     font-weight: bold;
     z-index: 1;
