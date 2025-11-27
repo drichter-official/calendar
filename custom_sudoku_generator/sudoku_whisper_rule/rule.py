@@ -88,7 +88,7 @@ class WhisperRule(BaseRule):
         for start_r in range(self.size):
             for start_c in range(self.size):
                 line = self._find_longest_path_greedy((start_r, start_c), solution_grid)
-                # keep any reasonably long candidate, we'll filter exact lengths & curling later
+                # Keep any reasonably long candidate; exact lengths and curling will be filtered later.
                 if len(line) >= max(2, self.MIN_LINE_LENGTH - 1):
                     # normalize direction (avoid duplicates reversed)
                     if line and list(reversed(line)) not in all_lines:
@@ -105,8 +105,8 @@ class WhisperRule(BaseRule):
         n = len(path)
         for i in range(n):
             for j in range(i + 2, n):
-                # skip consecutive cells (j == i+1) and also allow the very first and last?
-                # We treat any non-consecutive adjacency as self-touching.
+                # Check for adjacency between non-consecutive cells (i.e., j != i+1).
+                # Any such adjacency indicates the path touches itself.
                 if max(abs(path[i][0] - path[j][0]), abs(path[i][1] - path[j][1])) == 1:
                     return True
         return False
@@ -150,11 +150,13 @@ class WhisperRule(BaseRule):
             # backward_path[0] is start_cell, so skip it when reversing
             backward_without_start = list(reversed(backward_path[1:])) if len(backward_path) > 1 else []
             combined = backward_without_start + path
-            # truncate combined to max allowed length
+            # Ensure combined does not self-touch before truncating.
+            if self._is_self_touching(combined):
+                continue
+            # Truncate combined to max allowed length.
             if len(combined) > self.MAX_LINE_LENGTH:
                 combined = combined[: self.MAX_LINE_LENGTH]
-            # ensure combined does not self-touch
-            if not self._is_self_touching(combined) and len(combined) > len(best_path):
+            if len(combined) > len(best_path):
                 best_path = combined
         
         # Also try a more flexible snake-like path
