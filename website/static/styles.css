@@ -106,12 +106,12 @@ body {
     /* perspective creates the door open effect */
     transform: perspective(1200px) translateZ(0px) translateX(0px) translateY(0px) rotateY(-105deg);
     opacity: 0.3; /* Make opened door more transparent */
+    pointer-events: none; /* Make the skewed door frame not clickable, but background remains clickable */
 }
 
-/* Door wrapper with opened door - not clickable */
+/* Door wrapper with opened door - still clickable (background area) */
 .door-wrapper[data-opened="true"] {
-    cursor: default;
-    pointer-events: none;
+    cursor: pointer;
 }
 
 /* Hover effect for closed doors - reduced glow */
