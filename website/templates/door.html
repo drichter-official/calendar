@@ -1443,7 +1443,7 @@
 
             // Create arrowhead marker
             const markerId = 'arrowhead';
-            if (!document.getElementById(markerId)) {
+            if (!defs.querySelector('#' + markerId)) {
                 const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
                 marker.setAttribute('id', markerId);
                 marker.setAttribute('markerWidth', '10');
