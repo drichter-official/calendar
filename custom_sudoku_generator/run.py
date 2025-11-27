@@ -92,8 +92,30 @@ class SudokuGenerator:
         return None
 
     # Remove clues while ensuring unique solution
-    def remove_numbers(self, attempts=5):
+    def remove_numbers(self, attempts=5, difficulty='hard'):
+        """
+        Remove numbers from the grid while maintaining a unique solution.
+        
+        Args:
+            attempts: Number of failed removal attempts before stopping (used for hard difficulty)
+            difficulty: Difficulty level - 'easy', 'medium', or 'hard'
+                - 'easy': Stop after ~50% of numbers have been removed
+                - 'medium': Stop after ~75% of numbers have been removed
+                - 'hard': Continue until no more numbers can be removed (no early termination)
+        
+        Returns:
+            The puzzle grid with numbers removed
+        """
         grid = copy.deepcopy(self.grid)
+        total_cells = self.size * self.size  # 81 for 9x9 grid
+        
+        # Calculate removal targets based on difficulty
+        if difficulty == 'easy':
+            target_empty_cells = int(total_cells * 0.50)  # ~40 cells empty
+        elif difficulty == 'medium':
+            target_empty_cells = int(total_cells * 0.75)  # ~61 cells empty
+        else:  # 'hard' - no early termination
+            target_empty_cells = total_cells  # Try to remove as many as possible
 
         # Get priority cells from the rule (cells that should be removed first)
         priority_cells = []
@@ -105,8 +127,13 @@ class SudokuGenerator:
 
         cells_attempted = 0
         priority_index = 0
+        cells_removed = 0
 
         while attempts > 0:
+            # Check if we've reached our target for easy/medium difficulty
+            if difficulty in ('easy', 'medium') and cells_removed >= target_empty_cells:
+                break
+            
             # First try priority cells, then fall back to random cells
             if priority_index < len(priority_cells):
                 row, col = priority_cells[priority_index]
@@ -139,6 +166,7 @@ class SudokuGenerator:
                 attempts -= 1
             else:
                 self.grid = grid
+                cells_removed += 1
         return grid
 
     def count_solutions(self, grid, count):
@@ -230,7 +258,7 @@ def load_custom_rule(rule_folder):
     return BaseRule()
 
 
-def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None):
+def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None, difficulty='hard'):
     """
     Generate a Sudoku puzzle for a specific rule folder.
 
@@ -238,6 +266,10 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None):
         rule_folder: Path to the folder containing the rule
         difficulty_attempts: Number of attempts to remove cells (higher = harder).
                            If None, uses smart defaults based on rule complexity.
+        difficulty: Difficulty level - 'easy', 'medium', or 'hard'
+                   - 'easy': Stop after ~50% of numbers have been removed
+                   - 'medium': Stop after ~75% of numbers have been removed
+                   - 'hard': Continue until no more numbers can be removed
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
@@ -247,6 +279,7 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None):
 
     print(f"\nGenerating Sudoku with rule: {custom_rule.name}")
     print(f"Description: {custom_rule.description}")
+    print(f"Difficulty: {difficulty}")
 
     # Use smart defaults if not specified
     if difficulty_attempts is None:
@@ -262,13 +295,13 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None):
     # Check if this rule supports reverse generation
     if custom_rule.supports_reverse_generation():
         print("Using REVERSE GENERATION mode (solution first, then constraints)...")
-        return generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts)
+        return generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts, difficulty=difficulty)
     else:
         print("Using FORWARD GENERATION mode (constraints first, then solution)...")
-        return generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts)
+        return generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts, difficulty=difficulty)
 
 
-def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
+def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, difficulty='hard'):
     """
     Traditional generation: Start with constraints, generate a solution that satisfies them.
 
@@ -276,6 +309,7 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
         custom_rule: The custom rule instance
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
+        difficulty: Difficulty level - 'easy', 'medium', or 'hard'
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
@@ -288,8 +322,8 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
     solution_grid = gen.generate_full_grid()
 
     # Create puzzle by removing numbers
-    print(f"Creating puzzle (difficulty attempts: {difficulty_attempts})...")
-    puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts)
+    print(f"Creating puzzle (difficulty: {difficulty}, attempts: {difficulty_attempts})...")
+    puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
 
     # Save the puzzle
     gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
@@ -297,7 +331,7 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5):
     return puzzle_grid, solution_grid
 
 
-def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max_regeneration_attempts=10):
+def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max_regeneration_attempts=10, difficulty='hard'):
     """
     Reverse generation: Generate a standard Sudoku solution first, then derive constraints from it.
 
@@ -310,6 +344,7 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
         max_regeneration_attempts: Maximum number of times to regenerate the solution
+        difficulty: Difficulty level - 'easy', 'medium', or 'hard'
 
     Returns:
         tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
@@ -323,13 +358,13 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=5, max
         print("Step 2: Deriving constraints from solution...")
         # Derive constraints from the solution
         if custom_rule.derive_constraints_from_solution(solution_grid):
-            print("Step 3: Creating puzzle by removing numbers...")
+            print(f"Step 3: Creating puzzle by removing numbers (difficulty: {difficulty})...")
             # Now create a generator with the custom rule that has derived constraints
             gen = SudokuGenerator(custom_rule=custom_rule)
             gen.grid = copy.deepcopy(solution_grid)
 
             # Create puzzle by removing numbers
-            puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts)
+            puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
 
             # Save the puzzle
             gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
