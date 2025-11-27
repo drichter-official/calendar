@@ -1,21 +1,111 @@
 {
   "rule": {
-    "name": "Even-Odd Sudoku (Spiral)",
-    "description": "Spiral pattern from center outward",
+    "name": "Even-Odd Sudoku (Four Corners)",
+    "description": "Even cells in corner boxes, odd cells in center",
     "size": 9,
     "box_size": 3,
     "even_cells": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        7
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        1,
+        8
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        6
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        0,
+        6
+      ],
+      [
+        1,
+        7
+      ],
+      [
+        2,
+        6
+      ]
+    ],
+    "odd_cells": [
       [
         4,
         4
       ],
       [
-        6,
-        2
+        5,
+        5
       ],
       [
-        2,
-        6
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        3,
+        3
       ],
       [
         5,
@@ -26,27 +116,9 @@
         5
       ]
     ],
-    "odd_cells": [
-      [
-        6,
-        6
-      ],
-      [
-        5,
-        5
-      ],
-      [
-        3,
-        3
-      ],
-      [
-        2,
-        2
-      ]
-    ],
-    "pattern_name": "spiral"
+    "pattern_name": "corners"
   },
-  "generated_at": "2025-11-27T19:27:55.969468",
+  "generated_at": "2025-11-27T19:30:15.682624",
   "size": 9,
   "box_size": 3
 }
