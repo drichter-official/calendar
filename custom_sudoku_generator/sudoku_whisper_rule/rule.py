@@ -21,8 +21,9 @@ class WhisperRule(BaseRule):
     """
 
     # Constants for line generation
-    MIN_LINE_LENGTH = 6  # Lines must be longer than 5 cells
-    MAX_PATH_LENGTH = 15  # Maximum path length during exploration
+    # Lines must be between 3 and 6 cells long (inclusive)
+    MIN_LINE_LENGTH = 3
+    MAX_LINE_LENGTH = 6
 
     def __init__(self, size=9, box_size=3):
         super().__init__(size, box_size)
@@ -55,8 +56,11 @@ class WhisperRule(BaseRule):
         # Find all whisper lines using bidirectional path finding
         all_lines = self._find_all_whisper_lines(solution_grid)
 
-        # Sort by length (prefer longer lines) and filter for minimum length
-        all_lines = [line for line in all_lines if len(line) >= self.MIN_LINE_LENGTH]
+        # Filter to keep only valid lengths and remove self-touching paths
+        def valid_line(line):
+            return (self.MIN_LINE_LENGTH <= len(line) <= self.MAX_LINE_LENGTH) and (not self._is_self_touching(line))
+
+        all_lines = [line for line in all_lines if valid_line(line)]
         all_lines.sort(key=lambda x: len(x), reverse=True)
 
         # Select non-crossing lines
@@ -79,17 +83,47 @@ class WhisperRule(BaseRule):
         Uses a greedy exploration to find long whisper paths.
         """
         all_lines = []
-        
+
         # Try starting from each cell and explore using greedy longest path
         for start_r in range(self.size):
             for start_c in range(self.size):
-                # Find the longest path starting from this cell using greedy DFS
                 line = self._find_longest_path_greedy((start_r, start_c), solution_grid)
-                # Keep paths that might become valid after filtering (at least MIN_LINE_LENGTH - 2)
-                if len(line) >= self.MIN_LINE_LENGTH - 2:
-                    all_lines.append(line)
+                # keep any reasonably long candidate, we'll filter exact lengths & curling later
+                if len(line) >= max(2, self.MIN_LINE_LENGTH - 1):
+                    # normalize direction (avoid duplicates reversed)
+                    if line and list(reversed(line)) not in all_lines:
+                        all_lines.append(line)
 
         return all_lines
+
+    def _is_self_touching(self, path):
+        """
+        Return True if any non-consecutive cells in path touch each other
+        (adjacent in 8-neighborhood). This disallows curls/loops where the
+        path touches itself and could be ambiguous to read.
+        """
+        n = len(path)
+        for i in range(n):
+            for j in range(i + 2, n):
+                # skip consecutive cells (j == i+1) and also allow the very first and last?
+                # We treat any non-consecutive adjacency as self-touching.
+                if max(abs(path[i][0] - path[j][0]), abs(path[i][1] - path[j][1])) == 1:
+                    return True
+        return False
+
+    def _can_extend_without_touching(self, path, next_cell):
+        """
+        Check if adding next_cell to the current path would cause the path
+        to touch itself (excluding adjacency to the current last cell).
+        """
+        # allow adjacency to only the last cell in the path
+        last = path[-1]
+        for i, cell in enumerate(path):
+            if cell == last:
+                continue
+            if max(abs(cell[0] - next_cell[0]), abs(cell[1] - next_cell[1])) == 1:
+                return False
+        return True
 
     def _find_longest_path_greedy(self, start_cell, solution_grid):
         """
@@ -116,13 +150,16 @@ class WhisperRule(BaseRule):
             # backward_path[0] is start_cell, so skip it when reversing
             backward_without_start = list(reversed(backward_path[1:])) if len(backward_path) > 1 else []
             combined = backward_without_start + path
-            
-            if len(combined) > len(best_path):
+            # truncate combined to max allowed length
+            if len(combined) > self.MAX_LINE_LENGTH:
+                combined = combined[: self.MAX_LINE_LENGTH]
+            # ensure combined does not self-touch
+            if not self._is_self_touching(combined) and len(combined) > len(best_path):
                 best_path = combined
         
         # Also try a more flexible snake-like path
         snake_path = self._build_snake_path(start_cell, solution_grid)
-        if len(snake_path) > len(best_path):
+        if (not self._is_self_touching(snake_path)) and len(snake_path) > len(best_path):
             best_path = snake_path
         
         return best_path
@@ -139,7 +176,7 @@ class WhisperRule(BaseRule):
         dr, dc = direction
         current_value = solution_grid[r][c]
         
-        while len(path) < self.MAX_PATH_LENGTH:
+        while len(path) < self.MAX_LINE_LENGTH:
             # Try preferred direction first
             preferred = (r + dr, c + dc)
             
@@ -151,7 +188,9 @@ class WhisperRule(BaseRule):
                     if (nr, nc) not in visited:
                         next_value = solution_grid[nr][nc]
                         if abs(next_value - current_value) >= 5:
-                            candidates.append((nr, nc, d))
+                            # ensure extending to this candidate won't make the path touch itself
+                            if self._can_extend_without_touching(path, (nr, nc)):
+                                candidates.append((nr, nc, d))
             
             if not candidates:
                 break
@@ -189,7 +228,7 @@ class WhisperRule(BaseRule):
         r, c = start_cell
         current_value = solution_grid[r][c]
         
-        while len(path) < self.MAX_PATH_LENGTH:
+        while len(path) < self.MAX_LINE_LENGTH:
             # Find all valid neighbors
             candidates = []
             for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
@@ -198,16 +237,18 @@ class WhisperRule(BaseRule):
                     if (nr, nc) not in visited:
                         next_value = solution_grid[nr][nc]
                         if abs(next_value - current_value) >= 5:
-                            # Count how many options this neighbor has
-                            future_options = 0
-                            for dr2, dc2 in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
-                                nnr, nnc = nr + dr2, nc + dc2
-                                if 0 <= nnr < self.size and 0 <= nnc < self.size:
-                                    if (nnr, nnc) not in visited and (nnr, nnc) != (r, c):
-                                        nn_value = solution_grid[nnr][nnc]
-                                        if abs(nn_value - next_value) >= 5:
-                                            future_options += 1
-                            candidates.append((nr, nc, future_options))
+                            # ensure extending to this neighbor won't make the path touch itself
+                            if self._can_extend_without_touching(path, (nr, nc)):
+                                # Count how many options this neighbor has
+                                future_options = 0
+                                for dr2, dc2 in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                                    nnr, nnc = nr + dr2, nc + dc2
+                                    if 0 <= nnr < self.size and 0 <= nnc < self.size:
+                                        if (nnr, nnc) not in visited and (nnr, nnc) != (r, c):
+                                            nn_value = solution_grid[nnr][nnc]
+                                            if abs(nn_value - next_value) >= 5:
+                                                future_options += 1
+                                candidates.append((nr, nc, future_options))
             
             if not candidates:
                 break
