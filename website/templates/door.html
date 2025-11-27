@@ -268,9 +268,8 @@
             color: inherit;
         }
         .sudoku td.arrow-circle {
-            background-color: #fff9c4 !important;
+            background-color: #e0e0e0 !important;
             color: inherit;
-            border-radius: 50%;
         }
         .sudoku td.arrow-cell {
             background-color: #fffde7 !important;
@@ -1467,17 +1466,27 @@
                 const [circleRow, circleCol] = arrow.circle;
                 const circleCenter = getCellCenter(circleRow, circleCol, cellSize, borderWidth);
 
-                // Create a path from circle through all arrow cells
+                // Create a path from the last arrow cell to the circle (reversed direction)
                 const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
-                // Build path data starting from circle
-                let pathData = `M ${circleCenter.x} ${circleCenter.y}`;
-                
-                arrow.arrow_cells.forEach((cell) => {
-                    const [row, col] = cell;
+                // Build path data starting from the last arrow cell and ending at circle
+                const arrowCells = arrow.arrow_cells;
+                if (arrowCells.length === 0) return;
+
+                // Start from the last arrow cell
+                const [lastRow, lastCol] = arrowCells[arrowCells.length - 1];
+                const lastCenter = getCellCenter(lastRow, lastCol, cellSize, borderWidth);
+                let pathData = `M ${lastCenter.x} ${lastCenter.y}`;
+
+                // Go through arrow cells in reverse order (excluding the last one we started from)
+                for (let i = arrowCells.length - 2; i >= 0; i--) {
+                    const [row, col] = arrowCells[i];
                     const center = getCellCenter(row, col, cellSize, borderWidth);
                     pathData += ` L ${center.x} ${center.y}`;
-                });
+                }
+
+                // End at the circle cell
+                pathData += ` L ${circleCenter.x} ${circleCenter.y}`;
 
                 path.setAttribute('d', pathData);
                 path.setAttribute('stroke', arrowColor);
@@ -1489,18 +1498,6 @@
                 path.setAttribute('marker-end', `url(#${markerId})`);
 
                 svg.appendChild(path);
-
-                // Draw a circle (ring) around the circle cell to indicate it's the sum cell
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', circleCenter.x);
-                circle.setAttribute('cy', circleCenter.y);
-                circle.setAttribute('r', cellSize / 2 - 5);
-                circle.setAttribute('fill', 'none');
-                circle.setAttribute('stroke', arrowColor);
-                circle.setAttribute('stroke-width', '2');
-                circle.setAttribute('stroke-opacity', '0.6');
-
-                svg.appendChild(circle);
             });
         }
 
