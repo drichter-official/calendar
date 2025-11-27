@@ -422,8 +422,41 @@
             background-color: #ffe0b2 !important;
             color: inherit;
         }
-        .sudoku td.chain-corner-cell {
-            background-color: #ffecb3 !important;
+        /* Offset Sudoku - 9 groups with different light pastel colors */
+        .sudoku td.offset-group-0 {
+            background-color: #e3f2fd !important;  /* Light Blue */
+            color: inherit;
+        }
+        .sudoku td.offset-group-1 {
+            background-color: #f3e5f5 !important;  /* Light Purple */
+            color: inherit;
+        }
+        .sudoku td.offset-group-2 {
+            background-color: #e8f5e9 !important;  /* Light Green */
+            color: inherit;
+        }
+        .sudoku td.offset-group-3 {
+            background-color: #fff3e0 !important;  /* Light Orange */
+            color: inherit;
+        }
+        .sudoku td.offset-group-4 {
+            background-color: #fce4ec !important;  /* Light Pink */
+            color: inherit;
+        }
+        .sudoku td.offset-group-5 {
+            background-color: #e0f7fa !important;  /* Light Cyan */
+            color: inherit;
+        }
+        .sudoku td.offset-group-6 {
+            background-color: #fffde7 !important;  /* Light Yellow */
+            color: inherit;
+        }
+        .sudoku td.offset-group-7 {
+            background-color: #e8eaf6 !important;  /* Light Indigo */
+            color: inherit;
+        }
+        .sudoku td.offset-group-8 {
+            background-color: #f1f8e9 !important;  /* Light Lime */
             color: inherit;
         }
         .sudoku td.consecutive-line-0 {
@@ -490,7 +523,15 @@
         .sudoku td.whisper-line-5 input,
         .sudoku td.whisper-line-6 input,
         .sudoku td.whisper-line-7 input,
-        .sudoku td.chain-corner-cell input,
+        .sudoku td.offset-group-0 input,
+        .sudoku td.offset-group-1 input,
+        .sudoku td.offset-group-2 input,
+        .sudoku td.offset-group-3 input,
+        .sudoku td.offset-group-4 input,
+        .sudoku td.offset-group-5 input,
+        .sudoku td.offset-group-6 input,
+        .sudoku td.offset-group-7 input,
+        .sudoku td.offset-group-8 input,
         .sudoku td.consecutive-line-0 input,
         .sudoku td.consecutive-line-1 input,
         .sudoku td.consecutive-line-2 input,
@@ -1171,11 +1212,13 @@
                 });
             }
 
-            // Chain Sudoku corner cells
-            if (rule.corner_cells) {
-                rule.corner_cells.forEach(([row, col]) => {
-                    const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                    if (cell) cell.classList.add('chain-corner-cell');
+            // Offset Sudoku - 9 groups with different colors
+            if (rule.offset_groups) {
+                rule.offset_groups.forEach((group, groupIndex) => {
+                    group.forEach(([row, col]) => {
+                        const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
+                        if (cell) cell.classList.add(`offset-group-${groupIndex}`);
+                    });
                 });
             }
 
