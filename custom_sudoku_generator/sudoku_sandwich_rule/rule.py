@@ -83,9 +83,12 @@ class SandwichRule(BaseRule):
                 if sandwich_sum > 0:
                     candidates.append(('col', c, sandwich_sum))
 
-        # Select a diverse subset of clues (about 30-50% of available)
+        # Select a diverse subset of clues (at least 10, up to 70% of available)
         if len(candidates) > 0:
-            num_clues = max(3, min(len(candidates), random.randint(len(candidates) // 3, len(candidates) // 2)))
+            # Ensure at least 10 clues if possible, otherwise use all available
+            min_clues = min(10, len(candidates))
+            max_clues = max(min_clues, int(len(candidates) * 0.7))
+            num_clues = random.randint(min_clues, max_clues)
             selected = random.sample(candidates, num_clues)
 
             for direction, index, sandwich_sum in selected:
