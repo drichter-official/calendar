@@ -128,23 +128,23 @@ body {
 }
 
 /* Large doors - varied heights for visual interest */
-.pos1 { left: 5%; top: 5%; width: 15%; height: 25%; }
-.pos2 { left: 22.5%; top: 5%; width: 20%; height: 15%; }
-.pos3 { left: 47.5%; top: 5%; width: 10%; height: 15%; }
-.pos4 { left: 62.5%; top: 5%; width: 20%; height: 15%; }
-.pos5 { left: 87.5%; top: 5%; width: 7.5%; height: 15%; }
+.pos1 { left: 5%; top: 5%; width: 12.5%; height: 22.5%; }
+.pos2 { left: 22.5%; top: 5%; width: 20%; height: 12.5%; }
+.pos3 { left: 47.5%; top: 5%; width: 10%; height: 12.5%; }
+.pos4 { left: 62.5%; top: 5%; width: 20%; height: 12.5%; }
+.pos5 { left: 87.5%; top: 5%; width: 7.5%; height: 12.5%; }
 .pos6 { left: 22.5%; top: 22.5%; width: 10%; height: 15%; }
 .pos7 { left: 37.5%; top: 22.5%; width: 20%; height: 15%; }
 .pos8 { left: 62.5%; top: 22.5%; width: 15%; height: 10%; }
 .pos9 { left: 82.5%; top: 22.5%; width: 12.5%; height: 15%; }
-.pos10 { left: 5%; top: 32.5%; width: 15%; height: 20%; }
+.pos10 { left: 5%; top: 32.5%; width: 12.5%; height: 20%; }
 .pos11 { left: 22.5%; top: 42.5%; width: 15%; height: 10%; }
 .pos12 { left: 42.5%; top: 42.5%; width: 15%; height: 15%; }
 .pos13 { left: 62.5%; top: 37.5%; width: 15%; height: 20%; }
 .pos14 { left: 82.5%; top: 42.5%; width: 12.5%; height: 15%; }
-.pos15 { left: 5%; top: 57.5%; width: 20%; height: 20%; }
+.pos15 { left: 5%; top: 57.5%; width: 17.5%; height: 20%; }
 .pos16 { left: 27.5%; top: 57.5%; width: 10%; height: 20%; }
-.pos17 { left: 5%; top: 82.5%; width: 10%; height: 15%; }
+.pos17 { left: 5%; top: 82.5%; width: 7.5%; height: 15%; }
 .pos18 { left: 17.5%; top: 82.5%; width: 20%; height: 15%; }
 .pos19 { left: 42.5%; top: 77.5%; width: 25%; height: 20%; }
 .pos20 { left: 42.5%; top: 62.5%; width: 10%; height: 10%; }
