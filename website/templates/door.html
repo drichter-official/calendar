@@ -268,7 +268,7 @@
             color: inherit;
         }
         .sudoku td.arrow-circle {
-            background-color: #e0e0e0 !important;
+            background-color: #c0c0c0 !important;
             color: inherit;
         }
         .sudoku td.arrow-cell {
@@ -1431,38 +1431,55 @@
 
             const cellSize = 50; // Cell size from CSS
             const borderWidth = 3; // Table border width
-            const arrowColor = '#666666'; // Gray color for arrows
 
-            // Create defs for arrowhead marker if not exists
+            // Color palette for arrows
+            const arrowColors = [
+                '#e57373', // red
+                '#64b5f6', // blue
+                '#81c784', // green
+                '#ffb74d', // orange
+                '#ba68c8', // purple
+                '#4dd0e1', // cyan
+                '#f06292', // pink
+                '#aed581', // light green
+                '#7986cb', // indigo
+                '#ff8a65', // deep orange
+                '#4db6ac', // teal
+                '#dce775'  // lime
+            ];
+
+            // Create defs for arrowhead markers if not exists
             let defs = svg.querySelector('defs');
             if (!defs) {
                 defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
                 svg.appendChild(defs);
             }
 
-            // Create arrowhead marker
-            const markerId = 'arrowhead';
-            if (!defs.querySelector('#' + markerId)) {
-                const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-                marker.setAttribute('id', markerId);
-                marker.setAttribute('markerWidth', '10');
-                marker.setAttribute('markerHeight', '7');
-                marker.setAttribute('refX', '9');
-                marker.setAttribute('refY', '3.5');
-                marker.setAttribute('orient', 'auto');
-                marker.setAttribute('markerUnits', 'strokeWidth');
+            // Draw each arrow with a different color
+            rule.arrows.forEach((arrow, index) => {
+                const arrowColor = arrowColors[index % arrowColors.length];
+                const markerId = 'arrowhead-' + index;
 
-                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
-                polygon.setAttribute('fill', arrowColor);
-                polygon.setAttribute('fill-opacity', '0.6');
+                // Create arrowhead marker for this color if not exists
+                if (!defs.querySelector('#' + markerId)) {
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                    marker.setAttribute('id', markerId);
+                    marker.setAttribute('markerWidth', '6');
+                    marker.setAttribute('markerHeight', '4');
+                    marker.setAttribute('refX', '5');
+                    marker.setAttribute('refY', '2');
+                    marker.setAttribute('orient', 'auto');
+                    marker.setAttribute('markerUnits', 'strokeWidth');
 
-                marker.appendChild(polygon);
-                defs.appendChild(marker);
-            }
+                    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    polygon.setAttribute('points', '0 0, 6 2, 0 4');
+                    polygon.setAttribute('fill', arrowColor);
+                    polygon.setAttribute('fill-opacity', '0.8');
 
-            // Draw each arrow
-            rule.arrows.forEach((arrow) => {
+                    marker.appendChild(polygon);
+                    defs.appendChild(marker);
+                }
+
                 const [circleRow, circleCol] = arrow.circle;
                 const circleCenter = getCellCenter(circleRow, circleCol, cellSize, borderWidth);
 
@@ -1491,7 +1508,7 @@
                 path.setAttribute('d', pathData);
                 path.setAttribute('stroke', arrowColor);
                 path.setAttribute('stroke-width', '3');
-                path.setAttribute('stroke-opacity', '0.6');
+                path.setAttribute('stroke-opacity', '0.8');
                 path.setAttribute('fill', 'none');
                 path.setAttribute('stroke-linecap', 'round');
                 path.setAttribute('stroke-linejoin', 'round');

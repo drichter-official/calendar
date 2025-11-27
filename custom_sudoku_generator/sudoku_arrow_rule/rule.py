@@ -46,7 +46,7 @@ class ArrowRule(BaseRule):
         used_cells = set()
 
         # Try to create multiple arrows
-        num_arrows = random.randint(4, 8)
+        num_arrows = random.randint(5, 8)
         attempts = 0
         max_attempts = 100
 
