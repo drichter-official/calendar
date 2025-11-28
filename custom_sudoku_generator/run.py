@@ -7,10 +7,6 @@ import time
 from datetime import datetime
 from base_rule import BaseRule
 
-# Hard mode settings
-HARD_MODE_TARGET_CLUES = 12  # Target less than 12 numbers left for hard mode
-HARD_MODE_TIMEOUT = 30  # Timeout in seconds before retrying hard mode generation
-
 # Generation settings per difficulty level
 # Hard: 5 attempts x 10s timeout each
 HARD_ATTEMPT_COUNT = 5
@@ -35,7 +31,7 @@ class SudokuGenerator:
         self.grid = [[0]*size for _ in range(size)]
         self.custom_rule_instance = custom_rule if custom_rule else BaseRule(size, box_size)
         self.timeout_start = None
-        self.timeout_duration = HARD_MODE_TIMEOUT  # Default 30 seconds timeout
+        self.timeout_duration = HARD_ATTEMPT_TIMEOUT  # Default timeout per attempt
         self.timed_out = False
 
 
