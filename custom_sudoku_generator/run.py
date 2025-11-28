@@ -9,17 +9,17 @@ from base_rule import BaseRule
 
 # Generation settings per difficulty level
 # Hard: 5 attempts x 10s timeout each
-HARD_ATTEMPT_COUNT = 5
+HARD_ATTEMPT_COUNT = 3
 HARD_ATTEMPT_TIMEOUT = 10
-HARD_REMOVAL_TARGET = 0.90  # Target 90% cells to remove for hard
+HARD_REMOVAL_TARGET = 100  # Target all cells to remove for hard
 
 # Medium: 10 attempts x 2s timeout each
-MEDIUM_ATTEMPT_COUNT = 10
+MEDIUM_ATTEMPT_COUNT = 5
 MEDIUM_ATTEMPT_TIMEOUT = 2
-MEDIUM_REMOVAL_TARGET = 0.66  # Target 66% cells to remove for medium
+MEDIUM_REMOVAL_TARGET = 0.67  # Target 66% cells to remove for medium
 
 # Easy: 10 attempts x 1s timeout each
-EASY_ATTEMPT_COUNT = 10
+EASY_ATTEMPT_COUNT = 5
 EASY_ATTEMPT_TIMEOUT = 1
 EASY_REMOVAL_TARGET = 0.50  # Target 50% cells to remove for easy
 
