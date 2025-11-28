@@ -83,12 +83,13 @@ def test_hard_mode_retry_logic():
         custom_rule = BaseRule()
         
         # Create a generator with very short timeout for testing
-        # We'll override the constants temporarily for this test
+        # Use proper cleanup pattern to restore the original value
         import run
         original_timeout = run.HARD_MODE_TIMEOUT
-        run.HARD_MODE_TIMEOUT = 2  # 2 second timeout for faster testing
         
         try:
+            run.HARD_MODE_TIMEOUT = 2  # 2 second timeout for faster testing
+            
             puzzle_grid, solution_grid = generate_sudoku_forward(
                 custom_rule, 
                 tmpdir, 
