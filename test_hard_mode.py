@@ -11,6 +11,7 @@ import tempfile
 # Add the custom_sudoku_generator directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'custom_sudoku_generator'))
 
+import run
 from run import (
     SudokuGenerator, 
     generate_sudoku_forward, 
@@ -159,8 +160,6 @@ def test_generate_with_multi_attempts():
     """Test the new generate_with_multi_attempts method directly."""
     print("\nTesting generate_with_multi_attempts method...")
     
-    import run
-    
     # Save original values
     original_count = run.MULTI_ATTEMPT_COUNT
     original_timeout = run.MULTI_ATTEMPT_TIMEOUT
@@ -193,8 +192,6 @@ def test_generate_with_multi_attempts():
 def test_multi_attempts_picks_best():
     """Test that the multi-attempt approach picks the puzzle with fewest clues."""
     print("\nTesting that multi-attempts picks best result...")
-    
-    import run
     
     # Save original values
     original_count = run.MULTI_ATTEMPT_COUNT

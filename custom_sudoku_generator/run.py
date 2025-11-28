@@ -213,8 +213,12 @@ class SudokuGenerator:
         cells_removed = 0
         priority_index = 0
         failed_attempts = 0
+        max_iterations = total_cells * 10  # Safeguard against unexpected infinite loop
+        iterations = 0
 
-        while failed_attempts < max_failed_attempts:
+        while failed_attempts < max_failed_attempts and iterations < max_iterations:
+            iterations += 1
+            
             # Check timeout
             if self.check_timeout():
                 break
