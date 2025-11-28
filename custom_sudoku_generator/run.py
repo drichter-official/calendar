@@ -7,15 +7,21 @@ import time
 from datetime import datetime
 from base_rule import BaseRule
 
-# Hard mode settings
-HARD_MODE_TARGET_CLUES = 12  # Target less than 12 numbers left for hard mode
-HARD_MODE_TIMEOUT = 30  # Timeout in seconds before retrying hard mode generation
-
-# New generation approach settings (for medium and hard)
-MULTI_ATTEMPT_COUNT = 4  # Number of attempts to run for medium/hard
-MULTI_ATTEMPT_TIMEOUT = 5  # Timeout in seconds per attempt
-MEDIUM_REMOVAL_TARGET = 0.70  # Target 70% cells to remove for medium
+# Generation settings per difficulty level
+# Hard: 5 attempts x 10s timeout each
+HARD_ATTEMPT_COUNT = 5
+HARD_ATTEMPT_TIMEOUT = 10
 HARD_REMOVAL_TARGET = 0.90  # Target 90% cells to remove for hard
+
+# Medium: 10 attempts x 2s timeout each
+MEDIUM_ATTEMPT_COUNT = 10
+MEDIUM_ATTEMPT_TIMEOUT = 2
+MEDIUM_REMOVAL_TARGET = 0.66  # Target 66% cells to remove for medium
+
+# Easy: 10 attempts x 1s timeout each
+EASY_ATTEMPT_COUNT = 10
+EASY_ATTEMPT_TIMEOUT = 1
+EASY_REMOVAL_TARGET = 0.50  # Target 50% cells to remove for easy
 
 
 class SudokuGenerator:
@@ -25,7 +31,7 @@ class SudokuGenerator:
         self.grid = [[0]*size for _ in range(size)]
         self.custom_rule_instance = custom_rule if custom_rule else BaseRule(size, box_size)
         self.timeout_start = None
-        self.timeout_duration = HARD_MODE_TIMEOUT  # Default 30 seconds timeout
+        self.timeout_duration = HARD_ATTEMPT_TIMEOUT  # Default timeout per attempt
         self.timed_out = False
 
 
@@ -132,7 +138,7 @@ class SudokuGenerator:
 
     def generate_with_multi_attempts(self, solution_grid, difficulty='hard'):
         """
-        Generate a puzzle using the new multi-attempt approach for medium and hard.
+        Generate a puzzle using the new multi-attempt approach for all difficulty levels.
         
         For each attempt:
         1. Start with the full solution
@@ -143,14 +149,23 @@ class SudokuGenerator:
         
         Args:
             solution_grid: The complete solution grid to start from
-            difficulty: 'medium' (70% removal) or 'hard' (90% removal)
+            difficulty: 'easy', 'medium', or 'hard'
         
         Returns:
             The best puzzle grid (with fewest remaining clues)
         """
-        if difficulty == 'medium':
+        # Set parameters based on difficulty
+        if difficulty == 'easy':
+            attempt_count = EASY_ATTEMPT_COUNT
+            attempt_timeout = EASY_ATTEMPT_TIMEOUT
+            target_removal_percentage = EASY_REMOVAL_TARGET
+        elif difficulty == 'medium':
+            attempt_count = MEDIUM_ATTEMPT_COUNT
+            attempt_timeout = MEDIUM_ATTEMPT_TIMEOUT
             target_removal_percentage = MEDIUM_REMOVAL_TARGET
         else:  # 'hard'
+            attempt_count = HARD_ATTEMPT_COUNT
+            attempt_timeout = HARD_ATTEMPT_TIMEOUT
             target_removal_percentage = HARD_REMOVAL_TARGET
         
         total_cells = self.size * self.size
@@ -158,16 +173,16 @@ class SudokuGenerator:
         
         all_attempts = []
         
-        print(f"  Running {MULTI_ATTEMPT_COUNT} attempts with {MULTI_ATTEMPT_TIMEOUT}s timeout each...")
+        print(f"  Running {attempt_count} attempts with {attempt_timeout}s timeout each...")
         print(f"  Target: Remove {int(target_removal_percentage * 100)}% of cells ({target_empty_cells} cells)")
         
-        for attempt_num in range(MULTI_ATTEMPT_COUNT):
-            print(f"  Attempt {attempt_num + 1}/{MULTI_ATTEMPT_COUNT}...")
+        for attempt_num in range(attempt_count):
+            print(f"  Attempt {attempt_num + 1}/{attempt_count}...")
             
             # Reset for this attempt
             self.grid = copy.deepcopy(solution_grid)
             self.reset_timeout()
-            self.timeout_duration = MULTI_ATTEMPT_TIMEOUT
+            self.timeout_duration = attempt_timeout
             self.timeout_start = time.time()
             
             # Try to remove numbers with this timeout
@@ -499,9 +514,9 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, dif
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
-            - 'easy': Stop after ~50% of numbers have been removed (single attempt)
-            - 'medium': Run 4 attempts with 5s timeout each, target 70% removal, pick best
-            - 'hard': Run 4 attempts with 5s timeout each, target 90% removal, pick best
+            - 'easy': 10 attempts x 1s timeout each, target 50% removal, pick best
+            - 'medium': 10 attempts x 2s timeout each, target 66% removal, pick best
+            - 'hard': 5 attempts x 10s timeout each, target 90% removal, pick best
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
@@ -513,14 +528,7 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, dif
     print("Generating full solution...")
     solution_grid = gen.generate_full_grid()
     
-    # For easy mode, use the old approach (single pass)
-    if difficulty == 'easy':
-        print(f"Creating puzzle (difficulty: {difficulty}, attempts: {difficulty_attempts})...")
-        puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-        gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-        return puzzle_grid, solution_grid
-    
-    # For medium and hard modes, use the new multi-attempt approach
+    # Use multi-attempt approach for all difficulty levels
     print(f"Creating puzzle using multi-attempt approach (difficulty: {difficulty})...")
     puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty=difficulty)
     
@@ -545,9 +553,9 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
         difficulty_attempts: Number of attempts to remove cells
         max_regeneration_attempts: Maximum number of times to regenerate the solution
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
-            - 'easy': Stop after ~50% of numbers have been removed (single attempt)
-            - 'medium': Run 4 attempts with 5s timeout each, target 70% removal, pick best
-            - 'hard': Run 4 attempts with 5s timeout each, target 90% removal, pick best
+            - 'easy': 10 attempts x 1s timeout each, target 50% removal, pick best
+            - 'medium': 10 attempts x 2s timeout each, target 66% removal, pick best
+            - 'hard': 5 attempts x 10s timeout each, target 90% removal, pick best
 
     Returns:
         tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
@@ -566,13 +574,7 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
             gen = SudokuGenerator(custom_rule=custom_rule)
             gen.grid = copy.deepcopy(solution_grid)
             
-            # For easy mode, use the old approach (single pass)
-            if difficulty == 'easy':
-                puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-                gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-                return puzzle_grid, solution_grid
-            
-            # For medium and hard modes, use the new multi-attempt approach
+            # Use multi-attempt approach for all difficulty levels
             puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty=difficulty)
             
             filled_cells = gen.count_filled_cells(puzzle_grid)
