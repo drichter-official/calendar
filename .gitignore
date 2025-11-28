@@ -23,3 +23,8 @@ Thumbs.db
 venv/
 env/
 ENV/
+
+# Log and result files
+*.log
+*_log.txt
+*_results.txt
