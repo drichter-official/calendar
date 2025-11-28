@@ -11,6 +11,12 @@ from base_rule import BaseRule
 HARD_MODE_TARGET_CLUES = 12  # Target less than 12 numbers left for hard mode
 HARD_MODE_TIMEOUT = 30  # Timeout in seconds before retrying hard mode generation
 
+# New generation approach settings (for medium and hard)
+MULTI_ATTEMPT_COUNT = 4  # Number of attempts to run for medium/hard
+MULTI_ATTEMPT_TIMEOUT = 5  # Timeout in seconds per attempt
+MEDIUM_REMOVAL_TARGET = 0.70  # Target 70% cells to remove for medium
+HARD_REMOVAL_TARGET = 0.90  # Target 90% cells to remove for hard
+
 
 class SudokuGenerator:
     def __init__(self, size=9, box_size=3, custom_rule=None):
@@ -123,6 +129,137 @@ class SudokuGenerator:
         """Reset the timeout tracking for a new generation attempt."""
         self.timeout_start = None
         self.timed_out = False
+
+    def generate_with_multi_attempts(self, solution_grid, difficulty='hard'):
+        """
+        Generate a puzzle using the new multi-attempt approach for medium and hard.
+        
+        For each attempt:
+        1. Start with the full solution
+        2. Try to remove the target percentage of numbers within the timeout
+        3. Save the result
+        
+        After all attempts, return the puzzle with the least remaining numbers.
+        
+        Args:
+            solution_grid: The complete solution grid to start from
+            difficulty: 'medium' (70% removal) or 'hard' (90% removal)
+        
+        Returns:
+            The best puzzle grid (with fewest remaining clues)
+        """
+        if difficulty == 'medium':
+            target_removal_percentage = MEDIUM_REMOVAL_TARGET
+        else:  # 'hard'
+            target_removal_percentage = HARD_REMOVAL_TARGET
+        
+        total_cells = self.size * self.size
+        target_empty_cells = int(total_cells * target_removal_percentage)
+        
+        all_attempts = []
+        
+        print(f"  Running {MULTI_ATTEMPT_COUNT} attempts with {MULTI_ATTEMPT_TIMEOUT}s timeout each...")
+        print(f"  Target: Remove {int(target_removal_percentage * 100)}% of cells ({target_empty_cells} cells)")
+        
+        for attempt_num in range(MULTI_ATTEMPT_COUNT):
+            print(f"  Attempt {attempt_num + 1}/{MULTI_ATTEMPT_COUNT}...")
+            
+            # Reset for this attempt
+            self.grid = copy.deepcopy(solution_grid)
+            self.reset_timeout()
+            self.timeout_duration = MULTI_ATTEMPT_TIMEOUT
+            self.timeout_start = time.time()
+            
+            # Try to remove numbers with this timeout
+            puzzle_grid = self._remove_numbers_with_target(
+                target_empty_cells=target_empty_cells,
+                max_failed_attempts=100  # Allow many attempts within the timeout
+            )
+            
+            clues_remaining = self.count_filled_cells(puzzle_grid)
+            all_attempts.append((clues_remaining, copy.deepcopy(puzzle_grid)))
+            print(f"    → {clues_remaining} clues remaining")
+        
+        # Pick the best attempt (least remaining clues)
+        all_attempts.sort(key=lambda x: x[0])
+        best_clues, best_puzzle = all_attempts[0]
+        
+        print(f"  Best result: {best_clues} clues remaining")
+        
+        return best_puzzle
+
+    def _remove_numbers_with_target(self, target_empty_cells, max_failed_attempts=100):
+        """
+        Remove numbers from the grid while maintaining a unique solution.
+        Uses timeout-based termination.
+        
+        Args:
+            target_empty_cells: Target number of empty cells
+            max_failed_attempts: Number of consecutive failed removal attempts before stopping
+        
+        Returns:
+            The puzzle grid with numbers removed
+        """
+        grid = copy.deepcopy(self.grid)
+        total_cells = self.size * self.size
+        
+        # Get priority cells from the rule (cells that should be removed first)
+        priority_cells = []
+        if hasattr(self.custom_rule_instance, 'get_priority_removal_cells'):
+            priority_cells = self.custom_rule_instance.get_priority_removal_cells()
+            priority_cells = [(r, c) for r, c in priority_cells if grid[r][c] != 0]
+            random.shuffle(priority_cells)
+
+        cells_removed = 0
+        priority_index = 0
+        failed_attempts = 0
+
+        while failed_attempts < max_failed_attempts:
+            # Check timeout
+            if self.check_timeout():
+                break
+
+            # Check if we've reached our target
+            current_empty = total_cells - self.count_filled_cells(grid)
+            if current_empty >= target_empty_cells:
+                break
+            
+            # First try priority cells, then fall back to random cells
+            if priority_index < len(priority_cells):
+                row, col = priority_cells[priority_index]
+                priority_index += 1
+            else:
+                # Random selection after priority cells are exhausted
+                row = random.randint(0, self.size - 1)
+                col = random.randint(0, self.size - 1)
+                # Find a filled cell
+                max_tries = 100
+                tries = 0
+                while grid[row][col] == 0 and tries < max_tries:
+                    row = random.randint(0, self.size - 1)
+                    col = random.randint(0, self.size - 1)
+                    tries += 1
+                if tries >= max_tries:
+                    break  # No more cells to remove
+
+            # Skip if cell is already empty
+            if grid[row][col] == 0:
+                continue
+
+            backup = grid[row][col]
+            grid[row][col] = 0
+
+            # Check for uniqueness: use a solver variant that counts solutions
+            solutions = self.count_solutions(copy.deepcopy(grid), 0)
+            if solutions != 1:
+                grid[row][col] = backup
+                failed_attempts += 1
+            else:
+                self.grid = grid
+                cells_removed += 1
+                failed_attempts = 0  # Reset failed attempts on success
+                
+        return grid
 
     # Remove clues while ensuring unique solution
     def remove_numbers(self, attempts=1, difficulty='hard'):
@@ -358,67 +495,36 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, dif
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
-            - For 'hard' mode: Aims for less than 12 clues left. If not achieved 
-              within 30 seconds, retries the generation.
+            - 'easy': Stop after ~50% of numbers have been removed (single attempt)
+            - 'medium': Run 4 attempts with 5s timeout each, target 70% removal, pick best
+            - 'hard': Run 4 attempts with 5s timeout each, target 90% removal, pick best
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
     """
-    max_hard_mode_retries = 10  # Maximum retries for hard mode
-    best_puzzle = None
-    best_solution = None
-    best_clue_count = float('inf')
+    # Create generator with the custom rule
+    gen = SudokuGenerator(custom_rule=custom_rule)
     
-    for retry in range(max_hard_mode_retries if difficulty == 'hard' else 1):
-        if difficulty == 'hard' and retry > 0:
-            print(f"\n🔄 Hard mode retry {retry + 1}/{max_hard_mode_retries} - target: less than {HARD_MODE_TARGET_CLUES} clues")
-        
-        # Create generator with the custom rule
-        gen = SudokuGenerator(custom_rule=custom_rule)
-        
-        # For hard mode, ensure timeout is set for each retry
-        if difficulty == 'hard':
-            gen.timeout_duration = HARD_MODE_TIMEOUT
-            gen.timeout_start = time.time()
-
-        # Generate full solution
-        print("Generating full solution...")
-        solution_grid = gen.generate_full_grid()
-
-        # Create puzzle by removing numbers
+    # Generate full solution
+    print("Generating full solution...")
+    solution_grid = gen.generate_full_grid()
+    
+    # For easy mode, use the old approach (single pass)
+    if difficulty == 'easy':
         print(f"Creating puzzle (difficulty: {difficulty}, attempts: {difficulty_attempts})...")
         puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-        
-        # For hard mode, check if we achieved the target
-        if difficulty == 'hard':
-            filled_cells = gen.count_filled_cells(puzzle_grid)
-            print(f"📊 Puzzle has {filled_cells} clues remaining (target: < {HARD_MODE_TARGET_CLUES})")
-            
-            # Track best result
-            if filled_cells < best_clue_count:
-                best_clue_count = filled_cells
-                best_puzzle = copy.deepcopy(puzzle_grid)
-                best_solution = copy.deepcopy(solution_grid)
-            
-            if filled_cells < HARD_MODE_TARGET_CLUES:
-                print(f"✅ Hard mode target achieved with {filled_cells} clues!")
-                gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-                return puzzle_grid, solution_grid
-            else:
-                if retry < max_hard_mode_retries - 1:
-                    print(f"⚠️  Did not achieve target ({filled_cells} >= {HARD_MODE_TARGET_CLUES}), retrying...")
-                    continue
-                else:
-                    print(f"⚠️  Could not achieve target after {max_hard_mode_retries} attempts. Using best result ({best_clue_count} clues).")
-                    gen.save_puzzle(rule_folder, best_puzzle, best_solution)
-                    return best_puzzle, best_solution
-        
-        # Save the puzzle (for non-hard modes)
         gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
         return puzzle_grid, solution_grid
     
-    # Should not reach here, but return best puzzle just in case
-    return best_puzzle, best_solution
+    # For medium and hard modes, use the new multi-attempt approach
+    print(f"Creating puzzle using multi-attempt approach (difficulty: {difficulty})...")
+    puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty=difficulty)
+    
+    filled_cells = gen.count_filled_cells(puzzle_grid)
+    print(f"📊 Final puzzle has {filled_cells} clues remaining")
+    
+    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+    return puzzle_grid, solution_grid
 
 
 def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max_regeneration_attempts=10, difficulty='hard'):
@@ -435,16 +541,13 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
         difficulty_attempts: Number of attempts to remove cells
         max_regeneration_attempts: Maximum number of times to regenerate the solution
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
-            - For 'hard' mode: Aims for less than 12 clues left. If not achieved 
-              within 30 seconds, retries the generation.
+            - 'easy': Stop after ~50% of numbers have been removed (single attempt)
+            - 'medium': Run 4 attempts with 5s timeout each, target 70% removal, pick best
+            - 'hard': Run 4 attempts with 5s timeout each, target 90% removal, pick best
 
     Returns:
         tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
     """
-    best_puzzle = None
-    best_solution = None
-    best_clue_count = float('inf')
-    
     for attempt in range(max_regeneration_attempts):
         # First, generate a standard Sudoku solution (no custom constraints)
         print(f"Step 1: Generating standard Sudoku solution (attempt {attempt + 1}/{max_regeneration_attempts})...")
@@ -459,41 +562,20 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
             gen = SudokuGenerator(custom_rule=custom_rule)
             gen.grid = copy.deepcopy(solution_grid)
             
-            # For hard mode, ensure timeout is set for each retry
-            if difficulty == 'hard':
-                gen.timeout_duration = HARD_MODE_TIMEOUT
-                gen.timeout_start = time.time()
-
-            # Create puzzle by removing numbers
-            puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-            
-            # For hard mode, check if we achieved the target
-            if difficulty == 'hard':
-                filled_cells = gen.count_filled_cells(puzzle_grid)
-                print(f"📊 Puzzle has {filled_cells} clues remaining (target: < {HARD_MODE_TARGET_CLUES})")
-                
-                # Track best result
-                if filled_cells < best_clue_count:
-                    best_clue_count = filled_cells
-                    best_puzzle = puzzle_grid
-                    best_solution = solution_grid
-                
-                if filled_cells < HARD_MODE_TARGET_CLUES:
-                    print(f"✅ Hard mode target achieved with {filled_cells} clues!")
-                    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-                    return puzzle_grid, solution_grid
-                else:
-                    if attempt < max_regeneration_attempts - 1:
-                        print(f"⚠️  Did not achieve target ({filled_cells} >= {HARD_MODE_TARGET_CLUES}), retrying...")
-                        continue
-                    else:
-                        print(f"⚠️  Could not achieve target after {max_regeneration_attempts} attempts. Using best result ({best_clue_count} clues).")
-                        gen.save_puzzle(rule_folder, best_puzzle, best_solution)
-                        return best_puzzle, best_solution
-            else:
-                # For non-hard modes, save and return immediately
+            # For easy mode, use the old approach (single pass)
+            if difficulty == 'easy':
+                puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
                 gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
                 return puzzle_grid, solution_grid
+            
+            # For medium and hard modes, use the new multi-attempt approach
+            puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty=difficulty)
+            
+            filled_cells = gen.count_filled_cells(puzzle_grid)
+            print(f"📊 Final puzzle has {filled_cells} clues remaining")
+            
+            gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+            return puzzle_grid, solution_grid
         else:
             print(f"  Constraints could not be derived, regenerating solution...")
 
