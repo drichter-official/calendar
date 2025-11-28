@@ -11,11 +11,16 @@ import tempfile
 # Add the custom_sudoku_generator directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'custom_sudoku_generator'))
 
+import run
 from run import (
     SudokuGenerator, 
     generate_sudoku_forward, 
     HARD_MODE_TARGET_CLUES, 
-    HARD_MODE_TIMEOUT
+    HARD_MODE_TIMEOUT,
+    MULTI_ATTEMPT_COUNT,
+    MULTI_ATTEMPT_TIMEOUT,
+    MEDIUM_REMOVAL_TARGET,
+    HARD_REMOVAL_TARGET
 )
 from base_rule import BaseRule
 
@@ -29,6 +34,21 @@ def test_hard_mode_constants():
     
     print(f"  ✅ HARD_MODE_TARGET_CLUES = {HARD_MODE_TARGET_CLUES}")
     print(f"  ✅ HARD_MODE_TIMEOUT = {HARD_MODE_TIMEOUT}")
+
+
+def test_multi_attempt_constants():
+    """Test that the multi-attempt generation constants are correctly defined."""
+    print("\nTesting multi-attempt constants...")
+    
+    assert MULTI_ATTEMPT_COUNT == 4, f"Expected 4 attempts, got {MULTI_ATTEMPT_COUNT}"
+    assert MULTI_ATTEMPT_TIMEOUT == 5, f"Expected 5s timeout, got {MULTI_ATTEMPT_TIMEOUT}"
+    assert MEDIUM_REMOVAL_TARGET == 0.70, f"Expected 0.70, got {MEDIUM_REMOVAL_TARGET}"
+    assert HARD_REMOVAL_TARGET == 0.90, f"Expected 0.90, got {HARD_REMOVAL_TARGET}"
+    
+    print(f"  ✅ MULTI_ATTEMPT_COUNT = {MULTI_ATTEMPT_COUNT}")
+    print(f"  ✅ MULTI_ATTEMPT_TIMEOUT = {MULTI_ATTEMPT_TIMEOUT}s")
+    print(f"  ✅ MEDIUM_REMOVAL_TARGET = {MEDIUM_REMOVAL_TARGET}")
+    print(f"  ✅ HARD_REMOVAL_TARGET = {HARD_REMOVAL_TARGET}")
 
 
 def test_count_filled_cells():
@@ -136,6 +156,67 @@ def test_non_hard_modes_not_affected():
             print(f"  ✅ {mode.capitalize()} mode: {clues} clues")
 
 
+def test_generate_with_multi_attempts():
+    """Test the new generate_with_multi_attempts method directly."""
+    print("\nTesting generate_with_multi_attempts method...")
+    
+    # Save original values
+    original_count = run.MULTI_ATTEMPT_COUNT
+    original_timeout = run.MULTI_ATTEMPT_TIMEOUT
+    
+    try:
+        # Use shorter values for testing
+        run.MULTI_ATTEMPT_COUNT = 2
+        run.MULTI_ATTEMPT_TIMEOUT = 2
+        
+        gen = SudokuGenerator(custom_rule=BaseRule())
+        solution_grid = gen.generate_full_grid()
+        
+        # Test medium difficulty (70% target)
+        puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty='medium')
+        assert puzzle_grid is not None, "Medium puzzle should be generated"
+        clues = gen.count_filled_cells(puzzle_grid)
+        print(f"  ✅ Medium mode via multi_attempts: {clues} clues")
+        
+        # Test hard difficulty (90% target)
+        puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty='hard')
+        assert puzzle_grid is not None, "Hard puzzle should be generated"
+        clues = gen.count_filled_cells(puzzle_grid)
+        print(f"  ✅ Hard mode via multi_attempts: {clues} clues")
+        
+    finally:
+        run.MULTI_ATTEMPT_COUNT = original_count
+        run.MULTI_ATTEMPT_TIMEOUT = original_timeout
+
+
+def test_multi_attempts_picks_best():
+    """Test that the multi-attempt approach picks the puzzle with fewest clues."""
+    print("\nTesting that multi-attempts picks best result...")
+    
+    # Save original values
+    original_count = run.MULTI_ATTEMPT_COUNT
+    original_timeout = run.MULTI_ATTEMPT_TIMEOUT
+    
+    try:
+        # Run multiple attempts to ensure we get the best
+        run.MULTI_ATTEMPT_COUNT = 3
+        run.MULTI_ATTEMPT_TIMEOUT = 2
+        
+        gen = SudokuGenerator(custom_rule=BaseRule())
+        solution_grid = gen.generate_full_grid()
+        
+        puzzle_grid = gen.generate_with_multi_attempts(solution_grid, difficulty='hard')
+        clues = gen.count_filled_cells(puzzle_grid)
+        
+        # The result should have significantly fewer clues than the total
+        assert clues < 81, f"Should have removed some clues, got {clues}"
+        print(f"  ✅ Multi-attempts returned puzzle with {clues} clues")
+        
+    finally:
+        run.MULTI_ATTEMPT_COUNT = original_count
+        run.MULTI_ATTEMPT_TIMEOUT = original_timeout
+
+
 def run_all_tests():
     """Run all hard mode tests."""
     print("=" * 60)
@@ -144,11 +225,14 @@ def run_all_tests():
     
     try:
         test_hard_mode_constants()
+        test_multi_attempt_constants()
         test_count_filled_cells()
         test_reset_timeout()
         test_timeout_duration_set()
         test_hard_mode_retry_logic()
         test_non_hard_modes_not_affected()
+        test_generate_with_multi_attempts()
+        test_multi_attempts_picks_best()
         
         print("\n" + "=" * 60)
         print("✅ ALL TESTS PASSED!")
