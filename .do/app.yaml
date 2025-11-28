@@ -4,7 +4,7 @@ services:
   github:
     branch: main
     deploy_on_push: true
-  run_command: gunicorn --chdir website app:app
+  run_command: gunicorn --timeout 60 --chdir website app:app
   environment_slug: python
   http_port: 8080
   instance_count: 1
