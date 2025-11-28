@@ -383,7 +383,40 @@
             color: inherit;
         }
         .sudoku td.renban-cell {
-            background-color: #f3e5f5 !important;
+            background-color: #ffcdd2 !important;
+            color: inherit;
+        }
+        /* Renban lines - each line gets a different soft/light color */
+        .sudoku td.renban-line-0 {
+            background-color: #ffcdd2 !important;  /* Light Red/Pink */
+            color: inherit;
+        }
+        .sudoku td.renban-line-1 {
+            background-color: #b3e5fc !important;  /* Light Blue */
+            color: inherit;
+        }
+        .sudoku td.renban-line-2 {
+            background-color: #c8e6c9 !important;  /* Light Green */
+            color: inherit;
+        }
+        .sudoku td.renban-line-3 {
+            background-color: #ffe0b2 !important;  /* Light Orange */
+            color: inherit;
+        }
+        .sudoku td.renban-line-4 {
+            background-color: #e1bee7 !important;  /* Light Purple */
+            color: inherit;
+        }
+        .sudoku td.renban-line-5 {
+            background-color: #b2ebf2 !important;  /* Light Cyan */
+            color: inherit;
+        }
+        .sudoku td.renban-line-6 {
+            background-color: #fff9c4 !important;  /* Light Yellow */
+            color: inherit;
+        }
+        .sudoku td.renban-line-7 {
+            background-color: #f8bbd0 !important;  /* Light Pink */
             color: inherit;
         }
         .sudoku td.jigsaw-region-0 {
@@ -550,6 +583,14 @@
         .sudoku td.arrow-circle input,
         .sudoku td.arrow-cell input,
         .sudoku td.renban-cell input,
+        .sudoku td.renban-line-0 input,
+        .sudoku td.renban-line-1 input,
+        .sudoku td.renban-line-2 input,
+        .sudoku td.renban-line-3 input,
+        .sudoku td.renban-line-4 input,
+        .sudoku td.renban-line-5 input,
+        .sudoku td.renban-line-6 input,
+        .sudoku td.renban-line-7 input,
         .sudoku td.whisper-cell input,
         .sudoku td.whisper-line-0 input,
         .sudoku td.whisper-line-1 input,
@@ -1353,12 +1394,12 @@
                 });
             }
 
-            // Renban lines
+            // Renban lines - each line gets a different color
             if (rule.renban_lines) {
-                rule.renban_lines.forEach(line => {
+                rule.renban_lines.forEach((line, lineIndex) => {
                     line.forEach(([row, col]) => {
                         const cell = document.querySelector(`td[data-row="${row}"][data-col="${col}"]`);
-                        if (cell) cell.classList.add('renban-cell');
+                        if (cell) cell.classList.add(`renban-line-${lineIndex % 8}`);
                     });
                 });
             }
