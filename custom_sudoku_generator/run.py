@@ -7,6 +7,11 @@ import time
 from datetime import datetime
 from base_rule import BaseRule
 
+# Hard mode settings
+HARD_MODE_TARGET_CLUES = 12  # Target less than 12 numbers left for hard mode
+HARD_MODE_TIMEOUT = 30  # Timeout in seconds before retrying hard mode generation
+
+
 class SudokuGenerator:
     def __init__(self, size=9, box_size=3, custom_rule=None):
         self.size = size              # 9 for classic Sudoku
@@ -14,7 +19,7 @@ class SudokuGenerator:
         self.grid = [[0]*size for _ in range(size)]
         self.custom_rule_instance = custom_rule if custom_rule else BaseRule(size, box_size)
         self.timeout_start = None
-        self.timeout_duration = 30  # Default 30 seconds timeout
+        self.timeout_duration = HARD_MODE_TIMEOUT  # Default 30 seconds timeout
         self.timed_out = False
 
 
@@ -109,6 +114,15 @@ class SudokuGenerator:
                 if grid[r][c] == 0:
                     return r, c
         return None
+
+    def count_filled_cells(self, grid):
+        """Count the number of filled (non-zero) cells in the grid."""
+        return sum(1 for row in grid for cell in row if cell != 0)
+
+    def reset_timeout(self):
+        """Reset the timeout tracking for a new generation attempt."""
+        self.timeout_start = None
+        self.timed_out = False
 
     # Remove clues while ensuring unique solution
     def remove_numbers(self, attempts=1, difficulty='hard'):
@@ -300,7 +314,7 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None, difficulty='
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
                    - 'easy': Stop after ~50% of numbers have been removed
                    - 'medium': Stop after ~75% of numbers have been removed
-                   - 'hard': Continue until no more numbers can be removed
+                   - 'hard': Aims for < 12 clues, retries within 30s if not achieved
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
@@ -314,8 +328,11 @@ def generate_sudoku_for_rule(rule_folder, difficulty_attempts=None, difficulty='
 
     # Use smart defaults if not specified
     if difficulty_attempts is None:
+        # For hard mode, use many attempts to try to remove as many cells as possible
+        if difficulty == 'hard':
+            difficulty_attempts = 100  # Many attempts for hard mode to maximize cell removal
         # Check if rule is highly restrictive (e.g., non-consecutive)
-        if hasattr(custom_rule, 'is_highly_restrictive') and custom_rule.is_highly_restrictive:
+        elif hasattr(custom_rule, 'is_highly_restrictive') and custom_rule.is_highly_restrictive:
             difficulty_attempts = 1 # Very few attempts for highly restrictive rules
         # Reverse generation rules have complex constraints - use fewer attempts
         elif custom_rule.supports_reverse_generation():
@@ -341,25 +358,67 @@ def generate_sudoku_forward(custom_rule, rule_folder, difficulty_attempts=5, dif
         rule_folder: Path to save the puzzle
         difficulty_attempts: Number of attempts to remove cells
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
+            - For 'hard' mode: Aims for less than 12 clues left. If not achieved 
+              within 30 seconds, retries the generation.
 
     Returns:
         tuple: (puzzle_grid, solution_grid)
     """
-    # Create generator with the custom rule
-    gen = SudokuGenerator(custom_rule=custom_rule)
+    max_hard_mode_retries = 10  # Maximum retries for hard mode
+    best_puzzle = None
+    best_solution = None
+    best_clue_count = float('inf')
+    
+    for retry in range(max_hard_mode_retries if difficulty == 'hard' else 1):
+        if difficulty == 'hard' and retry > 0:
+            print(f"\n🔄 Hard mode retry {retry + 1}/{max_hard_mode_retries} - target: less than {HARD_MODE_TARGET_CLUES} clues")
+        
+        # Create generator with the custom rule
+        gen = SudokuGenerator(custom_rule=custom_rule)
+        
+        # For hard mode, ensure timeout is set for each retry
+        if difficulty == 'hard':
+            gen.timeout_duration = HARD_MODE_TIMEOUT
+            gen.timeout_start = time.time()
 
-    # Generate full solution
-    print("Generating full solution...")
-    solution_grid = gen.generate_full_grid()
+        # Generate full solution
+        print("Generating full solution...")
+        solution_grid = gen.generate_full_grid()
 
-    # Create puzzle by removing numbers
-    print(f"Creating puzzle (difficulty: {difficulty}, attempts: {difficulty_attempts})...")
-    puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-
-    # Save the puzzle
-    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-
-    return puzzle_grid, solution_grid
+        # Create puzzle by removing numbers
+        print(f"Creating puzzle (difficulty: {difficulty}, attempts: {difficulty_attempts})...")
+        puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
+        
+        # For hard mode, check if we achieved the target
+        if difficulty == 'hard':
+            filled_cells = gen.count_filled_cells(puzzle_grid)
+            print(f"📊 Puzzle has {filled_cells} clues remaining (target: < {HARD_MODE_TARGET_CLUES})")
+            
+            # Track best result
+            if filled_cells < best_clue_count:
+                best_clue_count = filled_cells
+                best_puzzle = copy.deepcopy(puzzle_grid)
+                best_solution = copy.deepcopy(solution_grid)
+            
+            if filled_cells < HARD_MODE_TARGET_CLUES:
+                print(f"✅ Hard mode target achieved with {filled_cells} clues!")
+                gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+                return puzzle_grid, solution_grid
+            else:
+                if retry < max_hard_mode_retries - 1:
+                    print(f"⚠️  Did not achieve target ({filled_cells} >= {HARD_MODE_TARGET_CLUES}), retrying...")
+                    continue
+                else:
+                    print(f"⚠️  Could not achieve target after {max_hard_mode_retries} attempts. Using best result ({best_clue_count} clues).")
+                    gen.save_puzzle(rule_folder, best_puzzle, best_solution)
+                    return best_puzzle, best_solution
+        
+        # Save the puzzle (for non-hard modes)
+        gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+        return puzzle_grid, solution_grid
+    
+    # Should not reach here, but return best puzzle just in case
+    return best_puzzle, best_solution
 
 
 def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max_regeneration_attempts=10, difficulty='hard'):
@@ -376,10 +435,16 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
         difficulty_attempts: Number of attempts to remove cells
         max_regeneration_attempts: Maximum number of times to regenerate the solution
         difficulty: Difficulty level - 'easy', 'medium', or 'hard'
+            - For 'hard' mode: Aims for less than 12 clues left. If not achieved 
+              within 30 seconds, retries the generation.
 
     Returns:
         tuple: (puzzle_grid, solution_grid) or (None, None) if all attempts fail
     """
+    best_puzzle = None
+    best_solution = None
+    best_clue_count = float('inf')
+    
     for attempt in range(max_regeneration_attempts):
         # First, generate a standard Sudoku solution (no custom constraints)
         print(f"Step 1: Generating standard Sudoku solution (attempt {attempt + 1}/{max_regeneration_attempts})...")
@@ -393,14 +458,42 @@ def generate_sudoku_reverse(custom_rule, rule_folder, difficulty_attempts=1, max
             # Now create a generator with the custom rule that has derived constraints
             gen = SudokuGenerator(custom_rule=custom_rule)
             gen.grid = copy.deepcopy(solution_grid)
+            
+            # For hard mode, ensure timeout is set for each retry
+            if difficulty == 'hard':
+                gen.timeout_duration = HARD_MODE_TIMEOUT
+                gen.timeout_start = time.time()
 
             # Create puzzle by removing numbers
             puzzle_grid = gen.remove_numbers(attempts=difficulty_attempts, difficulty=difficulty)
-
-            # Save the puzzle
-            gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
-
-            return puzzle_grid, solution_grid
+            
+            # For hard mode, check if we achieved the target
+            if difficulty == 'hard':
+                filled_cells = gen.count_filled_cells(puzzle_grid)
+                print(f"📊 Puzzle has {filled_cells} clues remaining (target: < {HARD_MODE_TARGET_CLUES})")
+                
+                # Track best result
+                if filled_cells < best_clue_count:
+                    best_clue_count = filled_cells
+                    best_puzzle = puzzle_grid
+                    best_solution = solution_grid
+                
+                if filled_cells < HARD_MODE_TARGET_CLUES:
+                    print(f"✅ Hard mode target achieved with {filled_cells} clues!")
+                    gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+                    return puzzle_grid, solution_grid
+                else:
+                    if attempt < max_regeneration_attempts - 1:
+                        print(f"⚠️  Did not achieve target ({filled_cells} >= {HARD_MODE_TARGET_CLUES}), retrying...")
+                        continue
+                    else:
+                        print(f"⚠️  Could not achieve target after {max_regeneration_attempts} attempts. Using best result ({best_clue_count} clues).")
+                        gen.save_puzzle(rule_folder, best_puzzle, best_solution)
+                        return best_puzzle, best_solution
+            else:
+                # For non-hard modes, save and return immediately
+                gen.save_puzzle(rule_folder, puzzle_grid, solution_grid)
+                return puzzle_grid, solution_grid
         else:
             print(f"  Constraints could not be derived, regenerating solution...")
 
