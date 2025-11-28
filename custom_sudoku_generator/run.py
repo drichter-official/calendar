@@ -23,6 +23,9 @@ EASY_ATTEMPT_COUNT = 10
 EASY_ATTEMPT_TIMEOUT = 1
 EASY_REMOVAL_TARGET = 0.50  # Target 50% cells to remove for easy
 
+# Priority cell settings
+PRIORITY_CELL_DROP_RATE = 0.20  # Randomly drop 20% of priority cells for variety
+
 
 class SudokuGenerator:
     def __init__(self, size=9, box_size=3, custom_rule=None):
@@ -223,6 +226,8 @@ class SudokuGenerator:
         if hasattr(self.custom_rule_instance, 'get_priority_removal_cells'):
             priority_cells = self.custom_rule_instance.get_priority_removal_cells()
             priority_cells = [(r, c) for r, c in priority_cells if grid[r][c] != 0]
+            # Randomly drop some priority cells to add variety
+            priority_cells = [cell for cell in priority_cells if random.random() > PRIORITY_CELL_DROP_RATE]
             random.shuffle(priority_cells)
 
         cells_removed = 0
@@ -316,6 +321,8 @@ class SudokuGenerator:
             priority_cells = self.custom_rule_instance.get_priority_removal_cells()
             # Filter to only cells that are currently filled
             priority_cells = [(r, c) for r, c in priority_cells if grid[r][c] != 0]
+            # Randomly drop some priority cells to add variety
+            priority_cells = [cell for cell in priority_cells if random.random() > PRIORITY_CELL_DROP_RATE]
             random.shuffle(priority_cells)  # Randomize order within priority cells
 
         cells_attempted = 0

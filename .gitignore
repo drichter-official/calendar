@@ -28,3 +28,8 @@ ENV/
 *.log
 *_log.txt
 *_results.txt
+
+# Generated sudoku files
+custom_sudoku_generator/*/sudoku.txt
+custom_sudoku_generator/*/solution.txt
+custom_sudoku_generator/*/metadata.json
