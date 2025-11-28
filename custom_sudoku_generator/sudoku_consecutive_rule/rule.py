@@ -26,6 +26,10 @@ class ConsecutiveRule(BaseRule):
         # Define consecutive lines (lists of cells that must contain consecutive numbers)
         # Will be derived from solution or use defaults
         self.consecutive_lines = []
+        
+        # Special cells are the endpoints of each consecutive line
+        # These are visually significant and should be prioritized for removal
+        self.special_cells = []
 
     def supports_reverse_generation(self):
         """Consecutive Sudoku strongly benefits from reverse generation."""
@@ -127,6 +131,14 @@ class ConsecutiveRule(BaseRule):
         else:
             self.consecutive_lines = []
 
+        # Populate special_cells with the endpoints of each line
+        self.special_cells = []
+        for line in self.consecutive_lines:
+            if len(line) >= 2:
+                # Add the first and last cell of each line as special cells
+                self.special_cells.append(line[0])
+                self.special_cells.append(line[-1])
+
         print(f"  Created {len(self.consecutive_lines)} non-overlapping consecutive lines")
         for i, line in enumerate(self.consecutive_lines):
             print(f"    Line {i+1}: length {len(line)}")
@@ -172,9 +184,10 @@ class ConsecutiveRule(BaseRule):
 
 
     def get_metadata(self):
-        """Return metadata including consecutive lines."""
+        """Return metadata including consecutive lines and special cells."""
         metadata = super().get_metadata()
         metadata['consecutive_lines'] = self.consecutive_lines
+        metadata['special_cells'] = self.special_cells
         metadata['generation_mode'] = 'reverse' if len(self.consecutive_lines) > 3 else 'forward'
         return metadata
 
@@ -182,8 +195,13 @@ class ConsecutiveRule(BaseRule):
         """
         Return cells in consecutive lines as priority for removal.
         This makes the puzzle more engaging by removing constraint cells first.
+        Special cells (endpoints of lines) are included first for higher priority.
         """
         priority_cells = []
+        # Add special cells first (endpoints of lines) for higher priority
+        for cell in self.special_cells:
+            priority_cells.append(cell)
+        # Add all cells from consecutive lines
         for line in self.consecutive_lines:
             priority_cells.extend(line)
         # Remove duplicates (in case lines overlap) while preserving order
