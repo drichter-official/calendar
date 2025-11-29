@@ -61,11 +61,18 @@ def test_special_cells_populated_after_derive():
         return False
     
     # Verify that special_cells contains endpoints of lines
-    expected_count = len(rule.consecutive_lines) * 2  # 2 endpoints per line
+    # Each line with length >= 2 should contribute 2 endpoints (or 1 if start equals end)
+    expected_count = 0
+    for line in rule.consecutive_lines:
+        if len(line) >= 2:
+            expected_count += 1  # first cell
+            if line[0] != line[-1]:
+                expected_count += 1  # last cell if different
+    
     actual_count = len(rule.special_cells)
     
     if actual_count == expected_count:
-        print(f"✓ SUCCESS: special_cells has {actual_count} cells (2 per line * {len(rule.consecutive_lines)} lines)")
+        print(f"✓ SUCCESS: special_cells has {actual_count} cells (expected based on line endpoints)")
         return True
     else:
         print(f"✗ FAIL: expected {expected_count} special cells but got {actual_count}")

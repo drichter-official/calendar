@@ -137,7 +137,9 @@ class ConsecutiveRule(BaseRule):
             if len(line) >= 2:
                 # Add the first and last cell of each line as special cells
                 self.special_cells.append(line[0])
-                self.special_cells.append(line[-1])
+                # Only add last cell if different from first (defensive check)
+                if line[-1] != line[0]:
+                    self.special_cells.append(line[-1])
 
         print(f"  Created {len(self.consecutive_lines)} non-overlapping consecutive lines")
         for i, line in enumerate(self.consecutive_lines):
