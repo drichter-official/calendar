@@ -933,6 +933,72 @@
             display: flex;
             flex-direction: column;
         }
+        /* Riddle Modal styles */
+        .riddle-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .riddle-modal-overlay.active {
+            display: flex;
+        }
+        .riddle-modal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 30px 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: white;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .riddle-modal h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.5rem;
+        }
+        .riddle-modal .riddle-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        .riddle-modal .riddle-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        .riddle-modal .close-btn {
+            background-color: white;
+            color: #667eea;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .riddle-modal .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -1044,11 +1110,31 @@
 
     <a href="/" class="back-link">← {{ _('Back to Calendar') }}</a>
 
+    <!-- Riddle Modal (German only, shown after solving medium/hard puzzles) -->
+    {% if get_locale() == 'de' and riddle %}
+    <div class="riddle-modal-overlay" id="riddleModal">
+        <div class="riddle-modal">
+            <div class="riddle-icon">🎄</div>
+            <h2>{{ _('Riddle for Day') }} {{ door }}</h2>
+            <p class="riddle-text">{{ riddle }}</p>
+            <button class="close-btn" onclick="closeRiddleModal()">{{ _('Close') }}</button>
+        </div>
+    </div>
+    {% endif %}
+
     <script>
         // Store the solution and metadata
         const solution = {{ solution | tojson }};
         const initialPuzzle = {{ sudoku | tojson }};
         const metadata = {{ metadata | tojson }};
+        
+        // Locale, door number, and riddle for German riddle feature
+        const currentLocale = "{{ get_locale() }}";
+        const doorNumber = {{ door }};
+        const riddleText = {{ riddle | tojson }};
+        
+        // Get current puzzle difficulty from localStorage (set during generation)
+        const currentDifficulty = localStorage.getItem('puzzle_difficulty_' + doorNumber) || 'easy';
 
         // Translated strings for Notes Mode button
         const notesModeText = "{{ _('Notes Mode') }}";
@@ -1073,6 +1159,27 @@
         // Undo system - track all user actions
         const undoHistory = [];
         const MAX_UNDO_STEPS = 100; // Limit history to prevent memory issues
+
+        // Riddle modal functions (German only, for medium/hard puzzles)
+        function showRiddleModal() {
+            // Only show riddle if:
+            // 1. Locale is German
+            // 2. Riddle exists for this door
+            // 3. Difficulty is medium or hard
+            if (currentLocale === 'de' && riddleText && (currentDifficulty === 'medium' || currentDifficulty === 'hard')) {
+                const modal = document.getElementById('riddleModal');
+                if (modal) {
+                    modal.classList.add('active');
+                }
+            }
+        }
+        
+        function closeRiddleModal() {
+            const modal = document.getElementById('riddleModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
 
         function recordAction(action) {
             undoHistory.push(action);
@@ -2287,6 +2394,8 @@
                 messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
             } else if (allCorrect) {
                 messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>';
+                // Show riddle modal for German users who solved medium/hard puzzles
+                showRiddleModal();
             } else {
                 messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>';
             }
@@ -2367,6 +2476,8 @@
                 })
                 .then(data => {
                     if (data.success) {
+                        // Store the difficulty in localStorage for riddle display after reload
+                        localStorage.setItem('puzzle_difficulty_' + doorNumber, difficulty);
                         messageDiv.innerHTML = '<span style="color: #4CAF50;">✓ ' + data.message + ' {{ _("Reloading...") }}</span>';
                         // Reload the page after a short delay to show the new puzzle
                         setTimeout(() => {
