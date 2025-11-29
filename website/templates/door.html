@@ -1303,7 +1303,11 @@
         // Update the hint button display (centralized function)
         function updateHintButtonDisplay() {
             const btn = document.getElementById('hintBtn');
-            if (hintsRemaining <= 0) {
+            // Keep button disabled if sudoku is locked
+            if (sudokuLocked) {
+                btn.disabled = true;
+                btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+            } else if (hintsRemaining <= 0) {
                 btn.disabled = true;
                 btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">0</span>';
             } else {
@@ -2165,6 +2169,16 @@
         // Only allow numbers 1-9
         document.querySelectorAll('.sudoku input').forEach(input => {
             input.addEventListener('input', function(e) {
+                // Prevent input when sudoku is locked - restore current value
+                if (sudokuLocked) {
+                    // The input is already read-only, but in case this fires, restore the value
+                    const currentValue = e.target.getAttribute('data-old-value');
+                    if (currentValue !== null) {
+                        e.target.value = currentValue;
+                    }
+                    return;
+                }
+                
                 const value = e.target.value;
                 const row = parseInt(e.target.dataset.row);
                 const col = parseInt(e.target.dataset.col);
@@ -2251,8 +2265,8 @@
                 const row = parseInt(e.target.dataset.row);
                 const col = parseInt(e.target.dataset.col);
                 
-                // If hint mode is active, apply hint to this cell
-                if (hintMode) {
+                // If hint mode is active and sudoku is not locked, apply hint to this cell
+                if (hintMode && !sudokuLocked) {
                     applyHint(row, col);
                     return;
                 }
@@ -2267,15 +2281,17 @@
 
             // Add keyboard navigation
             input.addEventListener('keydown', function(e) {
-                // Allow spacebar to toggle notes mode even in input fields
+                // Allow spacebar to toggle notes mode even in input fields (only if not locked)
                 if (e.code === 'Space') {
                     e.preventDefault();
-                    toggleNotesMode();
+                    if (!sudokuLocked) {
+                        toggleNotesMode();
+                    }
                     return;
                 }
 
-                // Handle Delete/Backspace in notes mode
-                if (notesMode && (e.key === 'Delete' || e.key === 'Backspace')) {
+                // Handle Delete/Backspace in notes mode (only if not locked)
+                if (notesMode && !sudokuLocked && (e.key === 'Delete' || e.key === 'Backspace')) {
                     e.preventDefault();
                     const row = parseInt(e.target.dataset.row);
                     const col = parseInt(e.target.dataset.col);
@@ -2413,16 +2429,17 @@
             });
 
             const messageDiv = document.getElementById('message');
+            const lockMessage = '<br><span style="color: #666;">{{ _("Sudoku locked. Generate a new puzzle to continue.") }}</span>';
             if (!allFilled) {
                 messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
             } else if (allCorrect) {
-                messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>';
+                messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>' + lockMessage;
                 // Show riddle modal for German users who solved medium/hard puzzles
                 showRiddleModal();
                 // Lock the sudoku after checking
                 lockSudoku();
             } else {
-                messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>';
+                messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>' + lockMessage;
                 // Lock the sudoku after checking
                 lockSudoku();
             }
@@ -2464,11 +2481,6 @@
                 hintBtn.classList.remove('active');
             }
             hintMode = false;
-            
-            // Add locked message
-            const messageDiv = document.getElementById('message');
-            const currentMessage = messageDiv.innerHTML;
-            messageDiv.innerHTML = currentMessage + '<br><span style="color: #666;">{{ _("Sudoku locked. Generate a new puzzle to continue.") }}</span>';
         }
 
         // Unlock the sudoku grid - called when generating a new puzzle or resetting
