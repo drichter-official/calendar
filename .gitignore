@@ -29,7 +29,5 @@ ENV/
 *_log.txt
 *_results.txt
 
-# Generated sudoku files
-custom_sudoku_generator/*/sudoku.txt
-custom_sudoku_generator/*/solution.txt
-custom_sudoku_generator/*/metadata.json
+# Note: sudoku.txt, solution.txt, and metadata.json in custom_sudoku_generator
+# folders are intentionally tracked in git as they are required for the app to work
