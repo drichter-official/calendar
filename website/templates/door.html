@@ -1029,8 +1029,8 @@
     <div class="sudoku-layout">
         <!-- Left side controls: Check Solution, Undo, Reset -->
         <div class="side-controls left-controls">
-            <button onclick="checkSolution()">{{ _('Check Solution') }}</button>
-            <button onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
+            <button id="checkSolutionBtn" onclick="checkSolution()">{{ _('Check Solution') }}</button>
+            <button id="undoBtn" onclick="undo()" class="secondary">↶ {{ _('Undo') }}</button>
             <button onclick="resetBoard()" class="secondary">{{ _('Reset') }}</button>
         </div>
 
@@ -1160,6 +1160,9 @@
         const undoHistory = [];
         const MAX_UNDO_STEPS = 100; // Limit history to prevent memory issues
 
+        // Sudoku lock state - once check solution is pressed, the grid is locked
+        let sudokuLocked = false;
+
         // Riddle modal functions (German only, for medium/hard puzzles)
         function showRiddleModal() {
             // Only show riddle if:
@@ -1190,6 +1193,11 @@
         }
 
         function undo() {
+            // Prevent undo when sudoku is locked
+            if (sudokuLocked) {
+                return;
+            }
+            
             if (undoHistory.length === 0) {
                 const messageDiv = document.getElementById('message');
                 messageDiv.innerHTML = '<span style="color: #ff9800;">Nothing to undo</span>';
@@ -1234,6 +1242,11 @@
 
         // Toggle notes mode function
         function toggleNotesMode() {
+            // Prevent toggling notes mode when sudoku is locked
+            if (sudokuLocked) {
+                return;
+            }
+            
             notesMode = !notesMode;
             const btn = document.getElementById('notesToggle');
             if (notesMode) {
@@ -1251,6 +1264,11 @@
 
         // Toggle hint mode function
         function toggleHintMode() {
+            // Prevent toggling hint mode when sudoku is locked
+            if (sudokuLocked) {
+                return;
+            }
+            
             if (hintsRemaining <= 0) {
                 return;
             }
@@ -1285,7 +1303,11 @@
         // Update the hint button display (centralized function)
         function updateHintButtonDisplay() {
             const btn = document.getElementById('hintBtn');
-            if (hintsRemaining <= 0) {
+            // Keep button disabled if sudoku is locked
+            if (sudokuLocked) {
+                btn.disabled = true;
+                btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">' + hintsRemaining + '</span>';
+            } else if (hintsRemaining <= 0) {
                 btn.disabled = true;
                 btn.innerHTML = '💡 ' + hintModeText + ' <span class="hint-count" id="hintCount">0</span>';
             } else {
@@ -2147,6 +2169,16 @@
         // Only allow numbers 1-9
         document.querySelectorAll('.sudoku input').forEach(input => {
             input.addEventListener('input', function(e) {
+                // Prevent input when sudoku is locked - restore current value
+                if (sudokuLocked) {
+                    // The input is already read-only, but in case this fires, restore the value
+                    const currentValue = e.target.getAttribute('data-old-value');
+                    if (currentValue !== null) {
+                        e.target.value = currentValue;
+                    }
+                    return;
+                }
+                
                 const value = e.target.value;
                 const row = parseInt(e.target.dataset.row);
                 const col = parseInt(e.target.dataset.col);
@@ -2233,8 +2265,8 @@
                 const row = parseInt(e.target.dataset.row);
                 const col = parseInt(e.target.dataset.col);
                 
-                // If hint mode is active, apply hint to this cell
-                if (hintMode) {
+                // If hint mode is active and sudoku is not locked, apply hint to this cell
+                if (hintMode && !sudokuLocked) {
                     applyHint(row, col);
                     return;
                 }
@@ -2249,15 +2281,17 @@
 
             // Add keyboard navigation
             input.addEventListener('keydown', function(e) {
-                // Allow spacebar to toggle notes mode even in input fields
+                // Allow spacebar to toggle notes mode even in input fields (only if not locked)
                 if (e.code === 'Space') {
                     e.preventDefault();
-                    toggleNotesMode();
+                    if (!sudokuLocked) {
+                        toggleNotesMode();
+                    }
                     return;
                 }
 
-                // Handle Delete/Backspace in notes mode
-                if (notesMode && (e.key === 'Delete' || e.key === 'Backspace')) {
+                // Handle Delete/Backspace in notes mode (only if not locked)
+                if (notesMode && !sudokuLocked && (e.key === 'Delete' || e.key === 'Backspace')) {
                     e.preventDefault();
                     const row = parseInt(e.target.dataset.row);
                     const col = parseInt(e.target.dataset.col);
@@ -2363,6 +2397,11 @@
         });
 
         function checkSolution() {
+            // Only allow checking once
+            if (sudokuLocked) {
+                return;
+            }
+
             let allCorrect = true;
             let allFilled = true;
             const inputs = document.querySelectorAll('.sudoku input');
@@ -2390,15 +2429,89 @@
             });
 
             const messageDiv = document.getElementById('message');
+            const lockMessage = '<br><span style="color: #666;">{{ _("Sudoku locked. Generate a new puzzle to continue.") }}</span>';
             if (!allFilled) {
                 messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
             } else if (allCorrect) {
-                messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>';
+                messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>' + lockMessage;
                 // Show riddle modal for German users who solved medium/hard puzzles
                 showRiddleModal();
+                // Lock the sudoku after checking
+                lockSudoku();
             } else {
-                messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>';
+                messageDiv.innerHTML = '<span class="error">{{ _("Some cells are incorrect. Keep trying!") }}</span>' + lockMessage;
+                // Lock the sudoku after checking
+                lockSudoku();
             }
+        }
+
+        // Lock the sudoku grid - disable all inputs and interactive features
+        function lockSudoku() {
+            sudokuLocked = true;
+            
+            // Disable all input fields
+            document.querySelectorAll('.sudoku input').forEach(input => {
+                input.readOnly = true;
+            });
+            
+            // Disable the check solution button
+            const checkBtn = document.getElementById('checkSolutionBtn');
+            if (checkBtn) {
+                checkBtn.disabled = true;
+            }
+            
+            // Disable undo button
+            const undoBtn = document.getElementById('undoBtn');
+            if (undoBtn) {
+                undoBtn.disabled = true;
+            }
+            
+            // Disable notes toggle button
+            const notesBtn = document.getElementById('notesToggle');
+            if (notesBtn) {
+                notesBtn.disabled = true;
+                notesBtn.classList.remove('active');
+            }
+            notesMode = false;
+            
+            // Disable hint button
+            const hintBtn = document.getElementById('hintBtn');
+            if (hintBtn) {
+                hintBtn.disabled = true;
+                hintBtn.classList.remove('active');
+            }
+            hintMode = false;
+        }
+
+        // Unlock the sudoku grid - called when generating a new puzzle or resetting
+        function unlockSudoku() {
+            sudokuLocked = false;
+            
+            // Enable all input fields
+            document.querySelectorAll('.sudoku input').forEach(input => {
+                input.readOnly = false;
+            });
+            
+            // Enable the check solution button
+            const checkBtn = document.getElementById('checkSolutionBtn');
+            if (checkBtn) {
+                checkBtn.disabled = false;
+            }
+            
+            // Enable undo button
+            const undoBtn = document.getElementById('undoBtn');
+            if (undoBtn) {
+                undoBtn.disabled = false;
+            }
+            
+            // Enable notes toggle button
+            const notesBtn = document.getElementById('notesToggle');
+            if (notesBtn) {
+                notesBtn.disabled = false;
+            }
+            
+            // Enable hint button (if hints remaining)
+            updateHintButtonDisplay();
         }
 
         function clearAll() {
@@ -2428,6 +2541,8 @@
             const hintBtn = document.getElementById('hintBtn');
             hintBtn.classList.remove('active');
             updateHintButtonDisplay();
+            // Unlock the sudoku if it was locked
+            unlockSudoku();
         }
 
         // Function to update the notes display for a cell
