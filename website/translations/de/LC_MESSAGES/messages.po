@@ -137,3 +137,11 @@ msgstr "Generiere neues Rätsel... Dies kann einen Moment dauern."
 #: website/templates/door.html
 msgid "Reloading..."
 msgstr "Wird neu geladen..."
+
+#: website/templates/door.html
+msgid "Riddle for Day"
+msgstr "Rätsel für Tag"
+
+#: website/templates/door.html
+msgid "Close"
+msgstr "Schließen"

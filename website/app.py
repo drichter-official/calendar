@@ -134,6 +134,35 @@ german_translations = {
                                'description': 'Unregelmäßige Regionen ersetzen 3x3-Boxen, müssen alle Ziffern 1-9 enthalten'},
 }
 
+# German riddles for each door (1-24) - displayed after solving medium/hard puzzles
+# Each riddle has a 'riddle' (question) and 'answer' (solution - stored but not displayed on website)
+german_riddles = {
+    1: {'riddle': 'Ich habe Städte, aber keine Häuser, Wälder, aber keine Bäume, und Wasser, aber keine Fische.', 'answer': 'Karte'},
+    2: {'riddle': 'Ich gehöre dir, aber andere benutzen mich häufiger als du.', 'answer': 'Name'},
+    3: {'riddle': 'Je mehr davon da ist, desto weniger siehst du.', 'answer': 'Dunkelheit'},
+    4: {'riddle': 'Man kann mich fangen, aber nicht werfen.', 'answer': 'Schnupfen'},
+    5: {'riddle': 'Ich habe einen Fuß, aber keine Beine, und liege oft am Bettende.', 'answer': 'Bett'},
+    6: {'riddle': 'Ich habe Nadeln, aber kann nicht nähen.', 'answer': 'Tanne'},
+    7: {'riddle': 'Ich bin immer vor dir, doch du kannst mich nie erreichen.', 'answer': 'Zukunft'},
+    8: {'riddle': 'Ich habe viele Gesichter, aber keinen Kopf, und zeige oft Gefühle.', 'answer': 'Maske'},
+    9: {'riddle': 'Ich bin zu sehen in Minuten, aber nicht in Stunden, zweimal in dem Wort „Augenblick", doch nie in Jahren.', 'answer': 'M'},
+    10: {'riddle': 'Ich bin nicht lebendig, aber kann wachsen; ich habe keine Lunge, aber brauche Luft; ich habe keinen Mund, aber Wasser tötet mich.', 'answer': 'Feuer'},
+    11: {'riddle': 'Ich habe einen Schlüssel, aber kein Schloss, ein Schloss, aber keinen Schlüssel, und manchmal ein Herz.', 'answer': 'Brust'},
+    12: {'riddle': 'Ich bin immer in dir, manchmal vorne, manchmal hinten, doch niemals außen.', 'answer': 'Gedanke'},
+    13: {'riddle': 'Ich bin größer als ein Haus, doch wiege nichts.', 'answer': 'Schatten'},
+    14: {'riddle': 'Ich laufe um dein Haus, komme aber nie hinein.', 'answer': 'Zaun'},
+    15: {'riddle': 'Ich bin schwer zu heben, aber leicht zu werfen.', 'answer': 'Blick'},
+    16: {'riddle': 'Ich komme einmal im Jahr, aber nie im Monat und nie im Tag.', 'answer': 'J'},
+    17: {'riddle': 'Ich habe Räume, doch keine Türen, und Zahlen, aber kein Rechnen.', 'answer': 'Kalender'},
+    18: {'riddle': 'Ich gehe bergauf und bergab, bleibe aber immer am selben Ort.', 'answer': 'Weg'},
+    19: {'riddle': 'Ich bin unsichtbar, aber du kannst mich fühlen, und manchmal bringe ich dich aus dem Gleichgewicht.', 'answer': 'Wind'},
+    20: {'riddle': 'Ich kann dich zerbrechen, ohne dich zu berühren, und doch bin ich nur ein Gefühl.', 'answer': 'Herz'},
+    21: {'riddle': 'Ich habe ein Auge, das nie sieht, und bin doch gefährlich, wenn ich erscheine.', 'answer': 'Wirbel'},
+    22: {'riddle': 'Ich bin da, bevor du geboren wirst, und bleibe, wenn du längst fort bist.', 'answer': 'Geschichte'},
+    23: {'riddle': 'Ich bin voll Wasser, doch werde nie nass.', 'answer': 'Wolke'},
+    24: {'riddle': 'Ich werde größer, je weniger du von mir siehst.', 'answer': 'Nebel'},
+}
+
 def get_translated_rule_info(door_number):
     """Get translated rule name and description based on current locale."""
     locale = get_locale()
@@ -256,6 +285,9 @@ def door(door_number):
     # Get translated rule name and description
     rule_name, rule_description = get_translated_rule_info(door_number)
     
+    # Get German riddle for this door (only the riddle text, answer not passed to template)
+    riddle = german_riddles.get(door_number, {}).get('riddle', '')
+    
     # Use a generic template for all doors
     return render_template("door.html", 
                          door=door_number, 
@@ -264,6 +296,7 @@ def door(door_number):
                          rule_description=rule_description,
                          sudoku=sudoku_grid, 
                          solution=solution_grid,
+                         riddle=riddle,
                          get_locale=get_locale)
 
 @app.route('/generate/<int:door_number>')

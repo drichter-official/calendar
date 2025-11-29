@@ -137,3 +137,11 @@ msgstr "Generating new puzzle... This may take a moment."
 #: website/templates/door.html
 msgid "Reloading..."
 msgstr "Reloading..."
+
+#: website/templates/door.html
+msgid "Riddle for Day"
+msgstr "Riddle for Day"
+
+#: website/templates/door.html
+msgid "Close"
+msgstr "Close"
