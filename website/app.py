@@ -148,13 +148,13 @@ german_translations = {
 # Each riddle has a 'riddle' (question) and 'answer' (solution - stored but not displayed on website)
 german_riddles = {
     1: {'riddle': 'Ich habe Städte, aber keine Häuser, Wälder, aber keine Bäume, und Wasser, aber keine Fische.', 'answer': 'Karte'},
-    2: {'riddle': 'Ich gehöre dir, aber andere benutzen mich häufiger als du.', 'answer': 'Name'},
-    3: {'riddle': 'Je mehr davon da ist, desto weniger siehst du.', 'answer': 'Dunkelheit'},
-    4: {'riddle': 'Ich bin immer vor dir, doch du kannst mich nie erreichen.', 'answer': 'Zukunft'},
+    2: {'riddle': 'Ich reise um die Welt, bleibe aber in einer Ecke.', 'answer': 'Briefmarke'},
+    3: {'riddle': 'Wenn du mich auf die Seite legst bin ich alles für immer, in zwei Hälften schneidest, bin ich nichts.', 'answer': '8'},
+    4: {'riddle': 'Ich bin immer vor dir, doch du kannst mich nie erreichen.', 'answer': 'Horizont'},
     5: {'riddle': 'Ich bin schwer zu heben, aber leicht zu werfen.', 'answer': 'Blick'},
     6: {'riddle': 'Ich gehe bergauf und bergab, bleibe aber immer am selben Ort.', 'answer': 'Weg'},
-    7: {'riddle': 'Ich bin unsichtbar, aber du kannst mich fühlen, und manchmal bringe ich dich aus dem Gleichgewicht.', 'answer': 'Wind'},
-    8: {'riddle': 'Ich bin da, bevor du geboren wirst, und bleibe, wenn du längst fort bist.', 'answer': 'Geschichte'},
+    7: {'riddle': 'Ich bin da, bevor du geboren wirst, und bleibe, wenn du längst fort bist.', 'answer': 'Geschichte'},
+    8: {'riddle': 'Kämpfst du mit mir, bin ich schwerer zu treffen je mehr du mich hasst.', 'answer': 'Entscheidung'},
     9: {'riddle': 'Ich laufe, aber habe keine Beine.', 'answer': 'Uhr'},
     10: {'riddle': 'Ich bin immer hungrig und verschlinge alles, was mir gegeben wird, aber wenn ich Wasser trinke, sterbe ich.', 'answer': 'Feuer'},
     11: {'riddle': 'Je mehr du nimmst, desto mehr lässt du zurück.', 'answer': 'Schritte'},
@@ -167,10 +167,10 @@ german_riddles = {
     18: {'riddle': 'Ich habe viele Augen, sehe aber nichts.', 'answer': 'Würfel'},
     19: {'riddle': 'Je länger ich stehe, desto kleiner werde ich.', 'answer': 'Kerze'},
     20: {'riddle': 'Ich bin leicht wie eine Feder, schwer zu halten.', 'answer': 'Atem'},
-    21: {'riddle': 'Ich werde leichter, je mehr man mich füllt.', 'answer': 'Heißluftballon'},
-    22: {'riddle': 'Ich reise um die Welt, bleibe aber in einer Ecke.', 'answer': 'Briefmarke'},
-    23: {'riddle': 'Wenn du mich auf die Seite legst bin ich alles für immer, in zwei Hälften schneidest, bin ich nichts.', 'answer': '8'},
-    24: {'riddle': 'Ich habe Finger, aber bin kein Mensch.', 'answer': 'Handschuh'},
+    21: {'riddle': 'Ich werde leichter, je mehr man mich füllt.', 'answer': 'Ballon'},
+    22: {'riddle': 'Ich habe Finger, aber bin kein Mensch.', 'answer': 'Handschuh'},
+    23: {'riddle': 'Ich bin unsichtbar, aber du kannst mich fühlen, und manchmal bringe ich dich aus dem Gleichgewicht.', 'answer': 'Wind'},
+    24: {'riddle': 'Ich gehöre dir, aber andere benutzen mich häufiger als du.', 'answer': 'Name'},
 }
 
 def get_translated_rule_info(door_number):
