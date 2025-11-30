@@ -2402,10 +2402,21 @@
                 return;
             }
 
-            let allCorrect = true;
-            let allFilled = true;
             const inputs = document.querySelectorAll('.sudoku input');
+            const messageDiv = document.getElementById('message');
 
+            // First check if all cells are filled (without marking anything)
+            // Use Array.from().some() for early termination when an empty cell is found
+            const allFilled = !Array.from(inputs).some(input => !input.value);
+
+            // If not all cells are filled, show message and return early without checking or locking
+            if (!allFilled) {
+                messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
+                return;
+            }
+
+            // All cells are filled - now check the solution
+            let allCorrect = true;
             inputs.forEach(input => {
                 const row = parseInt(input.dataset.row);
                 const col = parseInt(input.dataset.col);
@@ -2415,11 +2426,6 @@
                 // Remove previous styling
                 cell.classList.remove('correct', 'incorrect');
 
-                if (!value) {
-                    allFilled = false;
-                    return;
-                }
-
                 if (parseInt(value) === solution[row][col]) {
                     cell.classList.add('correct');
                 } else {
@@ -2428,11 +2434,8 @@
                 }
             });
 
-            const messageDiv = document.getElementById('message');
             const lockMessage = '<br><span style="color: #666;">{{ _("Sudoku locked. Generate a new puzzle to continue.") }}</span>';
-            if (!allFilled) {
-                messageDiv.innerHTML = '<span class="error">{{ _("Please fill in all cells first!") }}</span>';
-            } else if (allCorrect) {
+            if (allCorrect) {
                 messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>' + lockMessage;
                 // Show riddle modal for German users who solved medium/hard puzzles
                 showRiddleModal();
