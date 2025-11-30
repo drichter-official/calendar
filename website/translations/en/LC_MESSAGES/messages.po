@@ -149,3 +149,15 @@ msgstr "Close"
 #: website/templates/door.html
 msgid "Sudoku locked. Generate a new puzzle to continue."
 msgstr "Sudoku locked. Generate a new puzzle to continue."
+
+#: website/templates/calendar.html
+msgid "This door is still locked! Doors open at 6 AM CET on their day."
+msgstr "This door is still locked! Doors open at 6 AM CET on their day."
+
+#: website/templates/calendar.html
+msgid "is still locked. Please come back on December"
+msgstr "is still locked. Please come back on December"
+
+#: website/templates/calendar.html
+msgid "at 6 AM CET."
+msgstr "at 6 AM CET."
