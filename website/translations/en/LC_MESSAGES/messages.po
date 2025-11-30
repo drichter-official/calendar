@@ -145,3 +145,7 @@ msgstr "Riddle for Day"
 #: website/templates/door.html
 msgid "Close"
 msgstr "Close"
+
+#: website/templates/door.html
+msgid "Sudoku locked. Generate a new puzzle to continue."
+msgstr "Sudoku locked. Generate a new puzzle to continue."

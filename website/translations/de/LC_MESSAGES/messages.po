@@ -145,3 +145,7 @@ msgstr "Rätsel für Tag"
 #: website/templates/door.html
 msgid "Close"
 msgstr "Schließen"
+
+#: website/templates/door.html
+msgid "Sudoku locked. Generate a new puzzle to continue."
+msgstr "Sudoku gesperrt. Generiere ein neues Rätsel, um fortzufahren."
