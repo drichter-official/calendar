@@ -130,6 +130,57 @@
         .close-all-btn:active {
             transform: translateY(0);
         }
+
+        /* Locked door styles */
+        .door-wrapper.locked {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .door-wrapper.locked .door-panel {
+            background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+        }
+
+        .door-wrapper.locked::before {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            z-index: 10;
+            opacity: 0.8;
+        }
+
+        /* Locked door message toast */
+        .locked-toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(255, 152, 0, 0.4);
+            z-index: 2000;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+            max-width: 90%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
     </style>
 </head>
 <body>
@@ -157,13 +208,23 @@
     <!-- Close All Doors Button -->
     <button class="close-all-btn" onclick="closeAllDoors()">🔒 {{ _('Reset All Doors') }}</button>
 
+    <!-- Locked door toast message (hidden by default) -->
+    <div id="lockedToast" class="locked-toast" style="display: none;"></div>
+
     <div class="calendar-container">
         <div class="calendar-bg-wrapper">
             <img src="/static/lottas_background.png" class="calendar-bg" alt="{{ _('Advent Calendar') }}" />
             {% for door_number, pos_class in door_positions %}
-              <a href="{{ url_for('door', door_number=door_number) }}" class="door-wrapper {{ pos_class }}" data-door="{{ door_number }}" data-opened="{{ 'true' if door_number in opened_doors else 'false' }}">
+              {% set is_locked = restriction_enabled and door_number not in unlocked_doors %}
+              {% set is_opened = door_number in opened_doors %}
+              {% set is_unlocked = door_number in unlocked_doors %}
+              <a href="{{ url_for('door', door_number=door_number) }}" 
+                 class="door-wrapper {{ pos_class }}{% if is_locked %} locked{% endif %}" 
+                 data-door="{{ door_number }}" 
+                 data-opened="{{ 'true' if is_opened else 'false' }}" 
+                 data-unlocked="{{ 'true' if is_unlocked else 'false' }}">
                 <span class="door-number">{{ door_number }}</span>
-                <div class="door-panel{% if door_number in opened_doors %} doorOpen{% endif %}"></div>
+                <div class="door-panel{% if is_opened %} doorOpen{% endif %}"></div>
               </a>
             {% endfor %}
         </div>
@@ -215,6 +276,37 @@
             }
         });
 
+        // Localized messages
+        const lockedDoorMessage = "{{ _('This door is still locked! Doors open at 6 AM CET on their day.') }}";
+        const redirectedLockedMessage = "{{ _('Door') }} {door} {{ _('is still locked. Please come back on December') }} {door} {{ _('at 6 AM CET.') }}";
+
+        // Function to show the locked toast message
+        function showLockedToast(message, duration = 4000) {
+            const toast = document.getElementById('lockedToast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            // Auto-hide after duration
+            setTimeout(function() {
+                toast.style.display = 'none';
+            }, duration);
+        }
+
+        // Check if we were redirected due to a locked door (URL parameter)
+        function checkLockedRedirect() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lockedDoor = urlParams.get('locked');
+            if (lockedDoor) {
+                const message = redirectedLockedMessage.replace(/{door}/g, lockedDoor);
+                showLockedToast(message, 5000);
+                // Clean up the URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+
+        // Run on page load
+        checkLockedRedirect();
+
         // Handle door clicks - animate first, then navigate
         document.querySelectorAll('.door-wrapper').forEach(function(doorWrapper) {
             doorWrapper.addEventListener('click', function(event) {
@@ -223,6 +315,14 @@
                 const doorPanel = doorWrapper.querySelector('.door-panel');
                 const targetUrl = doorWrapper.getAttribute('href');
                 const isAlreadyOpen = doorWrapper.getAttribute('data-opened') === 'true';
+                const isUnlocked = doorWrapper.getAttribute('data-unlocked') === 'true';
+                const doorNumber = doorWrapper.getAttribute('data-door');
+                
+                // Check if door is locked
+                if (!isUnlocked) {
+                    showLockedToast(lockedDoorMessage);
+                    return;
+                }
                 
                 if (isAlreadyOpen) {
                     // Door already open, navigate directly to the door page
