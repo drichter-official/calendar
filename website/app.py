@@ -1,10 +1,20 @@
-from flask import Flask, render_template, jsonify, request, session
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for
 from flask_babel import Babel
+from datetime import datetime
+import pytz
 import os
 import ast
 import sys
 
 app = Flask(__name__)
+
+# =============================================================================
+# DOOR TIME RESTRICTION CONFIGURATION
+# =============================================================================
+# Set to True to enable time-based door restrictions (doors unlock at 6 AM CET on their day)
+# Set to False to disable the feature (all doors accessible at any time)
+ENABLE_DOOR_TIME_RESTRICTION = True
+# =============================================================================
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['BABEL_DEFAULT_LOCALE'] = 'de'
 app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'de']
@@ -237,6 +247,50 @@ def mark_door_opened(door_number):
         session.modified = True
     return True
 
+def is_door_unlocked(door_number):
+    """
+    Check if a door is unlocked based on the current time in CET.
+    A door unlocks at 6 AM CET on its corresponding day in December.
+    For example, door 1 unlocks at 6 AM CET on December 1st.
+    
+    Returns True if:
+    - ENABLE_DOOR_TIME_RESTRICTION is False (feature disabled)
+    - Current CET time is on or after 6 AM on the door's day
+    """
+    if not ENABLE_DOOR_TIME_RESTRICTION:
+        return True
+    
+    # Validate door number
+    if door_number < 1 or door_number > 24:
+        return False
+    
+    # Get current time in CET (Central European Time)
+    cet = pytz.timezone('Europe/Berlin')
+    now_cet = datetime.now(cet)
+    
+    # Determine the year for this advent calendar
+    # If we're in December, use current year
+    # If we're in January (before December's advent calendar ends), use previous year
+    # Otherwise, use current year (for testing or future access)
+    year = now_cet.year
+    if now_cet.month == 1 and now_cet.day <= 7:
+        # Early January - still in the advent calendar period, use previous year
+        year = now_cet.year - 1
+    
+    # Create the unlock datetime: December {door_number} at 6:00 AM CET
+    try:
+        unlock_time = cet.localize(datetime(year, 12, door_number, 6, 0, 0))
+    except ValueError:
+        # Invalid date (shouldn't happen with doors 1-24)
+        return False
+    
+    # Door is unlocked if current time is at or after the unlock time
+    return now_cet >= unlock_time
+
+def get_unlocked_doors():
+    """Get a set of door numbers that are currently unlocked based on time."""
+    return {door for door in range(1, 25) if is_door_unlocked(door)}
+
 @app.route('/api/opened_doors')
 def api_get_opened_doors():
     """API endpoint to get the list of opened doors."""
@@ -258,6 +312,20 @@ def api_close_all_doors():
     session.modified = True
     return jsonify({'success': True, 'message': 'All doors closed'})
 
+@app.route('/api/door/<int:door_number>/unlocked', methods=['GET'])
+def api_check_door_unlocked(door_number):
+    """API endpoint to check if a specific door is unlocked (based on time restriction)."""
+    if door_number < 1 or door_number > 24:
+        return jsonify({'error': 'Invalid door number'}), 400
+    unlocked = is_door_unlocked(door_number)
+    return jsonify({'door': door_number, 'unlocked': unlocked, 'restriction_enabled': ENABLE_DOOR_TIME_RESTRICTION})
+
+@app.route('/api/unlocked_doors')
+def api_get_unlocked_doors():
+    """API endpoint to get the list of unlocked doors (based on time restriction)."""
+    unlocked = list(get_unlocked_doors())
+    return jsonify({'unlocked_doors': sorted(unlocked), 'restriction_enabled': ENABLE_DOOR_TIME_RESTRICTION})
+
 @app.route('/')
 def calendar():
     doors = list(range(1, 25))
@@ -266,13 +334,19 @@ def calendar():
     # Door number matches position class number (door 1 at pos1, door 2 at pos2, etc.)
     door_positions = list(zip(doors, position_classes))
     opened_doors = get_opened_doors()
-    return render_template("calendar.html", door_positions=door_positions, opened_doors=opened_doors, get_locale=get_locale)
+    unlocked_doors = get_unlocked_doors()
+    return render_template("calendar.html", door_positions=door_positions, opened_doors=opened_doors, unlocked_doors=unlocked_doors, get_locale=get_locale, restriction_enabled=ENABLE_DOOR_TIME_RESTRICTION)
 
 @app.route('/door/<int:door_number>')
 def door(door_number):
     # Validate door number
     if door_number < 1 or door_number > 24:
         return "Invalid door number", 404
+    
+    # Check if door is unlocked (based on time restriction)
+    if not is_door_unlocked(door_number):
+        # Door is locked, redirect to calendar with an error message
+        return redirect(url_for('calendar') + '?locked=' + str(door_number))
     
     # Mark this door as opened
     mark_door_opened(door_number)
