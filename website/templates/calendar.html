@@ -199,10 +199,10 @@
               <a href="{{ url_for('door', door_number=door_number) }}" 
                  class="door-wrapper {{ pos_class }}" 
                  data-door="{{ door_number }}" 
-                 data-opened="{{ 'true' if is_opened else 'false' }}" 
+                 data-opened="{{ 'true' if is_opened and is_unlocked else 'false' }}" 
                  data-unlocked="{{ 'true' if is_unlocked else 'false' }}">
                 <span class="door-number">{{ door_number }}</span>
-                <div class="door-panel{% if is_opened %} doorOpen{% endif %}"></div>
+                <div class="door-panel{% if is_opened and is_unlocked %} doorOpen{% endif %}"></div>
               </a>
             {% endfor %}
         </div>
