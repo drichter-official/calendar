@@ -131,27 +131,6 @@
             transform: translateY(0);
         }
 
-        /* Locked door styles */
-        .door-wrapper.locked {
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        
-        .door-wrapper.locked .door-panel {
-            background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
-        }
-
-        .door-wrapper.locked::before {
-            content: '🔒';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5rem;
-            z-index: 10;
-            opacity: 0.8;
-        }
-
         /* Locked door message toast */
         .locked-toast {
             position: fixed;
@@ -215,11 +194,10 @@
         <div class="calendar-bg-wrapper">
             <img src="/static/lottas_background.png" class="calendar-bg" alt="{{ _('Advent Calendar') }}" />
             {% for door_number, pos_class in door_positions %}
-              {% set is_locked = restriction_enabled and door_number not in unlocked_doors %}
               {% set is_opened = door_number in opened_doors %}
               {% set is_unlocked = door_number in unlocked_doors %}
               <a href="{{ url_for('door', door_number=door_number) }}" 
-                 class="door-wrapper {{ pos_class }}{% if is_locked %} locked{% endif %}" 
+                 class="door-wrapper {{ pos_class }}" 
                  data-door="{{ door_number }}" 
                  data-opened="{{ 'true' if is_opened else 'false' }}" 
                  data-unlocked="{{ 'true' if is_unlocked else 'false' }}">
