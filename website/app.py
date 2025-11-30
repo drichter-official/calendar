@@ -148,23 +148,26 @@ german_translations = {
 # Each riddle has a 'riddle' (question) and 'answer' (solution - stored but not displayed on website)
 german_riddles = {
     1: {'riddle': 'Ich habe Städte, aber keine Häuser, Wälder, aber keine Bäume, und Wasser, aber keine Fische.', 'answer': 'Karte'},
-    2: {'riddle': 'Ich reise um die Welt, bleibe aber in einer Ecke.', 'answer': 'Briefmarke'},
-    3: {'riddle': 'Wenn du mich auf die Seite legst bin ich alles für immer, in zwei Hälften schneidest, bin ich nichts.', 'answer': '8'},
+    2: {'riddle': 'Ich bin immer hungrig und verschlinge alles, was mir gegeben wird, aber wenn ich Wasser trinke, sterbe ich.','answer': 'Feuer'},
+    3: {'riddle': 'Ich reise um die Welt, bleibe aber in einer Ecke.', 'answer': 'Briefmarke'},
     4: {'riddle': 'Ich bin immer vor dir, doch du kannst mich nie erreichen.', 'answer': 'Horizont'},
     5: {'riddle': 'Ich bin schwer zu heben, aber leicht zu werfen.', 'answer': 'Blick'},
     6: {'riddle': 'Ich gehe bergauf und bergab, bleibe aber immer am selben Ort.', 'answer': 'Weg'},
     7: {'riddle': 'Ich bin da, bevor du geboren wirst, und bleibe, wenn du längst fort bist.', 'answer': 'Geschichte'},
-    8: {'riddle': 'Kämpfst du mit mir, bin ich schwerer zu treffen je mehr du mich hasst.', 'answer': 'Entscheidung'},
-    9: {'riddle': 'Ich laufe, aber habe keine Beine.', 'answer': 'Uhr'},
-    10: {'riddle': 'Ich bin immer hungrig und verschlinge alles, was mir gegeben wird, aber wenn ich Wasser trinke, sterbe ich.', 'answer': 'Feuer'},
+    8: {'riddle': 'Wenn du mich auf die Seite legst bin ich alles für immer, in zwei Hälften schneidest, bin ich nichts.','answer': '8'},
+    9: {'riddle': 'Ich bin zuhause und doch unterwegs auf Papier.', 'answer': 'Brief'},
+
+    10: {'riddle': 'Kämpfst du mit mir, bin ich schwerer zu treffen je mehr du mich hasst.', 'answer': 'Entscheidung'},
     11: {'riddle': 'Je mehr du nimmst, desto mehr lässt du zurück.', 'answer': 'Schritte'},
     12: {'riddle': 'Ich fliege, aber habe keine Flügel.', 'answer': 'Zeit'},
     13: {'riddle': 'Ich kann gebrochen werden, ohne dass ich angefasst werde.', 'answer': 'Versprechen'},
-    14: {'riddle': 'Ich bin zuhause und doch unterwegs auf Papier.', 'answer': 'Brief'},
+    14: {'riddle': 'Ich habe viele Augen, sehe aber nichts.', 'answer': 'Würfel'},
+
     15: {'riddle': 'Ich bin voller Löcher, aber halte Wasser.', 'answer': 'Schwamm'},
     16: {'riddle': 'Ich wachse, aber lebe nicht.', 'answer': 'Kristall'},
     17: {'riddle': 'Ich komme, wenn du schläfst, und gehe, wenn du wachst.', 'answer': 'Traum'},
-    18: {'riddle': 'Ich habe viele Augen, sehe aber nichts.', 'answer': 'Würfel'},
+    18: {'riddle': 'Ich laufe, aber habe keine Beine.', 'answer': 'Uhr'},
+
     19: {'riddle': 'Je länger ich stehe, desto kleiner werde ich.', 'answer': 'Kerze'},
     20: {'riddle': 'Ich bin leicht wie eine Feder, schwer zu halten.', 'answer': 'Atem'},
     21: {'riddle': 'Ich werde leichter, je mehr man mich füllt.', 'answer': 'Ballon'},
