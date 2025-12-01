@@ -274,8 +274,14 @@ class SudokuGenerator:
             grid[row][col] = 0
 
             # Check for uniqueness: use a solver variant that counts solutions
+            # Returns -1 if timeout occurred (incomplete check)
             solutions = self.count_solutions(copy.deepcopy(grid), 0)
-            if solutions != 1:
+            if solutions == -1:
+                # Timeout during uniqueness check - restore cell and stop
+                # The last valid grid state is already saved in self.grid
+                grid[row][col] = backup
+                break
+            elif solutions != 1:
                 grid[row][col] = backup
                 failed_attempts += 1
             else:
@@ -364,8 +370,14 @@ class SudokuGenerator:
             grid[row][col] = 0
 
             # Check for uniqueness: use a solver variant that counts solutions
+            # Returns -1 if timeout occurred (incomplete check)
             solutions = self.count_solutions(copy.deepcopy(grid), 0)
-            if solutions != 1:
+            if solutions == -1:
+                # Timeout during uniqueness check - restore cell and stop
+                # The last valid grid state is already saved in self.grid
+                grid[row][col] = backup
+                break
+            elif solutions != 1:
                 grid[row][col] = backup
                 attempts -= 1
             else:
@@ -374,11 +386,10 @@ class SudokuGenerator:
         return grid
 
     def count_solutions(self, grid, count):
-        # NOTE: We intentionally do NOT check timeout here.
-        # The uniqueness verification must complete fully to ensure the puzzle
-        # has exactly one solution. If timeout is checked here, it can cause
-        # puzzles with multiple solutions to be incorrectly saved as valid.
-        # Timeout is only checked in the cell removal loops, not during solution counting.
+        # Check timeout - if exceeded, return -1 to indicate incomplete count
+        # The caller should NOT accept cell removals when count is -1
+        if self.check_timeout():
+            return -1
 
         for row in range(self.size):
             for col in range(self.size):
@@ -387,6 +398,8 @@ class SudokuGenerator:
                         if self.is_valid(grid, row, col, num):
                             grid[row][col] = num
                             count = self.count_solutions(grid, count)
+                            if count == -1:  # Timeout occurred during recursion
+                                return -1
                             if count > 1:  # Early stop if more than 1 solution
                                 return count
                             grid[row][col] = 0

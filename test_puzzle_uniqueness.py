@@ -174,8 +174,8 @@ def test_puzzle_uniqueness():
         
         # Create a generator with the custom rule
         gen = SudokuGenerator(custom_rule=custom_rule)
-        gen.timeout_start = None
-        gen.timed_out = False
+        # Reset timeout state to ensure accurate solution counting
+        gen.reset_timeout()
         
         # Count solutions
         solutions = gen.count_solutions(copy.deepcopy(puzzle), 0)
