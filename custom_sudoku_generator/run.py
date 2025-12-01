@@ -374,9 +374,11 @@ class SudokuGenerator:
         return grid
 
     def count_solutions(self, grid, count):
-        # Check timeout before continuing
-        if self.check_timeout():
-            return count
+        # NOTE: We intentionally do NOT check timeout here.
+        # The uniqueness verification must complete fully to ensure the puzzle
+        # has exactly one solution. If timeout is checked here, it can cause
+        # puzzles with multiple solutions to be incorrectly saved as valid.
+        # Timeout is only checked in the cell removal loops, not during solution counting.
 
         for row in range(self.size):
             for col in range(self.size):
