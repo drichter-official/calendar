@@ -1119,7 +1119,7 @@
 
     <a href="/" class="back-link">← {{ _('Back to Calendar') }}</a>
 
-    <!-- Riddle Modal (German only, shown after solving medium/hard puzzles) -->
+    <!-- Riddle Modal (German only, shown after solving the puzzle) -->
     {% if get_locale() == 'de' and riddle %}
     <div class="riddle-modal-overlay" id="riddleModal">
         <div class="riddle-modal">
@@ -1172,13 +1172,12 @@
         // Sudoku lock state - once check solution is pressed, the grid is locked
         let sudokuLocked = false;
 
-        // Riddle modal functions (German only, for medium/hard puzzles)
+        // Riddle modal functions (German only)
         function showRiddleModal() {
             // Only show riddle if:
             // 1. Locale is German
             // 2. Riddle exists for this door
-            // 3. Difficulty is medium or hard
-            if (currentLocale === 'de' && riddleText && (currentDifficulty === 'medium' || currentDifficulty === 'hard')) {
+            if (currentLocale === 'de' && riddleText) {
                 const modal = document.getElementById('riddleModal');
                 if (modal) {
                     modal.classList.add('active');
@@ -2446,7 +2445,7 @@
             const lockMessage = '<br><span style="color: #666;">{{ _("Sudoku locked. Generate a new puzzle to continue.") }}</span>';
             if (allCorrect) {
                 messageDiv.innerHTML = '<span class="success">🎉 {{ _("Congratulations! You solved the Sudoku correctly!") }} 🎉</span>' + lockMessage;
-                // Show riddle modal for German users who solved medium/hard puzzles
+                // Show riddle modal for German users
                 showRiddleModal();
                 // Lock the sudoku after checking
                 lockSudoku();
