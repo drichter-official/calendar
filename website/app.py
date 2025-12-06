@@ -380,10 +380,10 @@ def door(door_number):
 def generate_puzzle(door_number):
     """Generate a new sudoku puzzle for the specified door."""
     try:
-        # Get difficulty from query parameter (default to 'hard')
-        difficulty = request.args.get('difficulty', 'hard')
-        if difficulty not in ('easy', 'medium', 'hard'):
-            difficulty = 'hard'
+        # Get difficulty from query parameter (default to 'medium')
+        difficulty = request.args.get('difficulty', 'medium')
+        if difficulty not in ('medium', 'hard', 'extreme'):
+            difficulty = 'medium'
         
         # Check if we have write permissions
         rule_folder = get_rule_folder(door_number)

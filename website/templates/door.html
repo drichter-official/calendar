@@ -767,22 +767,22 @@
             border-radius: 5px;
             transition: all 0.3s;
         }
-        button.difficulty-btn.easy {
+        button.difficulty-btn.medium {
             background-color: #4CAF50;
         }
-        button.difficulty-btn.easy:hover {
+        button.difficulty-btn.medium:hover {
             background-color: #45a049;
         }
-        button.difficulty-btn.medium {
+        button.difficulty-btn.hard {
             background-color: #FF9800;
         }
-        button.difficulty-btn.medium:hover {
+        button.difficulty-btn.hard:hover {
             background-color: #F57C00;
         }
-        button.difficulty-btn.hard {
+        button.difficulty-btn.extreme {
             background-color: #f44336;
         }
-        button.difficulty-btn.hard:hover {
+        button.difficulty-btn.extreme:hover {
             background-color: #d32f2f;
         }
         button.difficulty-btn:disabled {
@@ -1086,9 +1086,9 @@
         <!-- Right side controls: Difficulty generation buttons -->
         <div class="side-controls right-controls">
             <span class="difficulty-label">{{ _('Generate New:') }}</span>
-            <button onclick="generateNewPuzzle(this, 'easy')" class="difficulty-btn easy">{{ _('Easy') }}</button>
             <button onclick="generateNewPuzzle(this, 'medium')" class="difficulty-btn medium">{{ _('Medium') }}</button>
             <button onclick="generateNewPuzzle(this, 'hard')" class="difficulty-btn hard">{{ _('Hard') }}</button>
+            <button onclick="generateNewPuzzle(this, 'extreme')" class="difficulty-btn extreme">{{ _('Extreme') }}</button>
         </div>
     </div>
 
@@ -1143,7 +1143,7 @@
         const riddleText = {{ riddle | tojson }};
         
         // Get current puzzle difficulty from localStorage (set during generation)
-        const currentDifficulty = localStorage.getItem('puzzle_difficulty_' + doorNumber) || 'easy';
+        const currentDifficulty = localStorage.getItem('puzzle_difficulty_' + doorNumber) || 'medium';
 
         // Translated strings for Notes Mode button
         const notesModeText = "{{ _('Notes Mode') }}";
