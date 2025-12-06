@@ -99,16 +99,16 @@ msgid "Generate New:"
 msgstr "Generate New:"
 
 #: website/templates/door.html
-msgid "Easy"
-msgstr "Easy"
-
-#: website/templates/door.html
 msgid "Medium"
 msgstr "Medium"
 
 #: website/templates/door.html
 msgid "Hard"
 msgstr "Hard"
+
+#: website/templates/door.html
+msgid "Extreme"
+msgstr "Extreme"
 
 #: website/templates/door.html
 msgid "Please fill in all cells first!"
