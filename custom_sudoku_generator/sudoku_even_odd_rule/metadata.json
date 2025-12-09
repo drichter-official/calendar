@@ -1,49 +1,33 @@
 {
   "rule": {
-    "name": "Even-Odd Sudoku (Checkerboard)",
-    "description": "Alternating even/odd pattern like a checkerboard",
+    "name": "Even-Odd Sudoku (X Marks)",
+    "description": "X-shaped pattern with even and odd markers",
     "size": 9,
     "box_size": 3,
     "even_cells": [
       [
-        4,
-        4
-      ],
-      [
         8,
         8
       ],
       [
-        6,
-        2
+        5,
+        5
       ],
       [
-        4,
-        0
-      ],
-      [
-        0,
-        4
-      ],
-      [
-        8,
-        4
+        7,
+        7
       ],
       [
         0,
         0
       ],
       [
-        8,
-        0
+        1,
+        1
       ],
       [
-        2,
-        6
-      ],
-      [
-        4,
-        8
+        3,
+        3
       ],
       [
         2,
@@ -52,65 +36,45 @@
       [
         6,
         6
-      ],
-      [
-        0,
-        8
       ]
     ],
     "odd_cells": [
       [
-        2,
-        4
-      ],
-      [
         6,
-        8
-      ],
-      [
-        4,
-        6
-      ],
-      [
-        2,
-        0
-      ],
-      [
-        6,
-        4
-      ],
-      [
-        4,
         2
       ],
       [
-        0,
-        6
-      ],
-      [
-        0,
-        2
+        7,
+        1
       ],
       [
         8,
-        6
-      ],
-      [
-        6,
         0
       ],
       [
-        8,
-        2
+        1,
+        7
       ],
       [
         2,
+        6
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        0,
         8
+      ],
+      [
+        3,
+        5
       ]
     ],
-    "pattern_name": "checkerboard"
+    "pattern_name": "cross"
   },
-  "generated_at": "2025-12-06T09:53:02.197899",
+  "generated_at": "2025-12-09T21:18:52.093447",
   "size": 9,
   "box_size": 3
 }
